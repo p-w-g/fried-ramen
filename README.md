@@ -22,6 +22,8 @@ getting a grip on Vue. created with Vue CLI.
 
 
 ## Done
+1. HelloWorld
+2. Spawned List component (tbc)
 
 # cli notes
 
