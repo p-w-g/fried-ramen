@@ -11,28 +11,36 @@
         id="title"
         v-model="title"
         type="text"
-        placeholder="Yakiniku"
+        placeholder="The job"
       >
       <input
-        id="occurence"
-        v-model="occurence"
+        id="description"
+        v-model="description"
         type="text"
-        placeholder="sunday perhaps?"
+        placeholder="the description"
       >
       <button name="the-form">
         SubMe
       </button>
     </form>
     <div>
-      <p
-        v-for="obj in todos"
-        :id="'todo-' + obj.id"
+      <article
+        v-for="(obj, index) in todos"
+        :id="obj.id"
         :key="obj.id"
+        :title="obj.title"
         class="task-card"
-        @click="makeMeDone(obj.id)"
       >
-       boring print: title: {{ obj.title }}, occurence: {{ obj.occurence }}, stateDone: {{obj.isDone}}, id: {{obj.id}}
-      </p>
+        <h3>
+          {{ obj.title }}:
+        </h3>
+        <p>
+          {{ obj.description }}
+        </p>
+        <button @click="remove(index)">
+          DeleteMe
+        </button>
+      </article>
     </div>
   </div>
 </template>
@@ -46,7 +54,7 @@ export default {
   data: () => ({
     todos: [],
     title: '',
-    occurence: '',
+    description: '',
     id: 0,
     isDone: false,
   }),
@@ -54,7 +62,7 @@ export default {
     addNewTodoTask() {
       this.todos.push({
         title: this.title,
-        occurence: this.occurence,
+        description: this.description,
         id: this.id++,
         isDone: false,
       });
@@ -63,24 +71,25 @@ export default {
     },
     resetForm() {
       this.title = '';
-      this.occurence = '';
+      this.description = '';
     },
-    // makeMeDone(event){
+    // toggleDone(event){
     //   this.isDone = true;
-    //   console.log("Am I dun?: ", this.isDone, "from: ", event.target.id);
-      
+    //   console.log('Is done?: ', this.isDone, 'from: ', event.target.id);
+
     // }
-    makeMeDone(passMeAnID){
+    toggleDone(passMeAnID) {
       this.isDone = true;
-      console.log("Am I dun?: ", this.isDone, "from: ", passMeAnID);
-      
-    }
+      console.log('Is done?: ', this.isDone, 'from: ', passMeAnID);
+    },
+    remove(index) {
+      this.$delete(this.todos, index);
+    },
   },
 };
 </script>
 <style>
-
-.done{
+.done {
   background-color: #89b2db;
 }
 </style>
