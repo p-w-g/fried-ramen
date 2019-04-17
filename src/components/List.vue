@@ -58,6 +58,15 @@ export default {
     id: 0,
     isDone: false,
   }),
+  mounted() {
+    if (localStorage.getItem('todos')) {
+      try {
+        this.todos = JSON.parse(localStorage.getItem('todos'));
+      } catch (e) {
+        localStorage.removeItem('todos');
+      }
+    }
+  },
   methods: {
     addNewTodoTask() {
       this.todos.push({
@@ -68,6 +77,7 @@ export default {
       });
 
       this.resetForm();
+      this.saveTodos();
     },
     resetForm() {
       this.title = '';
@@ -84,6 +94,11 @@ export default {
     },
     remove(index) {
       this.$delete(this.todos, index);
+      this.saveTodos();
+    },
+    saveTodos() {
+      const parsed = JSON.stringify(this.todos);
+      localStorage.setItem('todos', parsed);
     },
   },
 };
