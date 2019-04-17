@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <List ramen="nom nom" />
+    <List ramen="*chuckles* I'm a prop" />
   </div>
 </template>
 

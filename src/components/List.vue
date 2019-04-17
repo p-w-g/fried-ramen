@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>List of food I'd wanna eat this week</h1>
+    <h1>Another take on todos</h1>
     <p>{{ ramen }}</p>
     <form
       id="the-form"
@@ -20,7 +20,7 @@
         placeholder="the description"
       >
       <button name="the-form">
-        SubMe
+        Add
       </button>
     </form>
     <div>
@@ -31,12 +31,7 @@
         :title="obj.title"
         class="task-card"
       >
-        <h3>
-          {{ obj.title }}:
-        </h3>
-        <p>
-          {{ obj.description }}
-        </p>
+        <b>{{ obj.title }}:</b> {{ obj.description }} <br>
         <button @click="remove(index)">
           DeleteMe
         </button>
@@ -82,15 +77,6 @@ export default {
     resetForm() {
       this.title = '';
       this.description = '';
-    },
-    // toggleDone(event){
-    //   this.isDone = true;
-    //   console.log('Is done?: ', this.isDone, 'from: ', event.target.id);
-
-    // }
-    toggleDone(passMeAnID) {
-      this.isDone = true;
-      console.log('Is done?: ', this.isDone, 'from: ', passMeAnID);
     },
     remove(index) {
       this.$delete(this.todos, index);

@@ -11,19 +11,16 @@ getting a grip on Vue. created with Vue CLI.
 
 ### Core
 
-- Class holding tasks
-- Add task card feature
 - Toggle task card "done"
-- extensive event listeners / handlers
-- Delete task card
 - Edit feature
-- Persistence and / or Store state locally
-- Layout and CSS
 
 
 ## Done
-1. HelloWorld
-2. Spawned List component (tbc)
+- Class holding tasks
+- Add task card feature
+- Delete task card
+- Persistence and / or Store state locally
+
 
 # cli notes
 
