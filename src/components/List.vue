@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>All your costs go here</h3>
+    <h3>All your expenses go here</h3>
     <form
       id="the-form"
       action="#"
@@ -35,7 +35,7 @@
           <b>{{ obj.title }}:</b>
           {{ obj.description }}
           <button @click="remove(index)">
-            Remove
+            Paid off
           </button>
           <button @click="onHold(index)">
             Freeze it
