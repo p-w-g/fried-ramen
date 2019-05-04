@@ -1,16 +1,24 @@
 <template>
   <div id="app">
-    <List ramen="*chuckles* I'm a prop" />
+    <h1>Fried Ramen budget planner.</h1>
+    <hr>
+    <Inset />
+    <hr>
+    <List />
+    <hr>
+    <h3>Summary Component NA yet</h3>
   </div>
 </template>
 
 <script>
 import List from './components/List.vue';
+import Inset from './components/Inset.vue';
 
 export default {
   name: 'App',
   components: {
     List,
+    Inset,
   },
 };
 </script>
