@@ -5,8 +5,6 @@
     <Inset />
     <hr>
     <List />
-    <hr>
-    <h3>Summary Component NA yet</h3>
   </div>
 </template>
 
