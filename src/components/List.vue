@@ -2,42 +2,44 @@
   <div>
     <h3>All your expenses go here</h3>
     <form
-      id="the-form"
+      id="expenses-form"
       action="#"
       @submit.prevent="addNewTodoTask"
     >
       <input
-        id="title"
-        v-model="title"
+        id="task"
+        v-model="task"
         type="text"
         placeholder="For?"
       >
       <input
-        id="description"
-        v-model="description"
+        id="value"
+        v-model="value"
         type="number"
         placeholder="How much?"
       >
-      <button name="the-form">
+      <button name="expenses-form">
         Add
       </button>
     </form>
     <div>
       <p>Total: <b>{{ totalCost }}</b></p>
+      <p>Active: <b>{{ totalCost }}</b></p>
+      <p>Frozen: <b>{{ totalCost }}</b></p>
+
       <article>
         <p
-          v-for="(obj, index) in todos"
-          :id="obj.id"
+          v-for="obj in activeTasks"
           :key="obj.id"
-          :title="obj.title"
+          :task="obj.task"
           class="task-card"
         >
-          <b>{{ obj.title }}:</b>
-          {{ obj.description }}
-          <button @click="remove(index)">
+          <b>{{ obj.task }}:</b>
+          {{ obj.value }}
+          <button @click="remove(obj.id)">
             Paid off
           </button>
-          <button @click="onHold(index)">
+          <button @click="onHold(obj.id)">
             Freeze it
           </button>
         </p>
@@ -48,17 +50,16 @@
       <article>
         Frozen / awaiting
         <p
-          v-for="(obj, index) in freeze"
-          :id="obj.id"
+          v-for="obj in frozenTasks"
           :key="obj.id"
-          :title="obj.title"
+          :task="obj.task"
           class="task-card"
         >
-          <b>{{ obj.title }}:</b>
-          {{ obj.description }}
+          <b>{{ obj.task }}:</b>
+          {{ obj.value }}
 
-          <button @click="unFreeze(index)">
-            Unfreeze
+          <button @click="defrost(obj.id)">
+            defrost
           </button>
         </p>
       </article>
@@ -71,69 +72,68 @@ export default {
   name: 'List',
   data: () => ({
     todos: [],
-    freeze: [],
-    title: '',
-    description: '',
-    id: 0,
-    isDone: false,
+    task: '',
+    value: '',
     totalMinus: 0,
+    isCurrentTaskFrozen: false,
+    id: 0,
   }),
   computed: {
     totalCost() {
       let somekindofaholder = 0;
       this.todos.forEach((element) => {
-        somekindofaholder += parseInt(element.description);
+        somekindofaholder += parseInt(element.value);
       });
       return somekindofaholder;
     },
+    frozenTasks() {
+      return this.todos.filter(u => u.isCurrentTaskFrozen);
+    },
+    activeTasks() {
+      return this.todos.filter(u => !u.isCurrentTaskFrozen);
+    },
   },
   mounted() {
-    if (localStorage.getItem('todos') && localStorage.getItem('freeze')) {
+    if (localStorage.getItem('todos')) {
       try {
         this.todos = JSON.parse(localStorage.getItem('todos'));
-        this.freeze = JSON.parse(localStorage.getItem('freeze'));
+        this.id = this.todos.length;
       } catch (e) {
         localStorage.removeItem('todos');
-        localStorage.removeItem('freeze');
       }
     }
   },
   methods: {
     addNewTodoTask() {
-      if (this.description === '') return;
+      if (this.value === '') return;
       this.todos.push({
-        title: this.title,
-        description: this.description,
+        task: this.task,
+        value: this.value,
+        isCurrentTaskFrozen: false,
         id: this.id++,
-        isDone: false,
       });
 
       this.resetForm();
       this.saveTodos();
     },
     onHold(index) {
-      this.freeze.push(this.todos[index]);
-      this.$delete(this.todos, index);
+      this.todos[index].isCurrentTaskFrozen = true;
       this.saveTodos();
     },
-    unFreeze(index) {
-      this.todos.push(this.freeze[index]);
-      this.$delete(this.freeze, index);
+    defrost(index) {
+      this.todos[index].isCurrentTaskFrozen = false;
       this.saveTodos();
     },
     resetForm() {
-      this.title = '';
-      this.description = '';
+      this.task = '';
+      this.value = '';
     },
     remove(index) {
       this.$delete(this.todos, index);
       this.saveTodos();
     },
     saveTodos() {
-      const theListParsed = JSON.stringify(this.todos);
-      const onHoldParsed = JSON.stringify(this.freeze);
-      localStorage.setItem('todos', theListParsed);
-      localStorage.setItem('freeze', onHoldParsed);
+      localStorage.setItem('todos', JSON.stringify(this.todos));
     },
   },
 };

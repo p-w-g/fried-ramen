@@ -1,22 +1,17 @@
 <template>
   <div id="app">
-    <h1>Fried Ramen budget planner.</h1>
-    <hr>
-    <Inset />
-    <hr>
+    <h1>Can I afford some fancy ramen this month?</h1>
     <List />
   </div>
 </template>
 
 <script>
 import List from './components/List.vue';
-import Inset from './components/Inset.vue';
 
 export default {
   name: 'App',
   components: {
     List,
-    Inset,
   },
 };
 </script>
