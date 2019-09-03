@@ -1,26 +1,22 @@
 # fried-ramen
 
-yet another budget planner
+Cost tracker slash budget planner. Im having hard time wrapping my head around remembering what stuff I was supposed to pay before next payday, soo if I paid something off Im going to freeze it since its most likely recurring bill. Otherwise I'll have a snapshot of how much I'm spending this month.
 
 ## purpose
-Learn Vue.
+Stop buying stuff. Or maybe buy more stuff? Depends, maybe just plan my stuff to get stuff I actually need? 
 
-# progress
+## Already up and running
+- Foundation for expenses
+- Add - Delete - Freeze expense
+- Local storage
 
-## Missing features
-
-### Core
+## Eventually 
+### (or as i like to say, in a year or two)
 
 - Edit feature
-- Save state of incomes
-- Summary component
-- Vue state handle
+- Summary of total, pending and frozen
+- Vue native
+- Styling
+- Refactor
 
-
-## Done
-- Foundation for expenses and incomes
-- Add expense
-- Delete expense
-- Local storage
-- delay an expense by freezing it
 
