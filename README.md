@@ -6,15 +6,15 @@ Cost tracker slash budget planner. Im having hard time wrapping my head around r
 Stop buying stuff. Or maybe buy more stuff? Depends, maybe just plan my stuff to get stuff I actually need? 
 
 ## Already up and running
-- Foundation for expenses
+- Skeleton of expenses component
 - Add - Delete - Freeze expense
 - Local storage
+- Summary of total, awaiting and frozen
 
 ## Eventually 
 ### (or as i like to say, in a year or two)
 
 - Edit feature
-- Summary of total, pending and frozen
 - Vue native
 - Styling
 - Refactor
