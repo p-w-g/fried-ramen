@@ -39,7 +39,7 @@
           <button @click="remove(obj.id)">
             Paid off
           </button>
-          <button @click="onHold(obj.id)">
+          <button @click="freeze(obj.id)">
             Freeze it
           </button>
         </p>
@@ -78,11 +78,12 @@ export default {
     isCurrentTaskFrozen: false,
     id: 0,
   }),
+
   computed: {
     totalCost() {
       let somekindofaholder = 0;
       this.todos.forEach((element) => {
-        somekindofaholder += parseInt(element.value);
+        somekindofaholder += parseInt(element.value, 10);
       });
       return somekindofaholder;
     },
@@ -93,30 +94,26 @@ export default {
       return this.todos.filter(u => !u.isCurrentTaskFrozen);
     },
   },
+
   mounted() {
     if (localStorage.getItem('todos')) {
-      try {
-        this.todos = JSON.parse(localStorage.getItem('todos'));
-        this.id = this.todos.length;
-      } catch (e) {
-        localStorage.removeItem('todos');
-      }
+      this.loadTodos();
     }
   },
+
   methods: {
     addNewTodoTask() {
-      if (this.value === '') return;
+      return (this.value !== '') ? (this.newObjectPush(), this.resetForm(), this.saveTodos()) : null;
+    },
+    newObjectPush() {
       this.todos.push({
         task: this.task,
         value: this.value,
         isCurrentTaskFrozen: false,
         id: this.id++,
       });
-
-      this.resetForm();
-      this.saveTodos();
     },
-    onHold(index) {
+    freeze(index) {
       this.todos[index].isCurrentTaskFrozen = true;
       this.saveTodos();
     },
@@ -129,13 +126,22 @@ export default {
       this.value = '';
     },
     remove(index) {
-      this.$delete(this.todos, index);
+      this.$delete(this.todos[index]);
       this.saveTodos();
     },
     saveTodos() {
       localStorage.setItem('todos', JSON.stringify(this.todos));
     },
+    loadTodos() {
+      try {
+        this.todos = JSON.parse(localStorage.getItem('todos'));
+        this.id = this.todos.length;
+      } catch (e) {
+        localStorage.removeItem('todos');
+      }
+    },
   },
+
 };
 </script>
 <style>
