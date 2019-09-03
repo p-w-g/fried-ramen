@@ -24,8 +24,8 @@
     </form>
     <div>
       <p>Total: <b>{{ totalCost }}</b></p>
-      <p>Active: <b>{{ totalCost }}</b></p>
-      <p>Frozen: <b>{{ totalCost }}</b></p>
+      <p>Active: <b>{{ activeCosts }}</b></p>
+      <p>Frozen: <b>{{ frozenCosts }}</b></p>
 
       <article>
         <p
@@ -81,14 +81,16 @@ export default {
 
   computed: {
     totalCost() {
-      let somekindofaholder = 0;
-      this.todos.forEach((element) => {
-        somekindofaholder += parseInt(element.value, 10);
-      });
-      return somekindofaholder;
+      return this.reducer(this.todos);
+    },
+    frozenCosts() {
+      return this.reducer(this.frozenTasks);
     },
     frozenTasks() {
       return this.todos.filter(u => u.isCurrentTaskFrozen);
+    },
+    activeCosts() {
+      return this.reducer(this.activeTasks);
     },
     activeTasks() {
       return this.todos.filter(u => !u.isCurrentTaskFrozen);
@@ -120,6 +122,14 @@ export default {
     defrost(index) {
       this.todos[index].isCurrentTaskFrozen = false;
       this.saveTodos();
+    },
+    parser10(notAStrinObviously) {
+      return parseInt(notAStrinObviously, 10);
+    },
+    reducer(arrayOfObjects) {
+      return arrayOfObjects.reduce(
+        (accumulator, currentObject) => accumulator + this.parser10(currentObject.value), 0,
+      );
     },
     resetForm() {
       this.task = '';
