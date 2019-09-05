@@ -111,7 +111,7 @@ export default {
         expense: this.expense,
         amount: this.amount,
         isCurrentExpensePostponed: false,
-        id: this.id += 1,
+        id: this.id++,
       });
     },
     freeze(index) {

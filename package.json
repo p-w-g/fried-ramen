@@ -36,7 +36,9 @@
       "airbnb-base",
       "plugin:vue/recommended"
     ],
-    "rules": {},
+    "rules": {
+      "no-plusplus": "off"
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }
