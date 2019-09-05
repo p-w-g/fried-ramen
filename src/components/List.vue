@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h3>All your expenses go here</h3>
+    <h2>All your expenses go here</h2>
     <form
       id="expenses-form"
-      action="#"
       @submit.prevent="addNewExpense"
     >
       <input
@@ -23,10 +22,20 @@
       </button>
     </form>
     <div>
-      <p>Total: <b>{{ totalExpenses }}</b></p>
-      <p>Active: <b>{{ activeExpensesTotal }}</b></p>
-      <p>Frozen: <b>{{ postponedExpensesTotal }}</b></p>
-
+      <summary>
+        <p>
+          Total:
+          <b>{{ totalExpenses }}</b>
+        </p>
+        <p>
+          Active:
+          <b>{{ activeExpensesTotal }}</b>
+        </p>
+        <p>
+          Frozen:
+          <b>{{ postponedExpensesTotal }}</b>
+        </p>
+      </summary>
       <article>
         <p
           v-for="obj in activeExpenses"
@@ -57,7 +66,6 @@
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-
           <button @click="advance(obj.id)">
             Advance
           </button>
@@ -104,7 +112,9 @@ export default {
 
   methods: {
     addNewExpense() {
-      return (this.amount !== '') ? (this.newObjectPush(), this.resetForm(), this.saveTodos()) : null;
+      return this.amount !== ''
+        ? (this.newObjectPush(), this.resetForm(), this.saveTodos())
+        : null;
     },
     newObjectPush() {
       this.todos.push({
@@ -127,7 +137,8 @@ export default {
     },
     reducer(arrayOfObjects) {
       return arrayOfObjects.reduce(
-        (accumulator, currentObject) => accumulator + this.parser10(currentObject.amount), 0,
+        (accumulator, currentObject) => accumulator + this.parser10(currentObject.amount),
+        0,
       );
     },
     resetForm() {
@@ -150,9 +161,5 @@ export default {
       }
     },
   },
-
 };
 </script>
-<style>
-
-</style>
