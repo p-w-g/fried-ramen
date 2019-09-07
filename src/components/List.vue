@@ -25,21 +25,10 @@
       </button>
     </form>
     <div>
-      <summary>
-        <p>
-          Total:
-          <b>{{ totalExpenses }}</b>
-        </p>
-        <p>
-          Active:
-          <b>{{ activeExpensesTotal }}</b>
-        </p>
-        <p>
-          Frozen:
-          <b>{{ postponedExpensesTotal }}</b>
-        </p>
-      </summary>
-      <article>
+      <article v-show="activeExpenses.length > 0">
+    <hr>
+        Active <b>{{ activeExpensesTotal }}</b>
+
         <p
           v-for="obj in activeExpenses"
           :key="obj.id"
@@ -65,8 +54,8 @@
     </div>
     <hr>
     <div>
-      <article>
-        Postponed
+      <article v-show="postponedExpenses.length > 0">
+        Postponed <b>{{ postponedExpensesTotal }}</b>
         <p
           v-for="obj in postponedExpenses"
           :key="obj.id"
@@ -84,6 +73,13 @@
         </p>
       </article>
     </div>
+    <summary v-show="totalExpensesToggle">
+    <hr>
+      <p >
+        Total:
+        <b>{{ totalExpenses }}</b>
+      </p>
+    </summary>
   </div>
 </template>
 
@@ -113,6 +109,9 @@ export default {
     },
     activeExpenses() {
       return this.todos.filter(u => !u.isCurrentExpensePostponed);
+    },
+    totalExpensesToggle() {
+      return !((this.postponedExpenses.length < 1 || this.activeExpenses.length < 1));
     },
   },
 
