@@ -1,0 +1,27 @@
+#app {
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 60px;
+  }
+
+.fr {
+  &--button {
+    border: 3px solid palegreen;
+
+    &__expedite {
+      border: 3px solid peachpuff;
+    }
+
+    &__advance {
+    border: 3px solid skyblue;
+    }
+
+    &__postpone {
+      border: 3px solid brown;
+
+    }
+  }
+}

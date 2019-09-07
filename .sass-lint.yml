@@ -1,0 +1,10 @@
+files:
+  include: '/**/assets/*.s+(a|c)ss'
+  ignore:
+    - 'node_modules/**/*.scss'
+rules:
+  class-name-format:
+    - 1
+    - convention: hyphenatedbem
+  property-sort-order:
+    - 0

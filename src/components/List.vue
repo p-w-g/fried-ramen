@@ -17,7 +17,10 @@
         type="number"
         placeholder="Amount?"
       >
-      <button name="expenses-form">
+      <button
+        name="expenses-form"
+        class="fr--button"
+      >
         Add
       </button>
     </form>
@@ -45,10 +48,16 @@
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-          <button @click="remove(obj.id)">
+          <button
+            class="fr--button__expedite"
+            @click="remove(obj.id)"
+          >
             Expedite
           </button>
-          <button @click="freeze(obj.id)">
+          <button
+            class="fr--button__postpone"
+            @click="freeze(obj.id)"
+          >
             Postpone
           </button>
         </p>
@@ -66,7 +75,10 @@
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-          <button @click="advance(obj.id)">
+          <button
+            class="fr--button__advance"
+            @click="advance(obj.id)"
+          >
             Advance
           </button>
         </p>
