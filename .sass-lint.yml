@@ -8,3 +8,7 @@ rules:
     - convention: hyphenatedbem
   property-sort-order:
     - 0
+  no-color-literals:
+    - 0
+  no-color-keywords:
+    - 0
