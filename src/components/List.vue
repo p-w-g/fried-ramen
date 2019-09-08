@@ -1,96 +1,176 @@
 <template>
   <div>
-    <h1>Another take on todos</h1>
-    <p>{{ ramen }}</p>
+    <h2>All your expenses go here</h2>
     <form
-      id="the-form"
-      action="#"
-      @submit.prevent="addNewTodoTask"
+      id="expenses-form"
+      @submit.prevent="addNewExpense"
     >
       <input
-        id="title"
-        v-model="title"
+        id="expense"
+        v-model="expense"
         type="text"
-        placeholder="The job"
+        placeholder="Expense?"
       >
       <input
-        id="description"
-        v-model="description"
-        type="text"
-        placeholder="the description"
+        id="amount"
+        v-model="amount"
+        type="number"
+        placeholder="Amount?"
       >
-      <button name="the-form">
+      <button
+        name="expenses-form"
+        class="fr--button"
+      >
         Add
       </button>
     </form>
     <div>
-      <article
-        v-for="(obj, index) in todos"
-        :id="obj.id"
-        :key="obj.id"
-        :title="obj.title"
-        class="task-card"
-      >
-        <b>{{ obj.title }}:</b> {{ obj.description }} <br>
-        <button @click="remove(index)">
-          DeleteMe
-        </button>
+      <article v-show="activeExpenses.length > 0">
+    <hr>
+        Active <b>{{ activeExpensesTotal }}</b>
+
+        <p
+          v-for="obj in activeExpenses"
+          :key="obj.id"
+          :expense="obj.expense"
+          class="expense-card"
+        >
+          <b>{{ obj.expense }}:</b>
+          {{ obj.amount }}
+          <button
+            class="fr--button__expedite"
+            @click="remove(obj.id)"
+          >
+            Expedite
+          </button>
+          <button
+            class="fr--button__postpone"
+            @click="freeze(obj.id)"
+          >
+            Postpone
+          </button>
+        </p>
       </article>
     </div>
+    <hr>
+    <div>
+      <article v-show="postponedExpenses.length > 0">
+        Postponed <b>{{ postponedExpensesTotal }}</b>
+        <p
+          v-for="obj in postponedExpenses"
+          :key="obj.id"
+          :expense="obj.expense"
+          class="expense-card"
+        >
+          <b>{{ obj.expense }}:</b>
+          {{ obj.amount }}
+          <button
+            class="fr--button__advance"
+            @click="advance(obj.id)"
+          >
+            Advance
+          </button>
+        </p>
+      </article>
+    </div>
+    <summary v-show="totalExpensesToggle">
+    <hr>
+      <p >
+        Total:
+        <b>{{ totalExpenses }}</b>
+      </p>
+    </summary>
   </div>
 </template>
 
 <script>
 export default {
   name: 'List',
-  props: {
-    ramen: String,
-  },
   data: () => ({
     todos: [],
-    title: '',
-    description: '',
+    expense: '',
+    amount: '',
+    isCurrentExpensePostponed: false,
     id: 0,
-    isDone: false,
   }),
+
+  computed: {
+    totalExpenses() {
+      return this.reducer(this.todos);
+    },
+    postponedExpensesTotal() {
+      return this.reducer(this.postponedExpenses);
+    },
+    postponedExpenses() {
+      return this.todos.filter(u => u.isCurrentExpensePostponed);
+    },
+    activeExpensesTotal() {
+      return this.reducer(this.activeExpenses);
+    },
+    activeExpenses() {
+      return this.todos.filter(u => !u.isCurrentExpensePostponed);
+    },
+    totalExpensesToggle() {
+      return !((this.postponedExpenses.length < 1 || this.activeExpenses.length < 1));
+    },
+  },
+
   mounted() {
     if (localStorage.getItem('todos')) {
-      try {
-        this.todos = JSON.parse(localStorage.getItem('todos'));
-      } catch (e) {
-        localStorage.removeItem('todos');
-      }
+      this.loadTodos();
     }
   },
-  methods: {
-    addNewTodoTask() {
-      this.todos.push({
-        title: this.title,
-        description: this.description,
-        id: this.id++,
-        isDone: false,
-      });
 
-      this.resetForm();
+  methods: {
+    addNewExpense() {
+      return this.amount !== ''
+        ? (this.newObjectPush(), this.resetForm(), this.saveTodos())
+        : null;
+    },
+    newObjectPush() {
+      this.todos.push({
+        expense: this.expense,
+        amount: this.amount,
+        isCurrentExpensePostponed: false,
+        id: this.id++,
+      });
+    },
+    freeze(index) {
+      this.todos[index].isCurrentExpensePostponed = true;
       this.saveTodos();
     },
+    advance(index) {
+      this.todos[index].isCurrentExpensePostponed = false;
+      this.saveTodos();
+    },
+    parser10(notAStrinObviously) {
+      return parseInt(notAStrinObviously, 10);
+    },
+    reducer(arrayOfObjects) {
+      return arrayOfObjects.reduce(
+        (accumulator, currentObject) => accumulator + this.parser10(currentObject.amount),
+        0,
+      );
+    },
     resetForm() {
-      this.title = '';
-      this.description = '';
+      this.expense = '';
+      this.amount = '';
     },
     remove(index) {
-      this.$delete(this.todos, index);
+      this.$delete(this.todos[index]);
       this.saveTodos();
     },
     saveTodos() {
-      const parsed = JSON.stringify(this.todos);
-      localStorage.setItem('todos', parsed);
+      localStorage.setItem('todos', JSON.stringify(this.todos));
+    },
+    loadTodos() {
+      try {
+        this.todos = JSON.parse(localStorage.getItem('todos'));
+        this.id = this.todos.length;
+      } catch (e) {
+        localStorage.removeItem('todos');
+      }
     },
   },
 };
 </script>
-<style>
-.done {
-  background-color: #89b2db;
-}
-</style>

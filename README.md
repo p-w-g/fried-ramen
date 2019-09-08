@@ -1,53 +1,22 @@
 # fried-ramen
 
-yet another task list. vue.
+Cost tracker slash budget planner. Im having hard time wrapping my head around remembering what stuff I was supposed to pay before next payday, soo if I paid something off Im going to freeze it since its most likely recurring bill. Otherwise I'll have a snapshot of how much I'm spending this month.
 
 ## purpose
-getting a grip on Vue. created with Vue CLI.
+Stop buying stuff. Or maybe buy more stuff? Depends, maybe just plan my stuff to get stuff I actually need? 
 
-# progress
+## Already up and running
+- Skeleton of expenses component
+- Add - Delete - Freeze expense
+- Local storage
+- Summary of total, awaiting and frozen
 
-## Missing features
+## Eventually 
+### (or as i like to say, in a year or two)
 
-### Core
-
-- Toggle task card "done"
 - Edit feature
+- Vue native
+- Styling
+- Refactor
 
 
-## Done
-- Class holding tasks
-- Add task card feature
-- Delete task card
-- Persistence and / or Store state locally
-
-
-# cli notes
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
