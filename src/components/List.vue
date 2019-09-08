@@ -3,6 +3,7 @@
     <h2>All your expenses go here</h2>
     <form
       id="expenses-form"
+      class="fr--form"
       @submit.prevent="addNewExpense"
     >
       <input
@@ -10,12 +11,14 @@
         v-model="expense"
         type="text"
         placeholder="Expense?"
+        class="fr--input-box"
       >
       <input
         id="amount"
         v-model="amount"
         type="number"
         placeholder="Amount?"
+        class="fr--input-box"
       >
       <button
         name="expenses-form"
@@ -25,8 +28,10 @@
       </button>
     </form>
     <div>
-      <article v-show="activeExpenses.length > 0">
-    <hr>
+      <article
+        v-show="activeExpenses.length > 0"
+        class="fr--content-column"
+      >
         Active <b>{{ activeExpensesTotal }}</b>
 
         <p
@@ -52,9 +57,12 @@
         </p>
       </article>
     </div>
-    <hr>
+
     <div>
-      <article v-show="postponedExpenses.length > 0">
+      <article
+        v-show="postponedExpenses.length > 0"
+        class="fr--content-column"
+      >
         Postponed <b>{{ postponedExpensesTotal }}</b>
         <p
           v-for="obj in postponedExpenses"
@@ -73,9 +81,11 @@
         </p>
       </article>
     </div>
-    <summary v-show="totalExpensesToggle">
-    <hr>
-      <p >
+    <summary
+      v-show="totalExpensesToggle"
+      class="fr--content-column"
+    >
+      <p>
         Total:
         <b>{{ totalExpenses }}</b>
       </p>
