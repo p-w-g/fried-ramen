@@ -1,42 +1,39 @@
 <template>
-  <div>
-    <header>
-    <h1>{{ randomTitle }}</h1>
-    <h2>All your expenses go here</h2>
-    <form
-      id="expenses-form"
-      class="fr--form"
-      @submit.prevent="addNewExpense"
-    >
-      <input
-        id="expense"
-        v-model="expense"
-        type="text"
-        placeholder="Expense?"
-        class="fr--input-box"
+  <div class="fr--grid-container">
+    <header class="fr--heading">
+      <h1>{{ randomTitle }}</h1>
+      <h2>All your expenses go here</h2>
+      <form
+        id="expenses-form"
+        class="fr--form"
+        @submit.prevent="addNewExpense"
       >
-      <input
-        id="amount"
-        v-model="amount"
-        type="number"
-        placeholder="Amount?"
-        class="fr--input-box"
-      >
-      <button
-        name="expenses-form"
-        class="fr--button"
-      >
-        Add
-      </button>
-    </form>
+        <input
+          id="expense"
+          v-model="expense"
+          type="text"
+          placeholder="Expense?"
+          class="fr--input-box"
+        >
+        <input
+          id="amount"
+          v-model="amount"
+          type="number"
+          placeholder="Amount?"
+          class="fr--input-box"
+        >
+        <button
+          name="expenses-form"
+          class="fr--button"
+        >
+          Add
+        </button>
+      </form>
     </header>
-    <div>
+    <div class="fr--content-column">
       <article
         v-show="activeExpenses.length > 0"
-        class="fr--content-column"
       >
-        Active <b>{{ activeExpensesTotal }}</b>
-
         <p
           v-for="obj in activeExpenses"
           :key="obj.id"
@@ -59,14 +56,10 @@
           </button>
         </p>
       </article>
-    </div>
 
-    <div>
       <article
         v-show="postponedExpenses.length > 0"
-        class="fr--content-column"
       >
-        Postponed <b>{{ postponedExpensesTotal }}</b>
         <p
           v-for="obj in postponedExpenses"
           :key="obj.id"
@@ -83,25 +76,31 @@
           </button>
         </p>
       </article>
+
+      <summary>
+        <p v-show="totalExpensesToggle">
+          Total:
+          <b>{{ totalExpenses }}</b>
+        </p>
+
+        <p v-show="activeExpenses.length > 0">
+          Active <b>{{ activeExpensesTotal }}</b>
+        </p>
+
+        <p v-show="postponedExpenses.length > 0">
+          Postponed <b>{{ postponedExpensesTotal }}</b>
+        </p>
+      </summary>
     </div>
-    <summary
-      v-show="totalExpensesToggle"
-      class="fr--content-column"
-    >
-      <p>
-        Total:
-        <b>{{ totalExpenses }}</b>
-      </p>
-    </summary>
   </div>
 </template>
 
 <script>
-let themNomNoms = [
+const themNomNoms = [
   'Burger Tiem!',
   'Coffee run...',
-  'Am I stuck with ramen again?'
-]
+  'Am I stuck with ramen again?',
+];
 
 export default {
   name: 'List',
@@ -132,9 +131,9 @@ export default {
     totalExpensesToggle() {
       return !((this.postponedExpenses.length < 1 || this.activeExpenses.length < 1));
     },
-    randomTitle(){
+    randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
-    }
+    },
   },
 
   mounted() {
