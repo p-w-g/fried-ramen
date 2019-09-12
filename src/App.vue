@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <h1>Can I afford some fancy ramen this month?</h1>
     <List />
   </div>
 </template>

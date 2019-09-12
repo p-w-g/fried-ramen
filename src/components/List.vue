@@ -1,5 +1,7 @@
 <template>
   <div>
+    <header>
+    <h1>{{ randomTitle }}</h1>
     <h2>All your expenses go here</h2>
     <form
       id="expenses-form"
@@ -27,6 +29,7 @@
         Add
       </button>
     </form>
+    </header>
     <div>
       <article
         v-show="activeExpenses.length > 0"
@@ -94,6 +97,12 @@
 </template>
 
 <script>
+let themNomNoms = [
+  'Burger Tiem!',
+  'Coffee run...',
+  'Am I stuck with ramen again?'
+]
+
 export default {
   name: 'List',
   data: () => ({
@@ -123,6 +132,9 @@ export default {
     totalExpensesToggle() {
       return !((this.postponedExpenses.length < 1 || this.activeExpenses.length < 1));
     },
+    randomTitle(){
+      return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
+    }
   },
 
   mounted() {
