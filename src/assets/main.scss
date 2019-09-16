@@ -1,68 +1,90 @@
 @font-face {
-  font-family: 'Quicksand';
-  src: url('./assets/Quicksand-VariableFont:wght.ttf') format('opentype');
+  font-family: "Quicksand";
+  src: url("./assets/Quicksand-VariableFont:wght.ttf") format("opentype");
 }
 
 body {
-  font-family: 'Quicksand';
+  font-family: "Quicksand";
+  font-weight: 400;
+  color: #2c3e50;
+  background-color: #eee;
+  text-align: center;
 }
-
+ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+}
+li {
+  justify-content: space-between;
+  * {
+    margin-left: 1rem;
+  }
+}
 .fr {
+  font-family: Arial, Helvetica, sans-serif;
   color: #2c3e50;
 
   &--button {
-    border: 3px solid palegreen;
+    border-radius: 0.5rem;
+    border: 0;
+    box-shadow: 0 0 2px 0 #92bfb1;
+    background-color: #ddd;
 
     &:hover,
     &:focus {
-      background-color: burlywood;
+      background-color: #ab947e;
+      box-shadow: 0 0 2px 0 #6f8f72;
     }
 
-    &__expedite {
-      border: 3px solid peachpuff;
-    }
-
-    &__advance {
-      border: 3px solid skyblue;
-    }
-
-    &__postpone {
-      border: 3px solid brown;
-    }
-
-    &__postpone,
+    &__expedite,
     &__advance,
-    &__expedite {
+    &__postpone {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2c3e50;
+
       &:hover,
       &:focus {
-        background-color: burlywood;
+        box-shadow: 0 0 2px 0 #6f8f72;
       }
     }
   }
 
   &--form {
-    background-color: #2c3e50;
-    border: 3px solid palevioletred;
+    // needs work
   }
 
   &--input-box {
-    border: 3px solid palegoldenrod;
+    // needs work
+  }
+
+  &--content-column {
+    grid-column: 2;
+    grid-row: 2;
   }
 
   &--grid-container {
     display: grid;
     grid-template-columns: 2rem auto 2rem;
-    grid-template-rows: 25% auto;
-  }
-
-  &--content-column {
-    background-color: paleturquoise;
-    grid-column: 2 / span 1;
-    grid-row: 2 / span 1;
+    grid-template-rows: auto auto;
   }
 
   &--heading {
-    grid-column: 2 / span 1;
-    grid-row: 1 / span 1;
+    h1,
+    h2 {
+      font-weight: 400;
+    }
+
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  &--inline-flex {
+    display: inline-flex;
+
+    > p {
+      padding-left: 1rem;
+    }
   }
 }
