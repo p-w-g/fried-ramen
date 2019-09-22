@@ -3,56 +3,60 @@
     <div class="fr--heading">
       <header>
         <h1>{{ randomTitle }}</h1>
-        <h2>All your expenses go here</h2>
+        <h2 v-if="activeExpenses < 1 && postponedExpenses < 1">
+          Here be your expenses
+        </h2>
+        <summary
+          v-else
+          class=" fr--summary"
+        >
+          <p v-if="activeExpenses.length > 0">
+            Active: <b>{{ activeExpensesTotal }}</b>
+          </p>
+
+          <p v-if="postponedExpenses.length > 0">
+            Postponed: <b>{{ postponedExpensesTotal }}</b>
+          </p>
+        </summary>
         <form
           id="expenses-form"
           class="fr--form"
           @submit.prevent="addNewExpense"
         >
-          <input
-            id="expense"
-            v-model="expense"
-            type="text"
-            placeholder="Expense?"
-            class="fr--input-box"
-          >
-          <input
-            id="amount"
-            v-model="amount"
-            type="number"
-            placeholder="Amount?"
-            class="fr--input-box"
-          >
-          <button
-            name="expenses-form"
-            class="fr--button"
-          >
-            Add
-          </button>
+          <fieldset>
+            <div class="fr--label-wrapper">
+              <label for="expense">Expense</label>
+              <input
+                id="expense"
+                v-model="expense"
+                type="text"
+                class="fr--input-box"
+              >
+            </div>
+            <div class="fr--label-wrapper">
+              <label for="amount">Amount</label>
+              <input
+                id="amount"
+                v-model="amount"
+                type="number"
+                class="fr--input-box"
+              >
+            </div>
+            <button
+              name="expenses-form"
+              class="fr--button"
+            >
+              Add
+            </button>
+          </fieldset>
         </form>
-        <div>
-          <summary class="fr--inline-flex">
-            <p v-show="totalExpensesToggle">
-              Total:
-              <b>{{ totalExpenses }}</b>
-            </p>
-
-            <p v-show="activeExpenses.length > 0">
-              Active: <b>{{ activeExpensesTotal }}</b>
-            </p>
-
-            <p v-show="postponedExpenses.length > 0">
-              Postponed: <b>{{ postponedExpensesTotal }}</b>
-            </p>
-          </summary>
-        </div>
       </header>
     </div>
 
     <div
       class="fr--content-column"
     >
-      <article>
+      <article class="fr--inline-flex">
         <p
           v-for="(obj, index) in activeExpenses"
           :key="index"
@@ -76,7 +80,7 @@
         </p>
       </article>
 
-      <article>
+      <article class="fr--inline-flex">
         <p
           v-for="(obj, index) in postponedExpenses"
           :key="index"
@@ -99,9 +103,9 @@
 
 <script>
 const themNomNoms = [
-  'Burger Tiem!',
-  'Coffee run...',
-  'Am I stuck with ramen again?',
+  'Am famished.',
+  'Coffee run.',
+  'Burgers it is.',
 ];
 
 export default {
