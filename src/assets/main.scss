@@ -1,36 +1,41 @@
 @font-face {
-  font-family: "Quicksand";
-  src: url("./assets/Quicksand-VariableFont:wght.ttf") format("opentype");
+  font-family: 'Quicksand';
+  src: url('./assets/Quicksand-VariableFont:wght.ttf') format('opentype');
 }
 
 body {
-  font-family: "Quicksand";
+  font-family: 'Quicksand';
   font-weight: 400;
   color: #2c3e50;
   margin: 0;
   text-align: center;
 }
+
 ul {
-  list-style: none;
+  list-style: 0;
   padding-left: 0;
   display: flex;
   flex-direction: column;
 }
+
 li {
   justify-content: space-between;
+
   * {
     margin-left: 1rem;
   }
 }
+
 fieldset {
-  border: none;
+  border: 0;
 }
+
 input {
-  border: none;
+  border: 0;
   padding: 0.5rem;
   text-align: center;
-  
-  &[type="number"] {
+
+  &[type='number'] {
     appearance: textfield;
   }
 }
@@ -63,9 +68,11 @@ input {
       }
     }
   }
+
   &--label-wrapper {
     border: solid 1px gray;
   }
+
   &--form {
     padding-top: 1rem;
     background-color: white;
@@ -73,6 +80,7 @@ input {
 
   &--input-box {
     width: calc(100% - 2rem);
+    margin-bottom: 0.5rem;
   }
 
   &--content-column {
@@ -85,6 +93,7 @@ input {
     grid-template-columns: 2rem auto 2rem;
     grid-template-rows: auto auto;
   }
+
   &--summary {
     margin-bottom: 0;
     border-bottom: #2c3e50 2px solid;
@@ -92,7 +101,13 @@ input {
     justify-content: space-evenly;
     display: inline-flex;
   }
+
   &--heading {
+    min-width: 100%;
+    background-color: #eee;
+    grid-column: 1 / 4;
+    grid-row: 1;
+
     h1,
     h2 {
       font-weight: 400;
@@ -104,10 +119,6 @@ input {
       border-bottom: #2c3e50 2px solid;
       width: 100%;
     }
-    min-width: 100%;
-    background-color: #eee;
-    grid-column: 1 / 4;
-    grid-row: 1;
   }
 
   &--inline-flex {
@@ -115,4 +126,10 @@ input {
     display: inline-flex;
     justify-content: space-around;
   }
+}
+
+summary,
+.fr--form,
+.fr--content-column {
+  max-width: 700px;
 }
