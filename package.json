@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint:vue": "vue-cli-service lint --no-exit",
-    "lint:sass": "sass-lint --config .sass-lint.yml '**/*.scss' --verbose --no-exit",
+    "lint:sass": "sass-lint src/**/*.scss -v -q",
     "qc": "npm run lint:sass && npm run lint:vue"
   },
   "repository": {
