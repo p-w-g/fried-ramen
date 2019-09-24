@@ -3,21 +3,23 @@
     <div class="fr--heading">
       <header>
         <h1>{{ randomTitle }}</h1>
-        <h2 v-if="activeExpenses < 1 && postponedExpenses < 1">
-          Here be your expenses
-        </h2>
-        <summary
-          v-else
-          class=" fr--summary"
-        >
-          <p v-if="activeExpenses.length > 0">
-            Active: <b>{{ activeExpensesTotal }}</b>
-          </p>
+        <div class="fr--summary">
+          <h2 v-if="activeExpenses < 1 && postponedExpenses < 1">
+            Here be your expenses
+          </h2>
 
-          <p v-if="postponedExpenses.length > 0">
-            Postponed: <b>{{ postponedExpensesTotal }}</b>
-          </p>
-        </summary>
+          <summary v-else>
+            <p v-if="activeExpenses.length > 0">
+              Active:
+              <b>{{ activeExpensesTotal }}</b>
+            </p>
+
+            <p v-if="postponedExpenses.length > 0">
+              Postponed:
+              <b>{{ postponedExpensesTotal }}</b>
+            </p>
+          </summary>
+        </div>
         <form
           id="expenses-form"
           class="fr--form"
@@ -53,15 +55,13 @@
       </header>
     </div>
 
-    <div
-      class="fr--content-column"
-    >
+    <div class="fr--content-column">
       <article class="fr--inline-flex">
         <p
           v-for="(obj, index) in activeExpenses"
           :key="index"
           :expense="obj.expense"
-          class="expense-card "
+          class="expense-card"
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
@@ -102,11 +102,7 @@
 </template>
 
 <script>
-const themNomNoms = [
-  'Am famished.',
-  'Coffee run.',
-  'Burgers it is.',
-];
+const themNomNoms = ['Am famished.', 'Coffee run.', 'Burgers it is.'];
 
 export default {
   name: 'List',
@@ -135,7 +131,9 @@ export default {
       return this.expenseList.filter(u => !u.isCurrentExpensePostponed);
     },
     totalExpensesToggle() {
-      return !((this.postponedExpenses.length < 1 || this.activeExpenses.length < 1));
+      return !(
+        this.postponedExpenses.length < 1 || this.activeExpenses.length < 1
+      );
     },
     randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
@@ -164,9 +162,7 @@ export default {
     },
     freeze(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
-        if (
-          index === this.expenseList[i].id
-        ) {
+        if (index === this.expenseList[i].id) {
           this.expenseList[i].isCurrentExpensePostponed = true;
         }
       }
@@ -175,9 +171,7 @@ export default {
     },
     advance(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
-        if (
-          index === this.expenseList[i].id
-        ) {
+        if (index === this.expenseList[i].id) {
           this.expenseList[i].isCurrentExpensePostponed = false;
         }
       }
@@ -199,9 +193,7 @@ export default {
     },
     remove(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
-        if (
-          index === this.expenseList[i].id
-        ) {
+        if (index === this.expenseList[i].id) {
           this.$delete(this.expenseList, i);
         }
       }
