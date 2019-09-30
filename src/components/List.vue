@@ -47,6 +47,7 @@
             <button
               name="expenses-form"
               class="fr--button"
+              hidden
             >
               Add
             </button>
