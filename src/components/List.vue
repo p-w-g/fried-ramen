@@ -44,13 +44,11 @@
                 class="fr--input-box"
               >
             </div>
-            <button
+            <add-icon
               name="expenses-form"
               class="fr--button"
-              hidden
-            >
-              Add
-            </button>
+              @click="addNewExpense"
+            />
           </fieldset>
         </form>
       </header>
@@ -66,18 +64,14 @@
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-          <button
+          <check-icon
             class="fr--button fr--button__expedite"
             @click="remove(obj.id)"
-          >
-            Expedite
-          </button>
-          <button
+          />
+          <chill-icon
             class="fr--button fr--button__postpone"
             @click="freeze(obj.id)"
-          >
-            Postpone
-          </button>
+          />
         </p>
       </article>
 
@@ -90,12 +84,10 @@
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-          <button
+          <flame-icon
             class="fr--button fr--button__advance"
             @click="advance(obj.id)"
-          >
-            Advance
-          </button>
+          />
         </p>
       </article>
     </div>
@@ -103,10 +95,21 @@
 </template>
 
 <script>
+import FlameIcon from '../assets/icons/whatshot-24px.svg';
+import ChillIcon from '../assets/icons/ac_unit-24px.svg';
+import CheckIcon from '../assets/icons/check_circle_outline-24px.svg';
+import AddIcon from '../assets/icons/add-24px.svg';
+
 const themNomNoms = ['Am famished.', 'Coffee run.', 'Burgers it is.'];
 
 export default {
   name: 'List',
+  components: {
+    FlameIcon,
+    ChillIcon,
+    CheckIcon,
+    AddIcon,
+  },
   data: () => ({
     expenseList: [],
     expense: '',
