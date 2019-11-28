@@ -111,6 +111,7 @@ input {
     h2 {
       font-weight: 400;
     }
+
     h1 {
       margin-bottom: 0;
     }
@@ -119,5 +120,17 @@ input {
   &--inline-flex {
     display: inline-flex;
     justify-content: space-around;
+  }
+
+  &--inline {
+    display: inline;
+    justify-content: space-around;
+  }
+}
+
+.expense-card {
+  &::after {
+    content: '\a';
+    white-space: pre;
   }
 }

@@ -44,6 +44,11 @@
                 class="fr--input-box"
               >
             </div>
+            <button
+              hidden
+              aria-hidden="true"
+            />
+
             <add-icon
               name="expenses-form"
               class="fr--button"
@@ -55,7 +60,7 @@
     </div>
 
     <div class="fr--content-column">
-      <article class="fr--inline-flex">
+      <article class="fr--inline">
         <p
           v-for="(obj, index) in activeExpenses"
           :key="index"
@@ -75,7 +80,7 @@
         </p>
       </article>
 
-      <article class="fr--inline-flex">
+      <article class="fr--inline">
         <p
           v-for="(obj, index) in postponedExpenses"
           :key="index"
