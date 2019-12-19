@@ -1,54 +1,15 @@
-@font-face {
-  font-family: 'Quicksand';
-  src: url('./assets/Quicksand-VariableFont.ttf') format('opentype');
-}
-
-body {
-  font-family: 'Quicksand';
-  font-weight: 400;
-  color: #2c3e50;
-  margin: 0;
-  text-align: center;
-}
-
-ul {
-  list-style: 0;
-  padding-left: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-li {
-  justify-content: space-between;
-
-  * {
-    margin-left: 1rem;
-  }
-}
-
-fieldset {
-  border: 0;
-}
-
-input {
-  border: 0;
-  padding: 0.5rem;
-  text-align: center;
-
-  &[type='number'] {
-    appearance: textfield;
-  }
-}
+@import 'colors';
+@import 'generics';
 
 .fr {
   font-family: Arial, Helvetica, sans-serif;
   color: #2c3e50;
 
-  &--button {
+  &__button {
     border-radius: 0.5rem;
     border: 0;
     box-shadow: 0 0 2px 0 #92bfb1;
-    background-color: #ddd;
+    background-color: $alt-bg;
 
     &:hover,
     &:focus {
@@ -56,9 +17,9 @@ input {
       box-shadow: 0 0 2px 0 #6f8f72;
     }
 
-    &__expedite,
-    &__advance,
-    &__postpone {
+    &--expedite,
+    &--advance,
+    &--postpone {
       font-family: Arial, Helvetica, sans-serif;
       color: #2c3e50;
 
@@ -67,34 +28,48 @@ input {
         box-shadow: 0 0 2px 0 #6f8f72;
       }
     }
+
+    &--expedite {
+      &:hover,
+      &:focus {
+        background-color: $state-danger;
+      }
+    }
+
+    &--postpone {
+      &:hover,
+      &:focus {
+        background-color: $state-freeze;
+      }
+    }
   }
 
-  &--label-wrapper {
+  &__label-wrapper {
     border: solid 1px gray;
   }
 
-  &--form {
+  &__form {
     padding-top: 1rem;
     background-color: white;
   }
 
-  &--input-box {
+  &__input-box {
     width: calc(100% - 2rem);
     margin-bottom: 0.5rem;
   }
 
-  &--content-column {
+  &__content-column {
     grid-column: 2;
     grid-row: 2;
   }
 
-  &--grid-container {
+  &__grid-container {
     display: grid;
     grid-template-columns: 2rem auto 2rem;
     grid-template-rows: auto auto;
   }
 
-  &--summary {
+  &__summary { // wycieto, trzeba przesunac border gdzies indziej
     margin-bottom: 0;
     border-bottom: #2c3e50 2px solid;
     width: 100%;
@@ -102,7 +77,7 @@ input {
     display: inline-flex;
   }
 
-  &--heading {
+  &__heading {
     background-color: #eee;
     grid-column: 1 / 4;
     grid-row: 1;
@@ -115,22 +90,5 @@ input {
     h1 {
       margin-bottom: 0;
     }
-  }
-
-  &--inline-flex {
-    display: inline-flex;
-    justify-content: space-around;
-  }
-
-  &--inline {
-    display: inline;
-    justify-content: space-around;
-  }
-}
-
-.expense-card {
-  &::after {
-    content: '\a';
-    white-space: pre;
   }
 }
