@@ -1,27 +1,45 @@
 @font-face {
-  font-family: "Quicksand";
-  src: url("./assets/Quicksand-VariableFont:wght.ttf") format("opentype");
+  font-family: 'Quicksand';
+  src: url('./assets/Quicksand-VariableFont.ttf') format('opentype');
 }
 
 body {
-  font-family: "Quicksand";
+  font-family: 'Quicksand';
   font-weight: 400;
   color: #2c3e50;
-  background-color: #eee;
+  margin: 0;
   text-align: center;
 }
+
 ul {
-  list-style: none;
+  list-style: 0;
   padding-left: 0;
   display: flex;
   flex-direction: column;
 }
+
 li {
   justify-content: space-between;
+
   * {
     margin-left: 1rem;
   }
 }
+
+fieldset {
+  border: 0;
+}
+
+input {
+  border: 0;
+  padding: 0.5rem;
+  text-align: center;
+
+  &[type='number'] {
+    appearance: textfield;
+  }
+}
+
 .fr {
   font-family: Arial, Helvetica, sans-serif;
   color: #2c3e50;
@@ -51,12 +69,18 @@ li {
     }
   }
 
+  &--label-wrapper {
+    border: solid 1px gray;
+  }
+
   &--form {
-    // needs work
+    padding-top: 1rem;
+    background-color: white;
   }
 
   &--input-box {
-    // needs work
+    width: calc(100% - 2rem);
+    margin-bottom: 0.5rem;
   }
 
   &--content-column {
@@ -70,21 +94,43 @@ li {
     grid-template-rows: auto auto;
   }
 
+  &--summary {
+    margin-bottom: 0;
+    border-bottom: #2c3e50 2px solid;
+    width: 100%;
+    justify-content: space-evenly;
+    display: inline-flex;
+  }
+
   &--heading {
+    background-color: #eee;
+    grid-column: 1 / 4;
+    grid-row: 1;
+
     h1,
     h2 {
       font-weight: 400;
     }
 
-    grid-column: 2;
-    grid-row: 1;
+    h1 {
+      margin-bottom: 0;
+    }
   }
 
   &--inline-flex {
     display: inline-flex;
+    justify-content: space-around;
+  }
 
-    > p {
-      padding-left: 1rem;
-    }
+  &--inline {
+    display: inline;
+    justify-content: space-around;
+  }
+}
+
+.expense-card {
+  &::after {
+    content: '\a';
+    white-space: pre;
   }
 }

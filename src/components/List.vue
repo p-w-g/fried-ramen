@@ -3,80 +3,84 @@
     <div class="fr--heading">
       <header>
         <h1>{{ randomTitle }}</h1>
-        <h2>All your expenses go here</h2>
+        <div class="fr--summary">
+          <h2 v-if="activeExpenses < 1 && postponedExpenses < 1">
+            Here be your expenses
+          </h2>
+
+          <summary v-else>
+            <p v-if="activeExpenses.length > 0">
+              Active:
+              <b>{{ activeExpensesTotal }}</b>
+            </p>
+
+            <p v-if="postponedExpenses.length > 0">
+              Postponed:
+              <b>{{ postponedExpensesTotal }}</b>
+            </p>
+          </summary>
+        </div>
         <form
           id="expenses-form"
           class="fr--form"
           @submit.prevent="addNewExpense"
         >
-          <input
-            id="expense"
-            v-model="expense"
-            type="text"
-            placeholder="Expense?"
-            class="fr--input-box"
-          >
-          <input
-            id="amount"
-            v-model="amount"
-            type="number"
-            placeholder="Amount?"
-            class="fr--input-box"
-          >
-          <button
-            name="expenses-form"
-            class="fr--button"
-          >
-            Add
-          </button>
+          <fieldset>
+            <div class="fr--label-wrapper">
+              <label for="expense">Expense</label>
+              <input
+                id="expense"
+                v-model="expense"
+                type="text"
+                class="fr--input-box"
+              >
+            </div>
+            <div class="fr--label-wrapper">
+              <label for="amount">Amount</label>
+              <input
+                id="amount"
+                v-model="amount"
+                type="number"
+                class="fr--input-box"
+              >
+            </div>
+            <button
+              hidden
+              aria-hidden="true"
+            />
+
+            <add-icon
+              name="expenses-form"
+              class="fr--button"
+              @click="addNewExpense"
+            />
+          </fieldset>
         </form>
-        <div>
-          <summary class="fr--inline-flex">
-            <p v-show="totalExpensesToggle">
-              Total:
-              <b>{{ totalExpenses }}</b>
-            </p>
-
-            <p v-show="activeExpenses.length > 0">
-              Active: <b>{{ activeExpensesTotal }}</b>
-            </p>
-
-            <p v-show="postponedExpenses.length > 0">
-              Postponed: <b>{{ postponedExpensesTotal }}</b>
-            </p>
-          </summary>
-        </div>
       </header>
     </div>
 
-    <div
-      class="fr--content-column"
-    >
-      <article>
+    <div class="fr--content-column">
+      <article class="fr--inline">
         <p
           v-for="(obj, index) in activeExpenses"
           :key="index"
           :expense="obj.expense"
-          class="expense-card "
+          class="expense-card"
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-          <button
+          <check-icon
             class="fr--button fr--button__expedite"
             @click="remove(obj.id)"
-          >
-            Expedite
-          </button>
-          <button
+          />
+          <chill-icon
             class="fr--button fr--button__postpone"
             @click="freeze(obj.id)"
-          >
-            Postpone
-          </button>
+          />
         </p>
       </article>
 
-      <article>
+      <article class="fr--inline">
         <p
           v-for="(obj, index) in postponedExpenses"
           :key="index"
@@ -85,12 +89,10 @@
         >
           <b>{{ obj.expense }}:</b>
           {{ obj.amount }}
-          <button
+          <flame-icon
             class="fr--button fr--button__advance"
             @click="advance(obj.id)"
-          >
-            Advance
-          </button>
+          />
         </p>
       </article>
     </div>
@@ -98,14 +100,21 @@
 </template>
 
 <script>
-const themNomNoms = [
-  'Burger Tiem!',
-  'Coffee run...',
-  'Am I stuck with ramen again?',
-];
+import FlameIcon from '../assets/icons/whatshot-24px.svg';
+import ChillIcon from '../assets/icons/ac_unit-24px.svg';
+import CheckIcon from '../assets/icons/check_circle_outline-24px.svg';
+import AddIcon from '../assets/icons/add-24px.svg';
+
+const themNomNoms = ['Am famished.', 'Coffee run.', 'Burgers it is.'];
 
 export default {
   name: 'List',
+  components: {
+    FlameIcon,
+    ChillIcon,
+    CheckIcon,
+    AddIcon,
+  },
   data: () => ({
     expenseList: [],
     expense: '',
@@ -131,7 +140,9 @@ export default {
       return this.expenseList.filter(u => !u.isCurrentExpensePostponed);
     },
     totalExpensesToggle() {
-      return !((this.postponedExpenses.length < 1 || this.activeExpenses.length < 1));
+      return !(
+        this.postponedExpenses.length < 1 || this.activeExpenses.length < 1
+      );
     },
     randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
@@ -160,9 +171,7 @@ export default {
     },
     freeze(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
-        if (
-          index === this.expenseList[i].id
-        ) {
+        if (index === this.expenseList[i].id) {
           this.expenseList[i].isCurrentExpensePostponed = true;
         }
       }
@@ -171,9 +180,7 @@ export default {
     },
     advance(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
-        if (
-          index === this.expenseList[i].id
-        ) {
+        if (index === this.expenseList[i].id) {
           this.expenseList[i].isCurrentExpensePostponed = false;
         }
       }
@@ -195,9 +202,7 @@ export default {
     },
     remove(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
-        if (
-          index === this.expenseList[i].id
-        ) {
+        if (index === this.expenseList[i].id) {
           this.$delete(this.expenseList, i);
         }
       }
