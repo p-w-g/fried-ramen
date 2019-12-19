@@ -1,47 +1,30 @@
 <template>
-  <div class="fr--grid-container">
-    <div class="fr--heading">
+  <div class="fr__grid-container">
+    <div class="fr__heading">
       <header>
         <h1>{{ randomTitle }}</h1>
-        <div class="fr--summary">
-          <h2 v-if="activeExpenses < 1 && postponedExpenses < 1">
-            Here be your expenses
-          </h2>
-
-          <summary v-else>
-            <p v-if="activeExpenses.length > 0">
-              Active:
-              <b>{{ activeExpensesTotal }}</b>
-            </p>
-
-            <p v-if="postponedExpenses.length > 0">
-              Postponed:
-              <b>{{ postponedExpensesTotal }}</b>
-            </p>
-          </summary>
-        </div>
         <form
           id="expenses-form"
-          class="fr--form"
+          class="fr__form"
           @submit.prevent="addNewExpense"
         >
           <fieldset>
-            <div class="fr--label-wrapper">
+            <div class="fr__label-wrapper">
               <label for="expense">Expense</label>
               <input
                 id="expense"
                 v-model="expense"
                 type="text"
-                class="fr--input-box"
+                class="fr__input-box"
               >
             </div>
-            <div class="fr--label-wrapper">
+            <div class="fr__label-wrapper">
               <label for="amount">Amount</label>
               <input
                 id="amount"
                 v-model="amount"
                 type="number"
-                class="fr--input-box"
+                class="fr__input-box"
               >
             </div>
             <button
@@ -51,7 +34,7 @@
 
             <add-icon
               name="expenses-form"
-              class="fr--button"
+              class="fr__button"
               @click="addNewExpense"
             />
           </fieldset>
@@ -59,42 +42,77 @@
       </header>
     </div>
 
-    <div class="fr--content-column">
-      <article class="fr--inline">
-        <p
-          v-for="(obj, index) in activeExpenses"
-          :key="index"
-          :expense="obj.expense"
-          class="expense-card"
-        >
-          <b>{{ obj.expense }}:</b>
-          {{ obj.amount }}
-          <check-icon
-            class="fr--button fr--button__expedite"
-            @click="remove(obj.id)"
-          />
-          <chill-icon
-            class="fr--button fr--button__postpone"
-            @click="freeze(obj.id)"
-          />
-        </p>
-      </article>
+    <div class="fr__content-column">
+      <table>
+        <thead>
+          <tr>
+            <th>
+              Active:
+            </th>
+            <th>
+              <b>{{ activeExpensesTotal }}</b>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(obj, index) in activeExpenses"
+            :key="index"
+            :expense="obj.expense"
+          >
+            <td>
+              <b>{{ obj.expense }}</b>
+            </td>
+            <td>
+              {{ obj.amount }}
+            </td>
+            <td>
+              <check-icon
+                class="fr__button fr__button--expedite"
+                @click="remove(obj.id)"
+              />
 
-      <article class="fr--inline">
-        <p
-          v-for="(obj, index) in postponedExpenses"
-          :key="index"
-          :expense="obj.expense"
-          class="expense-card"
-        >
-          <b>{{ obj.expense }}:</b>
-          {{ obj.amount }}
-          <flame-icon
-            class="fr--button fr--button__advance"
-            @click="advance(obj.id)"
-          />
-        </p>
-      </article>
+              <chill-icon
+                class="fr__button fr__button--postpone"
+                @click="freeze(obj.id)"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th>
+              Postponed:
+            </th>
+            <th>
+              <b>{{ postponedExpensesTotal }}</b>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(obj, index) in postponedExpenses"
+            :key="index"
+            :expense="obj.expense"
+          >
+            <td>
+              <b>{{ obj.expense }}</b>
+            </td>
+            <td>
+              {{ obj.amount }}
+            </td>
+            <td>
+              <flame-icon
+                class="fr__button fr__button--advance"
+                @click="advance(obj.id)"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -105,7 +123,12 @@ import ChillIcon from '../assets/icons/ac_unit-24px.svg';
 import CheckIcon from '../assets/icons/check_circle_outline-24px.svg';
 import AddIcon from '../assets/icons/add-24px.svg';
 
-const themNomNoms = ['Am famished.', 'Coffee run.', 'Burgers it is.'];
+const themNomNoms = [
+  'Am famished.',
+  'Coffee run.',
+  'Burgers it is.',
+  'Pizza Time',
+];
 
 export default {
   name: 'List',
@@ -158,7 +181,7 @@ export default {
   methods: {
     addNewExpense() {
       return this.amount !== ''
-        ? (this.newObjectPush(), this.resetForm(), this.saveexpenseList())
+        ? (this.newObjectPush(), this.resetForm(), this.saveExpenseList())
         : null;
     },
     newObjectPush() {
@@ -176,7 +199,7 @@ export default {
         }
       }
 
-      this.saveexpenseList();
+      this.saveExpenseList();
     },
     advance(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
@@ -185,7 +208,7 @@ export default {
         }
       }
 
-      this.saveexpenseList();
+      this.saveExpenseList();
     },
     parser10(notAStrinObviously) {
       return parseInt(notAStrinObviously, 10);
@@ -206,15 +229,14 @@ export default {
           this.$delete(this.expenseList, i);
         }
       }
-      this.saveexpenseList();
+      this.saveExpenseList();
     },
-    saveexpenseList() {
+    saveExpenseList() {
       localStorage.setItem('expenseList', JSON.stringify(this.expenseList));
     },
     loadexpenseList() {
       try {
         this.expenseList = JSON.parse(localStorage.getItem('expenseList'));
-        // this.id = this.expenseList.length;
       } catch (e) {
         localStorage.removeItem('expenseList');
       }
