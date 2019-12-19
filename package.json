@@ -8,7 +8,7 @@
     "lint:vue": "vue-cli-service lint --no-exit",
     "lint:sass": "sass-lint src/**/*.scss -v -q",
     "qc": "npm run lint:sass && npm run lint:vue",
-    "start": "serve"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -16,12 +16,14 @@
   },
   "dependencies": {
     "core-js": "^2.6.9",
+    "express": "^4.17.1",
+    "serve-static": "^1.14.1",
     "vue": "^2.6.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
+    "@vue/cli-service": "^4.1.1",
     "babel-eslint": "^10.0.3",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.2.0",
