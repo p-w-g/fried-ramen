@@ -1,6 +1,6 @@
 # fried-ramen
 
-Cost tracker slash budget planner. Im having hard time wrapping my head around remembering what stuff I was supposed to pay before next payday, soo if I paid something off Im going to freeze it since its most likely recurring bill. Otherwise I'll have a snapshot of how much I'm spending this month.
+Cost tracker slash budget planner, basically mobile view since the plan is to use it remotely to jit down something when out and about. Im having hard time wrapping my head around remembering what stuff I was supposed to pay before next payday, soo if I paid something off Im going to freeze it since its most likely recurring bill. Otherwise I'll have a snapshot of how much I'm spending this month.
 
 ### working poc
 
