@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <List />
+    <expense-list />
   </div>
 </template>
 
 <script>
-import List from './components/List.vue';
+import ExpenseList from './components/List.vue';
 
 export default {
   name: 'App',
   components: {
-    List,
+    ExpenseList,
   },
 };
 </script>

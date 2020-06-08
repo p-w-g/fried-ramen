@@ -131,7 +131,7 @@ const themNomNoms = [
 ];
 
 export default {
-  name: 'List',
+  name: 'ExpenseList',
   components: {
     FlameIcon,
     ChillIcon,
