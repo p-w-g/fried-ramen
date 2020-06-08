@@ -3,4 +3,7 @@ module.exports = {
   verbose: true,
   coverageReporters: ['text', 'html'],
   collectCoverage: true,
+  transform: {
+    '^.+\\.svg$': '<rootDir>/svgTransform.js',
+  },
 };
