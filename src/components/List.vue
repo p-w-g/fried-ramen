@@ -16,7 +16,7 @@
                 v-model="expense"
                 type="text"
                 class="fr__input-box"
-              >
+              />
             </div>
             <div class="fr__label-wrapper">
               <label for="amount">Amount</label>
@@ -25,12 +25,9 @@
                 v-model="amount"
                 type="number"
                 class="fr__input-box"
-              >
+              />
             </div>
-            <button
-              hidden
-              aria-hidden="true"
-            />
+            <button hidden aria-hidden="true" />
 
             <add-icon
               name="expenses-form"
@@ -46,9 +43,7 @@
       <table>
         <thead>
           <tr>
-            <th>
-              Active:
-            </th>
+            <th>Active:</th>
             <th>
               <b>{{ activeExpensesTotal }}</b>
             </th>
@@ -84,9 +79,7 @@
       <table>
         <thead>
           <tr>
-            <th>
-              Postponed:
-            </th>
+            <th>Postponed:</th>
             <th>
               <b>{{ postponedExpensesTotal }}</b>
             </th>
@@ -154,13 +147,13 @@ export default {
       return this.reducer(this.postponedExpenses);
     },
     postponedExpenses() {
-      return this.expenseList.filter(u => u.isCurrentExpensePostponed);
+      return this.expenseList.filter((el) => el.isCurrentExpensePostponed);
     },
     activeExpensesTotal() {
       return this.reducer(this.activeExpenses);
     },
     activeExpenses() {
-      return this.expenseList.filter(u => !u.isCurrentExpensePostponed);
+      return this.expenseList.filter((el) => !el.isCurrentExpensePostponed);
     },
     totalExpensesToggle() {
       return !(
@@ -193,30 +186,21 @@ export default {
       });
     },
     freeze(index) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        if (index === this.expenseList[i].id) {
-          this.expenseList[i].isCurrentExpensePostponed = true;
-        }
-      }
-
+      this.expenseList[index].isCurrentExpensePostponed = true;
       this.saveExpenseList();
     },
     advance(index) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        if (index === this.expenseList[i].id) {
-          this.expenseList[i].isCurrentExpensePostponed = false;
-        }
-      }
-
+      this.expenseList[index].isCurrentExpensePostponed = false;
       this.saveExpenseList();
     },
-    parser10(notAStrinObviously) {
-      return parseInt(notAStrinObviously, 10);
+    parser10(integer) {
+      return parseInt(integer, 10);
     },
     reducer(arrayOfObjects) {
       return arrayOfObjects.reduce(
-        (accumulator, currentObject) => accumulator + this.parser10(currentObject.amount),
-        0,
+        (accumulator, currentObject) =>
+          accumulator + this.parser10(currentObject.amount),
+        0
       );
     },
     resetForm() {
@@ -226,9 +210,10 @@ export default {
     remove(index) {
       for (let i = 0; i < this.expenseList.length; i++) {
         if (index === this.expenseList[i].id) {
-          this.$delete(this.expenseList, i);
+          this.expenseList.splice(i, 1);
         }
       }
+
       this.saveExpenseList();
     },
     saveExpenseList() {
