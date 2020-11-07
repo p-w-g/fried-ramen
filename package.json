@@ -45,7 +45,11 @@
       "eslint:recommended"
     ],
     "rules": {
-      "no-plusplus": "off"
+      "no-plusplus": "off",
+      "quotes": [
+        1,
+        "single"
+      ]
     },
     "parserOptions": {
       "parser": "babel-eslint"
