@@ -111,6 +111,7 @@
 </template>
 
 <script>
+// import useStore from 'vuex';
 import FlameIcon from '../assets/icons/whatshot-24px.svg';
 import ChillIcon from '../assets/icons/ac_unit-24px.svg';
 import CheckIcon from '../assets/icons/check_circle_outline-24px.svg';
@@ -132,28 +133,25 @@ export default {
     AddIcon,
   },
   data: () => ({
-    expenseList: [],
     expense: '',
     amount: '',
-    isCurrentExpensePostponed: false,
-    id: 0,
   }),
 
   computed: {
     totalExpenses() {
-      return this.reducer(this.expenseList);
+      return this.$store.getters.totalTotal;
     },
     postponedExpensesTotal() {
-      return this.reducer(this.postponedExpenses);
+      return this.$store.getters.frozenTotal;
     },
     postponedExpenses() {
-      return this.expenseList.filter((el) => el.isCurrentExpensePostponed);
+      return this.$store.getters.filterFrozen;
     },
     activeExpensesTotal() {
-      return this.reducer(this.activeExpenses);
+      return this.$store.getters.activeTotal;
     },
     activeExpenses() {
-      return this.expenseList.filter((el) => !el.isCurrentExpensePostponed);
+      return this.$store.getters.filterActive;
     },
     totalExpensesToggle() {
       return !(
@@ -166,65 +164,49 @@ export default {
   },
 
   mounted() {
-    if (localStorage.getItem('expenseList')) {
-      this.loadexpenseList();
-    }
+    this.$store.dispatch('loadJsonAttemptAction');
   },
 
   methods: {
+    // local state
     addNewExpense() {
       return this.amount !== ''
-        ? (this.newObjectPush(), this.resetForm(), this.saveExpenseList())
+        ? (this.newObjectPush(), this.resetForm())
         : null;
-    },
-    newObjectPush() {
-      this.expenseList.push({
-        expense: this.expense,
-        amount: this.amount,
-        isCurrentExpensePostponed: false,
-        id: this.id++,
-      });
-    },
-    freeze(index) {
-      this.expenseList[index].isCurrentExpensePostponed = true;
-      this.saveExpenseList();
-    },
-    advance(index) {
-      this.expenseList[index].isCurrentExpensePostponed = false;
-      this.saveExpenseList();
-    },
-    parser10(integer) {
-      return parseInt(integer, 10);
-    },
-    reducer(arrayOfObjects) {
-      return arrayOfObjects.reduce(
-        (accumulator, currentObject) =>
-          accumulator + this.parser10(currentObject.amount),
-        0
-      );
     },
     resetForm() {
       this.expense = '';
       this.amount = '';
     },
-    remove(index) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        if (index === this.expenseList[i].id) {
-          this.expenseList.splice(i, 1);
-        }
-      }
 
-      this.saveExpenseList();
+    // store
+    newObjectPush() {
+      this.$store.dispatch({
+        type: 'addNewExpenseAction',
+        expense: this.expense,
+        amount: this.amount,
+      });
+    },
+    freeze(index) {
+      this.$store.dispatch({
+        type: 'freezeThisExpenseAction',
+        index,
+      });
+    },
+    advance(index) {
+      this.$store.dispatch({
+        type: 'advanceThisExpenseAction',
+        index,
+      });
+    },
+    remove(index) {
+      this.$store.dispatch({
+        type: 'removeThisTaskAction',
+        index,
+      });
     },
     saveExpenseList() {
-      localStorage.setItem('expenseList', JSON.stringify(this.expenseList));
-    },
-    loadexpenseList() {
-      try {
-        this.expenseList = JSON.parse(localStorage.getItem('expenseList'));
-      } catch (e) {
-        localStorage.removeItem('expenseList');
-      }
+      this.$store.dispatch('saveToLocalStorageAction');
     },
   },
 };
