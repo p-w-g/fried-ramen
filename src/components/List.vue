@@ -16,7 +16,7 @@
                 v-model="expense"
                 type="text"
                 class="fr__input-box"
-              >
+              />
             </div>
             <div class="fr__label-wrapper">
               <label for="amount">Amount</label>
@@ -25,12 +25,9 @@
                 v-model="amount"
                 type="number"
                 class="fr__input-box"
-              >
+              />
             </div>
-            <button
-              hidden
-              aria-hidden="true"
-            />
+            <button hidden aria-hidden="true" />
 
             <add-icon
               name="expenses-form"
@@ -46,9 +43,7 @@
       <table>
         <thead>
           <tr>
-            <th>
-              Active:
-            </th>
+            <th>Active:</th>
             <th>
               <b>{{ activeExpensesTotal }}</b>
             </th>
@@ -84,9 +79,7 @@
       <table>
         <thead>
           <tr>
-            <th>
-              Postponed:
-            </th>
+            <th>Postponed:</th>
             <th>
               <b>{{ postponedExpensesTotal }}</b>
             </th>
@@ -139,28 +132,25 @@ export default {
     AddIcon,
   },
   data: () => ({
-    expenseList: [],
     expense: '',
     amount: '',
-    isCurrentExpensePostponed: false,
-    id: 0,
   }),
 
   computed: {
     totalExpenses() {
-      return this.reducer(this.expenseList);
+      return this.$store.getters.totalTotal;
     },
     postponedExpensesTotal() {
-      return this.reducer(this.postponedExpenses);
+      return this.$store.getters.frozenTotal;
     },
     postponedExpenses() {
-      return this.expenseList.filter(u => u.isCurrentExpensePostponed);
+      return this.$store.getters.filterFrozen;
     },
     activeExpensesTotal() {
-      return this.reducer(this.activeExpenses);
+      return this.$store.getters.activeTotal;
     },
     activeExpenses() {
-      return this.expenseList.filter(u => !u.isCurrentExpensePostponed);
+      return this.$store.getters.filterActive;
     },
     totalExpensesToggle() {
       return !(
@@ -173,73 +163,49 @@ export default {
   },
 
   mounted() {
-    if (localStorage.getItem('expenseList')) {
-      this.loadexpenseList();
-    }
+    this.$store.dispatch('loadJsonAttemptAction');
   },
 
   methods: {
+    // local state
     addNewExpense() {
       return this.amount !== ''
-        ? (this.newObjectPush(), this.resetForm(), this.saveExpenseList())
+        ? (this.newObjectPush(), this.resetForm())
         : null;
-    },
-    newObjectPush() {
-      this.expenseList.push({
-        expense: this.expense,
-        amount: this.amount,
-        isCurrentExpensePostponed: false,
-        id: this.id++,
-      });
-    },
-    freeze(index) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        if (index === this.expenseList[i].id) {
-          this.expenseList[i].isCurrentExpensePostponed = true;
-        }
-      }
-
-      this.saveExpenseList();
-    },
-    advance(index) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        if (index === this.expenseList[i].id) {
-          this.expenseList[i].isCurrentExpensePostponed = false;
-        }
-      }
-
-      this.saveExpenseList();
-    },
-    parser10(notAStrinObviously) {
-      return parseInt(notAStrinObviously, 10);
-    },
-    reducer(arrayOfObjects) {
-      return arrayOfObjects.reduce(
-        (accumulator, currentObject) => accumulator + this.parser10(currentObject.amount),
-        0,
-      );
     },
     resetForm() {
       this.expense = '';
       this.amount = '';
     },
+
+    // store
+    newObjectPush() {
+      this.$store.dispatch({
+        type: 'addNewExpenseAction',
+        expense: this.expense,
+        amount: this.amount,
+      });
+    },
+    freeze(index) {
+      this.$store.dispatch({
+        type: 'freezeThisExpenseAction',
+        index,
+      });
+    },
+    advance(index) {
+      this.$store.dispatch({
+        type: 'advanceThisExpenseAction',
+        index,
+      });
+    },
     remove(index) {
-      for (let i = 0; i < this.expenseList.length; i++) {
-        if (index === this.expenseList[i].id) {
-          this.$delete(this.expenseList, i);
-        }
-      }
-      this.saveExpenseList();
+      this.$store.dispatch({
+        type: 'removeThisTaskAction',
+        index,
+      });
     },
     saveExpenseList() {
-      localStorage.setItem('expenseList', JSON.stringify(this.expenseList));
-    },
-    loadexpenseList() {
-      try {
-        this.expenseList = JSON.parse(localStorage.getItem('expenseList'));
-      } catch (e) {
-        localStorage.removeItem('expenseList');
-      }
+      this.$store.dispatch('saveToLocalStorageAction');
     },
   },
 };

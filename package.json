@@ -15,7 +15,8 @@
     "core-js": "^3.6.5",
     "express": "^4.17.1",
     "serve-static": "^1.14.1",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vuex": "^4.0.0-0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.8",
@@ -44,7 +45,11 @@
       "eslint:recommended"
     ],
     "rules": {
-      "no-plusplus": "off"
+      "no-plusplus": "off",
+      "quotes": [
+        1,
+        "single"
+      ]
     },
     "parserOptions": {
       "parser": "babel-eslint"
