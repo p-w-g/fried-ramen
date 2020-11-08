@@ -111,7 +111,6 @@
 </template>
 
 <script>
-// import useStore from 'vuex';
 import FlameIcon from '../assets/icons/whatshot-24px.svg';
 import ChillIcon from '../assets/icons/ac_unit-24px.svg';
 import CheckIcon from '../assets/icons/check_circle_outline-24px.svg';
