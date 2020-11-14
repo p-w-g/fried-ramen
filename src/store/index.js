@@ -3,7 +3,7 @@ import { createStore } from 'vuex';
 export default createStore({
   state: {
     latestID: 100,
-    allExpensesList: [],
+    allExpensesList: []
   },
   mutations: {
     loadJson(state) {
@@ -22,12 +22,12 @@ export default createStore({
         expense: expense.expense,
         amount: expense.amount,
         id: state.latestID,
-        isPostponed: false,
+        isPostponed: false
       });
     },
 
     updateLatestID(state) {
-      let filterOutIds = state.allExpensesList.map((el) => el.id);
+      let filterOutIds = state.allExpensesList.map(el => el.id);
       let highestId = Math.max(...filterOutIds) + 1;
       state.latestID = highestId;
     },
@@ -54,7 +54,7 @@ export default createStore({
 
     deleteAll(state) {
       state.allExpensesList = [];
-    },
+    }
   },
   actions: {
     addNewExpenseAction(context, payload) {
@@ -72,6 +72,7 @@ export default createStore({
     },
     loadJsonAttemptAction(context) {
       if (localStorage.getItem('allExpensesList')) {
+        context.commit('updateLatestID');
         context.commit('loadJson');
       }
     },
@@ -82,23 +83,23 @@ export default createStore({
       context.commit('remove', index);
       context.commit('saveJson');
     },
-    removeAllTasks(context) {
+    removeAllTasksAction(context) {
       context.commit('deleteAll');
       context.commit('saveJson');
-    },
+    }
   },
   getters: {
-    filterFrozen: (state) => {
+    filterFrozen: state => {
       return state.allExpensesList != null
-        ? state.allExpensesList.filter((expense) => expense.isPostponed)
+        ? state.allExpensesList.filter(expense => expense.isPostponed)
         : [];
     },
-    filterActive: (state) => {
+    filterActive: state => {
       return state.allExpensesList != null
-        ? state.allExpensesList.filter((expense) => !expense.isPostponed)
+        ? state.allExpensesList.filter(expense => !expense.isPostponed)
         : [];
     },
-    totalTotal: (state) => {
+    totalTotal: state => {
       return state.allExpensesList.reduce(
         (accumulator, currentObject) =>
           accumulator + parseInt(currentObject.amount, 10),
@@ -118,6 +119,6 @@ export default createStore({
           accumulator + parseInt(currentObject.amount, 10),
         0
       );
-    },
-  },
+    }
+  }
 });
