@@ -54,6 +54,7 @@ td {
   &:first-child {
     width: calc(100% / 2);
   }
+
   &:last-child {
     width: calc(100% / 3 +1px);
   }
