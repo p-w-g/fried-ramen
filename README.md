@@ -1,8 +1,9 @@
 # fried-ramen
 
-Cost tracker slash budget planner, basically mobile view since the plan is to use it remotely to jit down something when out and about. Im having hard time wrapping my head around remembering what stuff I was supposed to pay before next payday, soo if I paid something off Im going to freeze it since its most likely recurring bill. Otherwise I'll have a snapshot of how much I'm spending this month.
+Cost tracker slash budget planner, helps with tracking expenses by freezing / postponing selected ones.
 
-### working poc
+
+### webpage
 
 https://fried-ramen.herokuapp.com/
 
@@ -10,17 +11,14 @@ https://fried-ramen.herokuapp.com/
 Stop buying stuff. Or maybe buy more stuff? Depends, maybe just plan my stuff to get stuff I actually need? 
 
 ## Already up and running
-- Skeleton of expenses component
-- Add - Delete - Freeze expense
-- Local storage
-- Summary of total, awaiting and frozen
+- Core features; add, delete, postpone
+- Automatically persist data
+- mobile PWA available fom webpage
 
 ## Eventually 
 ### (or as i like to say, in a year or two)
 
-- Edit feature
-- Vue native
-- Styling
-- Refactor
-
-
+- Edit an expense
+- bottom "Quick" menu 
+- additional "scenarios" of expenses
+- sharing via QR
