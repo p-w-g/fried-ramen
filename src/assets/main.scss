@@ -1,0 +1,81 @@
+@import 'colors';
+@import 'generics';
+
+.fr {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #2c3e50;
+
+  &__button {
+    border-radius: 0.5rem;
+    border: 0;
+    box-shadow: 0 0 2px 0 #92bfb1;
+    background-color: $alt-bg;
+    height: 1.6rem;
+    margin-right: 0.1rem;
+
+    &:hover,
+    &:focus {
+      background-color: #ab947e;
+      box-shadow: 0 0 2px 0 #6f8f72;
+    }
+
+    &--expedite,
+    &--advance,
+    &--postpone {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2c3e50;
+    }
+  }
+
+  &__label-wrapper {
+    background-color: white;
+    padding-top: 0.4em;
+  }
+
+  &__form {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+
+  &__input-box {
+    width: calc(100% - 2rem);
+    margin-bottom: 0.5rem;
+  }
+
+  &__content-column {
+    grid-column: 2;
+    grid-row: 2;
+    background-color: white;
+    padding-bottom: 0.4em;
+  }
+
+  &__grid-container {
+    display: grid;
+    grid-template-columns: 2rem auto 2rem;
+    grid-template-rows: auto auto;
+  }
+
+  &__summary {
+    // wycieto, trzeba przesunac border gdzies indziej
+    margin-bottom: 0;
+    border-bottom: #2c3e50 2px solid;
+    width: 100%;
+    justify-content: space-evenly;
+    display: inline-flex;
+  }
+
+  &__heading {
+    background-color: #eee;
+    grid-column: 2;
+    grid-row: 1;
+
+    h1,
+    h2 {
+      font-weight: 400;
+    }
+
+    h1 {
+      margin-bottom: 0.3em;
+    }
+  }
+}

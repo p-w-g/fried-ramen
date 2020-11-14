@@ -1,0 +1,65 @@
+@font-face {
+  font-family: 'Quicksand';
+  src: url('./assets/Quicksand-VariableFont.ttf') format('opentype');
+}
+
+html {
+  background-color: #eee;
+}
+
+body {
+  font-family: 'Quicksand';
+  font-weight: 400;
+  color: #2c3e50;
+  margin: 0;
+  text-align: center;
+}
+
+ul {
+  list-style: 0;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+li {
+  padding: 10px;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+input {
+  border: 0;
+  padding: 0.5rem;
+  text-align: center;
+
+  &[type='number'] {
+    appearance: textfield;
+  }
+}
+
+table {
+  margin: auto;
+  padding-top: 0.4em;
+}
+
+td {
+  width: calc(100% / 6);
+  padding: 0;
+
+  &:first-child {
+    width: calc(100% / 2);
+  }
+
+  &:last-child {
+    width: calc(100% / 3 +1px);
+  }
+}
+
+th {
+  padding: 0;
+}
