@@ -10,6 +10,8 @@
     border: 0;
     box-shadow: 0 0 2px 0 #92bfb1;
     background-color: $alt-bg;
+    height: 1.6rem;
+    margin-right: 0.1rem;
 
     &:hover,
     &:focus {
@@ -22,35 +24,17 @@
     &--postpone {
       font-family: Arial, Helvetica, sans-serif;
       color: #2c3e50;
-
-      &:hover,
-      &:focus {
-        box-shadow: 0 0 2px 0 #6f8f72;
-      }
-    }
-
-    &--expedite {
-      &:hover,
-      &:focus {
-        background-color: $state-danger;
-      }
-    }
-
-    &--postpone {
-      &:hover,
-      &:focus {
-        background-color: $state-freeze;
-      }
     }
   }
 
   &__label-wrapper {
-    border: solid 1px gray;
+    background-color: white;
+    padding-top: 0.4em;
   }
 
   &__form {
-    padding-top: 1rem;
-    background-color: white;
+    padding-top: 1em;
+    padding-bottom: 1em;
   }
 
   &__input-box {
@@ -61,6 +45,8 @@
   &__content-column {
     grid-column: 2;
     grid-row: 2;
+    background-color: white;
+    padding-bottom: 0.4em;
   }
 
   &__grid-container {
@@ -69,7 +55,8 @@
     grid-template-rows: auto auto;
   }
 
-  &__summary { // wycieto, trzeba przesunac border gdzies indziej
+  &__summary {
+    // wycieto, trzeba przesunac border gdzies indziej
     margin-bottom: 0;
     border-bottom: #2c3e50 2px solid;
     width: 100%;
@@ -79,7 +66,7 @@
 
   &__heading {
     background-color: #eee;
-    grid-column: 1 / 4;
+    grid-column: 2;
     grid-row: 1;
 
     h1,
@@ -88,7 +75,7 @@
     }
 
     h1 {
-      margin-bottom: 0;
+      margin-bottom: 0.3em;
     }
   }
 }
