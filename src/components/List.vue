@@ -92,7 +92,7 @@
               {{ obj.amount }}
             </td>
             <td>
-              <flame-icon
+              <revert-icon
                 class="fr__button fr__button--advance"
                 @click="advance(obj.id)"
               />
@@ -107,6 +107,7 @@
 
 <script>
 import FlameIcon from '../assets/icons/whatshot-24px.svg';
+import RevertIcon from '../assets/icons/history-24px.svg';
 import ChillIcon from '../assets/icons/ac_unit-24px.svg';
 import CheckIcon from '../assets/icons/check_circle_outline-24px.svg';
 
@@ -121,6 +122,7 @@ export default {
   name: 'ExpenseList',
   components: {
     FlameIcon,
+    RevertIcon,
     ChillIcon,
     CheckIcon,
   },
