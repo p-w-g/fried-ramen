@@ -27,7 +27,7 @@
                 class="fr__input-box"
               />
             </div>
-            <button hidden aria-hidden="true" />
+            <button />
           </fieldset>
         </form>
       </header>
@@ -100,6 +100,7 @@
           </tr>
         </tbody>
       </table>
+      <flame-icon class="fr__button fr__button--advance" @click="removeAllTasks()" />
     </div>
   </div>
 </template>
@@ -198,6 +199,9 @@ export default {
     },
     saveExpenseList() {
       this.$store.dispatch('saveToLocalStorageAction');
+    },
+    removeAllTasks() {
+      this.$store.dispatch('removeAllTasksAction');
     },
   },
 };
