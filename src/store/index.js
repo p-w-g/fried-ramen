@@ -2,7 +2,7 @@ import { createStore } from 'vuex';
 
 export default createStore({
   state: {
-    latestID: 100,
+    latestID: 0,
     allExpensesList: []
   },
   mutations: {
@@ -28,8 +28,11 @@ export default createStore({
 
     updateLatestID(state) {
       let filterOutIds = state.allExpensesList.map(el => el.id);
-      let highestId = Math.max(...filterOutIds) + 1;
-      state.latestID = highestId;
+      let highestId = Math.max(...filterOutIds);
+
+      highestId > state.latestID
+        ? (state.latestID = highestId)
+        : state.latestID++;
     },
 
     freeze(state, index) {
@@ -58,8 +61,8 @@ export default createStore({
   },
   actions: {
     addNewExpenseAction(context, payload) {
-      context.commit('addNewExpense', payload);
       context.commit('updateLatestID');
+      context.commit('addNewExpense', payload);
       context.commit('saveJson');
     },
     advanceThisExpenseAction(context, index) {
@@ -72,8 +75,8 @@ export default createStore({
     },
     loadJsonAttemptAction(context) {
       if (localStorage.getItem('allExpensesList')) {
-        context.commit('updateLatestID');
         context.commit('loadJson');
+        context.commit('updateLatestID');
       }
     },
     saveToLocalStorageAction(context) {
