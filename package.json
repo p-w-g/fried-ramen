@@ -36,6 +36,12 @@
     "sass-loader": "^8.0.2",
     "vue-svg-loader": "^0.17.0-beta.2"
   },
+  "vue": {
+    "pwa": {
+      "themeColor": "#eeeeee",
+      "msTileColor": "#eeeeee"
+    }
+  },
   "eslintConfig": {
     "root": true,
     "env": {
