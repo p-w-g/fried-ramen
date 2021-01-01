@@ -1,7 +1,7 @@
 module.exports = {
   pwa: {
-    "themeColor": "#eeeeee",
-    "msTileColor": "#eeeeee"
+    'themeColor': '#eeeeee',
+    'msTileColor': '#eeeeee'
   },
   chainWebpack: (config) => {
     const svgRule = config.module.rule('svg');
