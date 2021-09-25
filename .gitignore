@@ -63,3 +63,5 @@ typings/
 
 # intellij autogarbage
 .idea
+
+.DS_Store
