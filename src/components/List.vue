@@ -108,7 +108,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import store from '../store/index';
+
 import FlameIcon from '../assets/icons/whatshot-24px.svg';
 import RevertIcon from '../assets/icons/history-24px.svg';
 import ChillIcon from '../assets/icons/ac_unit-24px.svg';
@@ -118,37 +121,42 @@ const themNomNoms = [
   'Am famished.',
   'Coffee run.',
   'Burgers it is.',
-  'Pizza Time',
+  'Pizza Time'
 ];
 
-export default {
+export default defineComponent({
   name: 'ExpenseList',
-  components: {
-    FlameIcon,
-    RevertIcon,
-    ChillIcon,
-    CheckIcon,
+
+  setup() {
+    return {
+      FlameIcon,
+      RevertIcon,
+      ChillIcon,
+      CheckIcon
+    };
   },
+
+  components: {},
   data: () => ({
     expense: '',
-    amount: '',
+    amount: ''
   }),
 
   computed: {
-    totalExpenses() {
-      return this.$store.getters.totalTotal;
+    totalExpenses(): number {
+      return store.getters.totalTotal;
     },
-    postponedExpensesTotal() {
-      return this.$store.getters.frozenTotal;
+    postponedExpensesTotal(): number {
+      return store.getters.frozenTotal;
     },
-    postponedExpenses() {
-      return this.$store.getters.filterFrozen;
+    postponedExpenses(): number {
+      return store.getters.filterFrozen;
     },
-    activeExpensesTotal() {
-      return this.$store.getters.activeTotal;
+    activeExpensesTotal(): number {
+      return store.getters.activeTotal;
     },
-    activeExpenses() {
-      return this.$store.getters.filterActive;
+    activeExpenses(): number {
+      return store.getters.filterActive;
     },
     totalExpensesToggle() {
       return !(
@@ -157,11 +165,11 @@ export default {
     },
     randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
-    },
+    }
   },
 
   mounted() {
-    this.$store.dispatch('loadJsonAttemptAction');
+    store.dispatch('loadJsonAttemptAction');
   },
 
   methods: {
@@ -178,36 +186,36 @@ export default {
 
     // store
     newObjectPush() {
-      this.$store.dispatch({
+      store.dispatch({
         type: 'addNewExpenseAction',
         expense: this.expense,
-        amount: this.amount,
+        amount: this.amount
       });
     },
-    freeze(index) {
-      this.$store.dispatch({
+    freeze(index: number) {
+      store.dispatch({
         type: 'freezeThisExpenseAction',
-        index,
+        index
       });
     },
-    advance(index) {
-      this.$store.dispatch({
+    advance(index: number) {
+      store.dispatch({
         type: 'advanceThisExpenseAction',
-        index,
+        index
       });
     },
-    remove(index) {
-      this.$store.dispatch({
+    remove(index: number) {
+      store.dispatch({
         type: 'removeThisTaskAction',
-        index,
+        index
       });
     },
     saveExpenseList() {
-      this.$store.dispatch('saveToLocalStorageAction');
+      store.dispatch('saveToLocalStorageAction');
     },
     removeAllTasks() {
-      this.$store.dispatch('removeAllTasksAction');
-    },
-  },
-};
+      store.dispatch('removeAllTasksAction');
+    }
+  }
+});
 </script>
