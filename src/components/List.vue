@@ -13,7 +13,7 @@
               <label for="expense">Expense</label>
               <input
                 id="expense"
-                v-model="expense"
+                v-model="Expense"
                 type="text"
                 class="fr__input-box"
               />
@@ -22,7 +22,7 @@
               <label for="amount">Amount</label>
               <input
                 id="amount"
-                v-model="amount"
+                v-model.number="Amount"
                 type="number"
                 class="fr__input-box"
               />
@@ -83,18 +83,18 @@
           <tr
             v-for="(obj, index) in postponedExpenses"
             :key="index"
-            :expense="obj.expense"
+            :expense="obj.Expense"
           >
             <td>
-              <b>{{ obj.expense }}</b>
+              <b>{{ obj.Expense }}</b>
             </td>
             <td>
-              {{ obj.amount }}
+              {{ obj.Amount }}
             </td>
             <td>
               <revert-icon
                 class="fr__button fr__button--advance"
-                @click="advance(obj.id)"
+                @click="advance(obj.Id)"
               />
             </td>
           </tr>
@@ -138,8 +138,8 @@ export default defineComponent({
 
   components: {},
   data: () => ({
-    expense: '',
-    amount: ''
+    Expense: '',
+    Amount: 0
   }),
 
   computed: {
@@ -175,21 +175,23 @@ export default defineComponent({
   methods: {
     // local state
     addNewExpense() {
-      return this.amount !== ''
-        ? (this.newObjectPush(), this.resetForm())
-        : null;
+      this.newObjectPush();
+      this.resetForm();
+      // return this.amount !== ''
+      //   ? (this.newObjectPush(), this.resetForm())
+      //   : null;
     },
     resetForm() {
-      this.expense = '';
-      this.amount = '';
+      this.Expense = '';
+      this.Amount = 0;
     },
 
     // store
     newObjectPush() {
       store.dispatch({
         type: 'addNewExpenseAction',
-        expense: this.expense,
-        amount: this.amount
+        Expense: this.Expense,
+        Amount: this.Amount
       });
     },
     freeze(index: number) {

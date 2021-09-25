@@ -1,14 +1,16 @@
 import { createStore } from 'vuex';
+import { expenseModel } from '../models';
 
 export default createStore({
   state: {
     latestID: 0,
-    allExpensesList: []
+    allExpensesList: Array<expenseModel>()
   },
+
   mutations: {
     loadJson(state) {
       state.allExpensesList = JSON.parse(
-        localStorage.getItem('allExpensesList')
+        localStorage.getItem('allExpensesList')!
       );
     },
     saveJson(state) {
@@ -17,18 +19,18 @@ export default createStore({
         JSON.stringify(state.allExpensesList)
       );
     },
-    addNewExpense(state, expense) {
+    addNewExpense(state, expense: expenseModel) {
       state.allExpensesList.push({
-        expense: expense.expense,
-        amount: expense.amount,
-        id: state.latestID,
+        Expense: expense.Expense,
+        Amount: expense.Amount,
+        Id: state.latestID,
         isPostponed: false
       });
     },
 
     updateLatestID(state) {
-      let filterOutIds = state.allExpensesList.map(el => el.id);
-      let highestId = Math.max(...filterOutIds);
+      const filterOutIds = state.allExpensesList.map(el => el.Id);
+      const highestId = Math.max(...filterOutIds);
 
       highestId > state.latestID
         ? (state.latestID = highestId)
@@ -37,19 +39,19 @@ export default createStore({
 
     freeze(state, index) {
       state.allExpensesList.find(
-        ({ id }) => id === index.index
+        ({ Id }) => Id === index.index
       ).isPostponed = true;
     },
 
     advance(state, index) {
       state.allExpensesList.find(
-        ({ id }) => id === index.index
+        ({ Id }) => Id === index.index
       ).isPostponed = false;
     },
 
     remove(state, index) {
       for (let i = 0; i < state.allExpensesList.length; i++) {
-        if (index.index === state.allExpensesList[i].id) {
+        if (index.index === state.allExpensesList[i].Id) {
           state.allExpensesList.splice(i, 1);
         }
       }
@@ -102,24 +104,28 @@ export default createStore({
         ? state.allExpensesList.filter(expense => !expense.isPostponed)
         : [];
     },
-    totalTotal: state => {
-      return state.allExpensesList.reduce(
-        (accumulator, currentObject) =>
-          accumulator + parseInt(currentObject.amount, 10),
+    totalTotal: (state): number => {
+      const amounts: Array<number> = state.allExpensesList.map(
+        (e: expenseModel) => e.Amount
+      );
+
+      return amounts.reduce(
+        (accumulator: number, current: number) =>
+          Number(accumulator) + Number(current),
         0
       );
     },
     frozenTotal: (state, getters) => {
       return getters.filterFrozen.reduce(
-        (accumulator, currentObject) =>
-          accumulator + parseInt(currentObject.amount, 10),
+        (accumulator: number, currentObject: expenseModel) =>
+          accumulator + currentObject.Amount,
         0
       );
     },
     activeTotal: (state, getters) => {
       return getters.filterActive.reduce(
-        (accumulator, currentObject) =>
-          accumulator + parseInt(currentObject.amount, 10),
+        (accumulator: number, currentObject: expenseModel) =>
+          accumulator + currentObject.Amount,
         0
       );
     }
