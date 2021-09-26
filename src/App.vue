@@ -4,16 +4,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import ExpenseList from './components/List.vue';
+import pkgjson from '../package.json';
 
-export default {
+console.info('v:', pkgjson.version);
+export default defineComponent({
   name: 'App',
   components: {
-    ExpenseList,
-  },
-};
+    ExpenseList
+  }
+});
 </script>
-<style lang='scss'>
-@import '@/assets/main.scss'
+<style lang="scss">
+@import '@/assets/main.scss';
 </style>

@@ -13,7 +13,7 @@
               <label for="expense">Expense</label>
               <input
                 id="expense"
-                v-model="expense"
+                v-model="Expense"
                 type="text"
                 class="fr__input-box"
               />
@@ -22,7 +22,7 @@
               <label for="amount">Amount</label>
               <input
                 id="amount"
-                v-model="amount"
+                v-model.number="Amount"
                 type="number"
                 class="fr__input-box"
               />
@@ -47,23 +47,25 @@
           <tr
             v-for="(obj, index) in activeExpenses"
             :key="index"
-            :expense="obj.expense"
+            :expense="obj.Expense"
           >
             <td>
-              <b>{{ obj.expense }}</b>
+              <b>{{ obj.Expense }}</b>
             </td>
             <td>
-              {{ obj.amount }}
+              {{ obj.Amount }}
             </td>
             <td>
-              <check-icon
+              <img
+                :src="CheckIcon"
                 class="fr__button fr__button--expedite"
-                @click="remove(obj.id)"
+                @click="remove(obj.Id)"
               />
 
-              <chill-icon
+              <img
+                :src="ChillIcon"
                 class="fr__button fr__button--postpone"
-                @click="freeze(obj.id)"
+                @click="freeze(obj.Id)"
               />
             </td>
           </tr>
@@ -83,24 +85,26 @@
           <tr
             v-for="(obj, index) in postponedExpenses"
             :key="index"
-            :expense="obj.expense"
+            :expense="obj.Expense"
           >
             <td>
-              <b>{{ obj.expense }}</b>
+              <b>{{ obj.Expense }}</b>
             </td>
             <td>
-              {{ obj.amount }}
+              {{ obj.Amount }}
             </td>
             <td>
-              <revert-icon
+              <img
+                :src="RevertIcon"
                 class="fr__button fr__button--advance"
-                @click="advance(obj.id)"
+                @click="advance(obj.Id)"
               />
             </td>
           </tr>
         </tbody>
       </table>
-      <flame-icon
+      <img
+        :src="FlameIcon"
         class="fr__button fr__button--advance"
         @click="removeAllTasks()"
       />
@@ -108,7 +112,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import store from '../store/index';
+
 import FlameIcon from '../assets/icons/whatshot-24px.svg';
 import RevertIcon from '../assets/icons/history-24px.svg';
 import ChillIcon from '../assets/icons/ac_unit-24px.svg';
@@ -118,37 +125,42 @@ const themNomNoms = [
   'Am famished.',
   'Coffee run.',
   'Burgers it is.',
-  'Pizza Time',
+  'Pizza Time'
 ];
 
-export default {
+export default defineComponent({
   name: 'ExpenseList',
-  components: {
-    FlameIcon,
-    RevertIcon,
-    ChillIcon,
-    CheckIcon,
+
+  setup() {
+    return {
+      FlameIcon,
+      RevertIcon,
+      ChillIcon,
+      CheckIcon
+    };
   },
+
+  components: {},
   data: () => ({
-    expense: '',
-    amount: '',
+    Expense: '',
+    Amount: 0
   }),
 
   computed: {
-    totalExpenses() {
-      return this.$store.getters.totalTotal;
+    totalExpenses(): number {
+      return store.getters.totalTotal;
     },
-    postponedExpensesTotal() {
-      return this.$store.getters.frozenTotal;
+    postponedExpensesTotal(): number {
+      return store.getters.frozenTotal;
     },
-    postponedExpenses() {
-      return this.$store.getters.filterFrozen;
+    postponedExpenses(): number {
+      return store.getters.filterFrozen;
     },
-    activeExpensesTotal() {
-      return this.$store.getters.activeTotal;
+    activeExpensesTotal(): number {
+      return store.getters.activeTotal;
     },
-    activeExpenses() {
-      return this.$store.getters.filterActive;
+    activeExpenses(): number {
+      return store.getters.filterActive;
     },
     totalExpensesToggle() {
       return !(
@@ -157,57 +169,59 @@ export default {
     },
     randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
-    },
+    }
   },
 
   mounted() {
-    this.$store.dispatch('loadJsonAttemptAction');
+    store.dispatch('loadJsonAttemptAction');
   },
 
   methods: {
     // local state
     addNewExpense() {
-      return this.amount !== ''
-        ? (this.newObjectPush(), this.resetForm())
-        : null;
+      this.newObjectPush();
+      this.resetForm();
+      // return this.amount !== ''
+      //   ? (this.newObjectPush(), this.resetForm())
+      //   : null;
     },
     resetForm() {
-      this.expense = '';
-      this.amount = '';
+      this.Expense = '';
+      this.Amount = 0;
     },
 
     // store
     newObjectPush() {
-      this.$store.dispatch({
+      store.dispatch({
         type: 'addNewExpenseAction',
-        expense: this.expense,
-        amount: this.amount,
+        Expense: this.Expense,
+        Amount: this.Amount
       });
     },
-    freeze(index) {
-      this.$store.dispatch({
+    freeze(index: number) {
+      store.dispatch({
         type: 'freezeThisExpenseAction',
-        index,
+        index
       });
     },
-    advance(index) {
-      this.$store.dispatch({
+    advance(index: number) {
+      store.dispatch({
         type: 'advanceThisExpenseAction',
-        index,
+        index
       });
     },
-    remove(index) {
-      this.$store.dispatch({
+    remove(index: number) {
+      store.dispatch({
         type: 'removeThisTaskAction',
-        index,
+        index
       });
     },
     saveExpenseList() {
-      this.$store.dispatch('saveToLocalStorageAction');
+      store.dispatch('saveToLocalStorageAction');
     },
     removeAllTasks() {
-      this.$store.dispatch('removeAllTasksAction');
-    },
-  },
-};
+      store.dispatch('removeAllTasksAction');
+    }
+  }
+});
 </script>

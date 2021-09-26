@@ -10,15 +10,7 @@ https://fried-ramen.herokuapp.com/
 ## purpose
 Stop buying stuff. Or maybe buy more stuff? Depends, maybe just plan my stuff to get stuff I actually need? 
 
-## Already up and running
-- Core features; add, delete, postpone
-- Automatically persist data
-- mobile PWA available fom webpage
+### dev thingies.
 
-## Eventually 
-### (or as i like to say, in a year or two)
-
-- Edit an expense
-- bottom "Quick" menu 
-- additional "scenarios" of expenses
-- sharing via QR
+localhost: npm run serve
+because, npm run start is used by basic server on heroku deploy
