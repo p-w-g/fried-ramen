@@ -47,23 +47,25 @@
           <tr
             v-for="(obj, index) in activeExpenses"
             :key="index"
-            :expense="obj.expense"
+            :expense="obj.Expense"
           >
             <td>
-              <b>{{ obj.expense }}</b>
+              <b>{{ obj.Expense }}</b>
             </td>
             <td>
-              {{ obj.amount }}
+              {{ obj.Amount }}
             </td>
             <td>
-              <check-icon
+              <img
+                :src="CheckIcon"
                 class="fr__button fr__button--expedite"
-                @click="remove(obj.id)"
+                @click="remove(obj.Id)"
               />
 
-              <chill-icon
+              <img
+                :src="ChillIcon"
                 class="fr__button fr__button--postpone"
-                @click="freeze(obj.id)"
+                @click="freeze(obj.Id)"
               />
             </td>
           </tr>
@@ -92,7 +94,8 @@
               {{ obj.Amount }}
             </td>
             <td>
-              <revert-icon
+              <img
+                :src="RevertIcon"
                 class="fr__button fr__button--advance"
                 @click="advance(obj.Id)"
               />
@@ -100,7 +103,8 @@
           </tr>
         </tbody>
       </table>
-      <flame-icon
+      <img
+        :src="FlameIcon"
         class="fr__button fr__button--advance"
         @click="removeAllTasks()"
       />
