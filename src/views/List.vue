@@ -3,33 +3,7 @@
     <div class="fr__heading">
       <header>
         <h1>{{ randomTitle }}</h1>
-        <form
-          id="expenses-form"
-          class="fr__form"
-          @submit.prevent="addNewExpense"
-        >
-          <fieldset>
-            <div class="fr__label-wrapper">
-              <label for="expense">Expense</label>
-              <input
-                id="expense"
-                v-model="Expense"
-                type="text"
-                class="fr__input-box"
-              />
-            </div>
-            <div class="fr__label-wrapper">
-              <label for="amount">Amount</label>
-              <input
-                id="amount"
-                v-model.number="Amount"
-                type="number"
-                class="fr__input-box"
-              />
-            </div>
-            <button />
-          </fieldset>
-        </form>
+        <the-expense-form />
       </header>
     </div>
 
@@ -116,6 +90,8 @@
 import { defineComponent } from 'vue';
 import store from '../store/index';
 
+import TheExpenseForm from '@/components/form/ExpenseForm.vue';
+
 import FlameIcon from '../assets/icons/whatshot-24px.svg';
 import RevertIcon from '../assets/icons/history-24px.svg';
 import ChillIcon from '../assets/icons/ac_unit-24px.svg';
@@ -140,11 +116,7 @@ export default defineComponent({
     };
   },
 
-  components: {},
-  data: () => ({
-    Expense: '',
-    Amount: 0
-  }),
+  components: { TheExpenseForm },
 
   computed: {
     totalExpenses(): number {
@@ -162,11 +134,11 @@ export default defineComponent({
     activeExpenses(): number {
       return store.getters.filterActive;
     },
-    totalExpensesToggle() {
-      return !(
-        this.postponedExpenses.length < 1 || this.activeExpenses.length < 1
-      );
-    },
+    // totalExpensesToggle() {
+    //   return !(
+    //     this.postponedExpenses.length < 1 || this.activeExpenses.length < 1
+    //   );
+    // },
     randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
     }
@@ -177,27 +149,6 @@ export default defineComponent({
   },
 
   methods: {
-    // local state
-    addNewExpense() {
-      this.newObjectPush();
-      this.resetForm();
-      // return this.amount !== ''
-      //   ? (this.newObjectPush(), this.resetForm())
-      //   : null;
-    },
-    resetForm() {
-      this.Expense = '';
-      this.Amount = 0;
-    },
-
-    // store
-    newObjectPush() {
-      store.dispatch({
-        type: 'addNewExpenseAction',
-        Expense: this.Expense,
-        Amount: this.Amount
-      });
-    },
     freeze(index: number) {
       store.dispatch({
         type: 'freezeThisExpenseAction',

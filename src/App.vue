@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import ExpenseList from './components/List.vue';
+import ExpenseList from './views/List.vue';
 import pkgjson from '../package.json';
 
 console.info('v:', pkgjson.version);
