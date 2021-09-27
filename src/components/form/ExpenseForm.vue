@@ -29,6 +29,8 @@ import { defineComponent } from 'vue';
 import store from '@/store/index';
 
 export default defineComponent({
+  name: 'TheExpenseForm',
+
   data: () => ({
     Expense: '',
     Amount: 0
