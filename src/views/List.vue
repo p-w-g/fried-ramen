@@ -15,7 +15,7 @@
 import { defineComponent } from 'vue';
 
 import TheExpenseForm from '@/components/form/ExpenseForm.vue';
-import TheExpenseList from '@/components/list/ExpenseList.vue';
+import TheExpenseList from '@/components/list/ExpenseWrapper.vue';
 
 const themNomNoms = [
   '🌮 Tuesday.',
