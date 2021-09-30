@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts">
+// eslint-disable-next-line no-unused-vars
 import { expenseModel } from '@/models';
 import store from '@/store';
 import { defineComponent } from 'vue';
@@ -32,7 +33,11 @@ export default defineComponent({
   },
   computed: {
     labeledExpensesTotal(): number {
-      return;
+      return this.labeledAmounts.reduce(
+        (accumulator: number, current: number) =>
+          Number(accumulator) + Number(current),
+        0
+      );
     },
     labeledAmounts(): Array<number> {
       return this.labeledExpenses.map((e: expenseModel) => e.Amount);
