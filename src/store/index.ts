@@ -4,6 +4,7 @@ import { expenseModel } from '../models';
 export default createStore({
   state: {
     latestID: 0,
+    labels: [],
     allExpensesList: Array<expenseModel>()
   },
 
@@ -94,16 +95,12 @@ export default createStore({
     }
   },
   getters: {
-    filterFrozen: state => {
+    filterUnassigned: state => {
       return state.allExpensesList != null
-        ? state.allExpensesList.filter(expense => expense.isPostponed)
+        ? state.allExpensesList.filter(expense => !expense.Label)
         : [];
     },
-    filterActive: state => {
-      return state.allExpensesList != null
-        ? state.allExpensesList.filter(expense => !expense.isPostponed)
-        : [];
-    },
+
     totalTotal: (state): number => {
       const amounts: Array<number> = state.allExpensesList.map(
         (e: expenseModel) => e.Amount
@@ -115,17 +112,15 @@ export default createStore({
         0
       );
     },
-    frozenTotal: (state, getters) => {
-      return getters.filterFrozen.reduce(
-        (accumulator: number, currentObject: expenseModel) =>
-          accumulator + currentObject.Amount,
-        0
+
+    unassignedTotal: (state, getters) => {
+      const amounts: Array<number> = getters.filterUnassigned.map(
+        (e: expenseModel) => e.Amount
       );
-    },
-    activeTotal: (state, getters) => {
-      return getters.filterActive.reduce(
-        (accumulator: number, currentObject: expenseModel) =>
-          accumulator + currentObject.Amount,
+
+      return amounts.reduce(
+        (accumulator: number, current: number) =>
+          Number(accumulator) + Number(current),
         0
       );
     }
