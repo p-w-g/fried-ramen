@@ -3,7 +3,11 @@
     <div class="fr__heading">
       <header>
         <h1>{{ randomTitle }}</h1>
-        <the-expense-form />
+        <accordion>
+          <template #content>
+            <the-expense-form />
+          </template>
+        </accordion>
       </header>
     </div>
 
@@ -16,6 +20,7 @@ import { defineComponent } from 'vue';
 
 import TheExpenseForm from '@/components/form/ExpenseForm.vue';
 import TheExpenseList from '@/components/list/ExpenseWrapper.vue';
+import Accordion from '@/components/shared/Accordion.vue';
 
 const themNomNoms = [
   '🌮 Tuesday.',
@@ -28,7 +33,7 @@ const themNomNoms = [
 export default defineComponent({
   name: 'ExpenseList',
 
-  components: { TheExpenseForm, TheExpenseList },
+  components: { TheExpenseForm, TheExpenseList, Accordion },
 
   computed: {
     randomTitle() {
