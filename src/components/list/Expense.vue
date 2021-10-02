@@ -11,20 +11,14 @@
       class="fr__button fr__button--expedite"
       @click="remove(obj.Id)"
     />
-
-    <!-- <img
-      :src="ChillIcon"
-      class="fr__button fr__button--postpone"
-      @click="freeze(obj.Id)"
-    />
-  </td> -->
-    <!-- <td>
-    <img
-      :src="RevertIcon"
-      class="fr__button fr__button--advance"
-      @click="advance(obj.Id)"
-    />
-  </td> -->
+  </td>
+  <td>
+    <select v-model="selected" @change="selectLabel()">
+      <option value=""></option>
+      <option v-for="(label, index) in labels" :value="label" :key="index">{{
+        label
+      }}</option>
+    </select>
   </td>
 </template>
 
@@ -48,17 +42,24 @@ export default defineComponent({
   props: {
     obj: Object
   },
+  data() {
+    return {
+      selected: ''
+    };
+  },
+  computed: {
+    labels(): Array<string> {
+      return store.getters.labels;
+    }
+  },
   methods: {
-    freeze(index: number) {
+    selectLabel() {
+      const Label = this.selected;
+      const Id = this.obj.Id;
       store.dispatch({
-        type: 'freezeThisExpenseAction',
-        index
-      });
-    },
-    advance(index: number) {
-      store.dispatch({
-        type: 'advanceThisExpenseAction',
-        index
+        type: 'labelThisExpenseAction',
+        Id,
+        Label
       });
     },
     remove(index: number) {
