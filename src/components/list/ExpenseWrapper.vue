@@ -5,13 +5,13 @@
         <tr>
           <th>All:</th>
           <th>
-            <b>{{ activeExpensesTotal }}</b>
+            <b>{{ totalExpenses }}</b>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="(obj, index) in activeExpenses"
+          v-for="(obj, index) in unassignedExpenses"
           :key="index"
           :expense="obj.Expense"
         >
@@ -35,6 +35,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import store from '@/store/index';
+// eslint-disable-next-line no-unused-vars
+import { expenseModel } from '@/models';
 
 import TheExpense from '@/components/list/Expense.vue';
 import TheExpensesTable from '@/components/list/ExpensesTable.vue';
@@ -61,6 +63,10 @@ export default defineComponent({
     labels(): Array<string> {
       return store.getters.labels;
     },
+    unassignedExpenses(): Array<expenseModel> {
+      return store.getters.filterUnassigned;
+    },
+
     postponedExpensesTotal(): number {
       return store.getters.frozenTotal;
     },
