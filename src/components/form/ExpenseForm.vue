@@ -1,27 +1,38 @@
 <template>
-  <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense">
-    <fieldset>
-      <div class="fr__label-wrapper">
-        <label for="expense">Expense</label>
-        <input
-          id="expense"
-          v-model="Expense"
-          type="text"
-          class="fr__input-box"
-        />
-      </div>
-      <div class="fr__label-wrapper">
-        <label for="amount">Amount</label>
-        <input
-          id="amount"
-          v-model.number="Amount"
-          type="number"
-          class="fr__input-box"
-        />
-      </div>
-      <button />
-    </fieldset>
-  </form>
+  <div>
+    <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense">
+      <fieldset>
+        <div class="fr__label-wrapper">
+          <label for="expense">Expense</label>
+          <input
+            id="expense"
+            v-model="Expense"
+            type="text"
+            class="fr__input-box"
+          />
+        </div>
+        <div class="fr__label-wrapper">
+          <label for="amount">Amount</label>
+          <input
+            id="amount"
+            v-model.number="Amount"
+            type="number"
+            class="fr__input-box"
+          />
+        </div>
+        <button />
+      </fieldset>
+    </form>
+    <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel">
+      <fieldset>
+        <div class="fr__label-wrapper">
+          <label for="expense">Label</label>
+          <input id="label" v-model="Label" type="text" class="fr__input-box" />
+        </div>
+        <button />
+      </fieldset>
+    </form>
+  </div>
 </template>
 
 <script lang="ts">
@@ -33,19 +44,24 @@ export default defineComponent({
 
   data: () => ({
     Expense: '',
-    Amount: 0
+    Amount: 0,
+    Label: ''
   }),
   methods: {
     addNewExpense() {
       this.newObjectPush();
-      this.resetForm();
-      // return this.amount !== ''
-      //   ? (this.newObjectPush(), this.resetForm())
-      //   : null;
+      this.resetExpenseForm();
     },
-    resetForm() {
+    resetExpenseForm() {
       this.Expense = '';
       this.Amount = 0;
+    },
+    addNewLabel() {
+      this.newLabelPush();
+      this.resetLabelForm();
+    },
+    resetLabelForm() {
+      this.Label = '';
     },
 
     // store
@@ -54,6 +70,12 @@ export default defineComponent({
         type: 'addNewExpenseAction',
         Expense: this.Expense,
         Amount: this.Amount
+      });
+    },
+    newLabelPush() {
+      store.dispatch({
+        type: 'addNewLabelAction',
+        Label: this.Label
       });
     }
   }
