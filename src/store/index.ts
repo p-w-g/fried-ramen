@@ -73,6 +73,14 @@ export default createStore({
       }
     },
 
+    deleteLabel(state, lbl) {
+      for (let i = 0; i < state.labels.length; i++) {
+        if (lbl === state.labels[i]) {
+          state.labels.splice(i, 1);
+        }
+      }
+    },
+
     deleteAll(state) {
       state.allExpensesList = [];
       state.labels = [];
@@ -127,6 +135,11 @@ export default createStore({
     removeAllTasksAction(context) {
       context.commit('deleteAll');
       context.commit('saveAllJson');
+    },
+
+    removeLabelAction(context, payload) {
+      context.commit('deleteLabel', payload.Label);
+      context.commit('saveLabelJson');
     }
   },
   getters: {

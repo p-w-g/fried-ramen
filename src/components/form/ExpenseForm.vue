@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense">
+    <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense()">
       <fieldset>
         <div class="fr__label-wrapper">
           <label for="expense">Expense</label>
@@ -20,18 +20,24 @@
             class="fr__input-box"
           />
         </div>
-        <button />
+        <button hidden />
       </fieldset>
     </form>
-    <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel">
+    <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
       <fieldset>
         <div class="fr__label-wrapper">
           <label for="expense">Label</label>
           <input id="label" v-model="Label" type="text" class="fr__input-box" />
         </div>
-        <button />
+        <button hidden />
       </fieldset>
     </form>
+    <select v-model="selected" @change="removeLabel()">
+      <option value="" disabled></option>
+      <option v-for="(label, index) in labels" :value="label" :key="index">{{
+        label
+      }}</option>
+    </select>
   </div>
 </template>
 
@@ -45,8 +51,14 @@ export default defineComponent({
   data: () => ({
     Expense: '',
     Amount: 0,
-    Label: ''
+    Label: '',
+    selected: ''
   }),
+  computed: {
+    labels(): Array<string> {
+      return store.getters.labels;
+    }
+  },
   methods: {
     addNewExpense() {
       this.newObjectPush();
@@ -76,6 +88,14 @@ export default defineComponent({
       store.dispatch({
         type: 'addNewLabelAction',
         Label: this.Label
+      });
+    },
+    removeLabel() {
+      const Label = this.selected;
+
+      store.dispatch({
+        type: 'removeLabelAction',
+        Label
       });
     }
   }
