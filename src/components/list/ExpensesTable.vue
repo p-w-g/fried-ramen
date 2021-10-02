@@ -25,12 +25,19 @@
 import { expenseModel } from '@/models';
 import store from '@/store';
 import { defineComponent } from 'vue';
+import TheExpense from '@/components/list/Expense.vue';
 
 export default defineComponent({
   name: 'TheExpensesTable',
+
+  components: {
+    TheExpense
+  },
+
   props: {
     label: String
   },
+
   computed: {
     labeledExpensesTotal(): number {
       return this.labeledAmounts.reduce(
