@@ -14,12 +14,30 @@ export default createStore({
         localStorage.getItem('allExpensesList')!
       );
     },
+
+    loadLabelJson(state) {
+      state.labels = JSON.parse(localStorage.getItem('labels')!);
+    },
+
     saveJson(state) {
       localStorage.setItem(
         'allExpensesList',
         JSON.stringify(state.allExpensesList)
       );
     },
+
+    saveLabelJson(state) {
+      localStorage.setItem('labels', JSON.stringify(state.labels));
+    },
+
+    saveAllJson(state) {
+      localStorage.setItem(
+        'allExpensesList',
+        JSON.stringify(state.allExpensesList)
+      );
+      localStorage.setItem('labels', JSON.stringify(state.labels));
+    },
+
     addNewExpense(state, expense: expenseModel) {
       state.allExpensesList.push({
         Expense: expense.Expense,
@@ -27,6 +45,10 @@ export default createStore({
         Id: state.latestID,
         isPostponed: false
       });
+    },
+
+    addNewLabel(state, payload) {
+      state.labels.push(payload.Label);
     },
 
     updateLatestID(state) {
@@ -38,16 +60,9 @@ export default createStore({
         : state.latestID++;
     },
 
-    freeze(state, index) {
-      state.allExpensesList.find(
-        ({ Id }) => Id === index.index
-      ).isPostponed = true;
-    },
-
-    advance(state, index) {
-      state.allExpensesList.find(
-        ({ Id }) => Id === index.index
-      ).isPostponed = false;
+    labelExpense(state, payload) {
+      state.allExpensesList.find(({ Id }) => Id === payload.Id).Label =
+        payload.Label;
     },
 
     remove(state, index) {
@@ -60,38 +75,58 @@ export default createStore({
 
     deleteAll(state) {
       state.allExpensesList = [];
+      state.labels = [];
     }
   },
+
   actions: {
     addNewExpenseAction(context, payload) {
       context.commit('updateLatestID');
       context.commit('addNewExpense', payload);
       context.commit('saveJson');
     },
-    advanceThisExpenseAction(context, index) {
-      context.commit('advance', index);
+
+    addNewLabelAction(context, payload) {
+      context.commit('addNewLabel', payload);
+      context.commit('saveLabelJson');
+    },
+
+    labelThisExpenseAction(context, payload) {
+      context.commit('labelExpense', payload);
       context.commit('saveJson');
     },
-    freezeThisExpenseAction(context, index) {
-      context.commit('freeze', index);
-      context.commit('saveJson');
-    },
+
     loadJsonAttemptAction(context) {
       if (localStorage.getItem('allExpensesList')) {
         context.commit('loadJson');
         context.commit('updateLatestID');
       }
+      if (localStorage.getItem('labels')) {
+        context.commit('loadLabelJson');
+      }
     },
+
     saveToLocalStorageAction(context) {
       context.commit('saveJson');
     },
+
+    saveLabelToLocalStorageAction(context) {
+      context.commit('saveLabelJson');
+    },
+
+    saveAllToLocalStorageAction(context) {
+      context.commit('saveJson');
+      context.commit('saveLabelJson');
+    },
+
     removeThisTaskAction(context, index) {
       context.commit('remove', index);
       context.commit('saveJson');
     },
+
     removeAllTasksAction(context) {
       context.commit('deleteAll');
-      context.commit('saveJson');
+      context.commit('saveAllJson');
     }
   },
   getters: {
@@ -112,7 +147,9 @@ export default createStore({
         0
       );
     },
-
+    labels: (state): Array<string> => {
+      return state.labels;
+    },
     unassignedTotal: (state, getters) => {
       const amounts: Array<number> = getters.filterUnassigned.map(
         (e: expenseModel) => e.Amount
