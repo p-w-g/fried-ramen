@@ -15,9 +15,13 @@
   <td>
     <select v-model="selected" @change="selectLabel()">
       <option value=""></option>
-      <option v-for="(label, index) in labels" :value="label" :key="index">{{
-        label
-      }}</option>
+      <option
+        v-for="(label, index) in labels"
+        :selected="selected === obj.Label"
+        :value="label"
+        :key="index"
+        >{{ label }}</option
+      >
     </select>
   </td>
 </template>
@@ -39,19 +43,23 @@ export default defineComponent({
       CheckIcon
     };
   },
+
   props: {
     obj: Object
   },
+
   data() {
     return {
       selected: ''
     };
   },
+
   computed: {
     labels(): Array<string> {
       return store.getters.labels;
     }
   },
+
   methods: {
     selectLabel() {
       const Label = this.selected;
@@ -62,18 +70,25 @@ export default defineComponent({
         Label
       });
     },
+
     remove(index: number) {
       store.dispatch({
         type: 'removeThisTaskAction',
         index
       });
     },
+
     saveExpenseList() {
       store.dispatch('saveToLocalStorageAction');
     },
+
     removeAllTasks() {
       store.dispatch('removeAllTasksAction');
     }
+  },
+
+  mounted() {
+    this.selected = this.obj.Label;
   }
 });
 </script>
