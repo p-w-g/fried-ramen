@@ -46,9 +46,11 @@ export default defineComponent({
         0
       );
     },
+
     labeledAmounts(): Array<number> {
       return this.labeledExpenses.map((e: expenseModel) => e.Amount);
     },
+    
     labeledExpenses(): Array<expenseModel> {
       return store.state.allExpensesList.filter(
         (e: expenseModel) => e.Label === this.label

@@ -73,10 +73,16 @@ export default createStore({
       }
     },
 
-    deleteLabel(state, lbl) {
+    /**
+     * Attempts to delete label only if
+     * doesnt find any object assigned to that label
+     */
+    deleteLabelIfEmpty(state, lbl) {
       for (let i = 0; i < state.labels.length; i++) {
-        if (lbl === state.labels[i]) {
-          state.labels.splice(i, 1);
+        if (!state.allExpensesList.find(({ Label }) => lbl === Label)) {
+          if (lbl === state.labels[i]) {
+            state.labels.splice(i, 1);
+          }
         }
       }
     },
@@ -137,8 +143,8 @@ export default createStore({
       context.commit('saveAllJson');
     },
 
-    removeLabelAction(context, payload) {
-      context.commit('deleteLabel', payload.Label);
+    removeLabelAttemptAction(context, payload) {
+      context.commit('deleteLabelIfEmpty', payload.Label);
       context.commit('saveLabelJson');
     }
   },

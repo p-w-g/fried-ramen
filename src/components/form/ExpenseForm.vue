@@ -94,7 +94,7 @@ export default defineComponent({
       const Label = this.selected;
 
       store.dispatch({
-        type: 'removeLabelAction',
+        type: 'removeLabelAttemptAction',
         Label
       });
     }
