@@ -20,7 +20,7 @@
             class="fr__input-box"
           />
         </div>
-        <button hidden />
+        <button hidden form="expenses-form" />
       </fieldset>
     </form>
     <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
@@ -29,7 +29,7 @@
           <label for="expense">Label</label>
           <input id="label" v-model="Label" type="text" class="fr__input-box" />
         </div>
-        <button hidden />
+        <button hidden form="labels-form" />
       </fieldset>
     </form>
     <select v-model="selected" @change="removeLabel()">
@@ -50,7 +50,7 @@ export default defineComponent({
 
   data: () => ({
     Expense: '',
-    Amount: 0,
+    Amount: '',
     Label: '',
     selected: ''
   }),
@@ -66,7 +66,7 @@ export default defineComponent({
     },
     resetExpenseForm() {
       this.Expense = '';
-      this.Amount = 0;
+      this.Amount = '';
     },
     addNewLabel() {
       this.newLabelPush();
