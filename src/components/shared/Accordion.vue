@@ -20,7 +20,7 @@ import { defineComponent } from 'vue';
 import Chevron from '@/assets/icons/chevron_right.svg';
 
 export default defineComponent({
-  name: 'Accordion',
+  name: 'fr-accordion',
   setup() {
     return {
       Chevron
