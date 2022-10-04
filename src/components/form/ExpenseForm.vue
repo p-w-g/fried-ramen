@@ -20,7 +20,7 @@
             class="fr__input-box"
           />
         </div>
-        <button hidden form="expenses-form" />
+        <button form="expenses-form">add expense</button>
       </fieldset>
     </form>
     <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
@@ -29,15 +29,18 @@
           <label for="expense">Label</label>
           <input id="label" v-model="Label" type="text" class="fr__input-box" />
         </div>
-        <button hidden form="labels-form" />
+        <button form="labels-form">add label</button>
       </fieldset>
     </form>
-    <select v-model="selected" @change="removeLabel()">
-      <option value="" disabled></option>
-      <option v-for="(label, index) in labels" :value="label" :key="index">{{
-        label
-      }}</option>
-    </select>
+    <div class="fr__label-wrapper">
+      <label for="removal-menu">Select to delete an empty label</label>
+      <select id="removal-menu" v-model="selected" @change="removeLabel()">
+        <option value="" disabled></option>
+        <option v-for="(label, index) in labels" :value="label" :key="index">
+          {{ label }}
+        </option>
+      </select>
+    </div>
   </div>
 </template>
 
@@ -52,12 +55,12 @@ export default defineComponent({
     Expense: '',
     Amount: '',
     Label: '',
-    selected: ''
+    selected: '',
   }),
   computed: {
     labels(): Array<string> {
       return store.getters.labels;
-    }
+    },
   },
   methods: {
     addNewExpense() {
@@ -81,13 +84,13 @@ export default defineComponent({
       store.dispatch({
         type: 'addNewExpenseAction',
         Expense: this.Expense,
-        Amount: this.Amount
+        Amount: this.Amount,
       });
     },
     newLabelPush() {
       store.dispatch({
         type: 'addNewLabelAction',
-        Label: this.Label
+        Label: this.Label,
       });
     },
     removeLabel() {
@@ -95,9 +98,9 @@ export default defineComponent({
 
       store.dispatch({
         type: 'removeLabelAttemptAction',
-        Label
+        Label,
       });
-    }
-  }
+    },
+  },
 });
 </script>
