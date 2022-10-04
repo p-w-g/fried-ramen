@@ -17,11 +17,12 @@
       <option value=""></option>
       <option
         v-for="(label, index) in labels"
-        :selected="selected === obj.Label"
+        :selected="false"
         :value="label"
         :key="index"
-        >{{ label }}</option
       >
+        {{ label }}
+      </option>
     </select>
   </td>
 </template>
@@ -40,24 +41,24 @@ export default defineComponent({
     return {
       RevertIcon,
       ChillIcon,
-      CheckIcon
+      CheckIcon,
     };
   },
 
   props: {
-    obj: Object
+    obj: Object,
   },
 
   data() {
     return {
-      selected: ''
+      selected: '',
     };
   },
 
   computed: {
     labels(): Array<string> {
       return store.getters.labels;
-    }
+    },
   },
 
   methods: {
@@ -67,14 +68,14 @@ export default defineComponent({
       store.dispatch({
         type: 'labelThisExpenseAction',
         Id,
-        Label
+        Label,
       });
     },
 
     remove(index: number) {
       store.dispatch({
         type: 'removeThisTaskAction',
-        index
+        index,
       });
     },
 
@@ -84,11 +85,11 @@ export default defineComponent({
 
     removeAllTasks() {
       store.dispatch('removeAllTasksAction');
-    }
+    },
   },
 
   mounted() {
     this.selected = this.obj.Label;
-  }
+  },
 });
 </script>
