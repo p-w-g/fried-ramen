@@ -34,6 +34,7 @@ import store from '@/store/index';
 import RevertIcon from '@/assets/icons/history-24px.svg';
 import ChillIcon from '@/assets/icons/ac_unit-24px.svg';
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
+
 export default defineComponent({
   name: 'TheExpense',
 
