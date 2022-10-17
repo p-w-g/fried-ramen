@@ -6,9 +6,39 @@
     - icons to the right of body
 
 -->
-  <div class="fr__card-header">
-    <h3>{{ obj.Expense }}</h3>
-    <h4>{{ obj.Amount }}</h4>
+  <div class="fr__card">
+    <div class="fr__card-header">
+      <h3>{{ expense.Expense }}</h3>
+      <h4>{{ expense.Amount }}</h4>
+    </div>
+    <div class="fr__card-body">
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit
+        voluptates consequatur nulla harum? Perferendis, voluptatum.
+      </p>
+      <ul>
+        <li>
+          <img
+            :src="CheckIcon"
+            class="fr__button fr__button--expedite"
+            @click="remove(expense.Id)"
+          />
+        </li>
+        <li>
+          <select v-model="selected" @change="selectLabel()">
+            <option value=""></option>
+            <option
+              v-for="(label, index) in labels"
+              :selected="false"
+              :value="label"
+              :key="index"
+            >
+              {{ label }}
+            </option>
+          </select>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -16,23 +46,19 @@
 import { defineComponent } from 'vue';
 import store from '@/store/index';
 
-// import RevertIcon from '@/assets/icons/history-24px.svg';
-// import ChillIcon from '@/assets/icons/ac_unit-24px.svg';
-// import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
+import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
 
 export default defineComponent({
   name: 'TheExpenseCard',
 
   setup() {
     return {
-      // RevertIcon,
-      // ChillIcon,
-      // CheckIcon,
+      CheckIcon,
     };
   },
 
   props: {
-    obj: Object,
+    expense: Object,
   },
 
   data() {
@@ -50,7 +76,7 @@ export default defineComponent({
   methods: {
     selectLabel() {
       const Label = this.selected;
-      const Id = this.obj.Id;
+      const Id = this.expense.Id;
       store.dispatch({
         type: 'labelThisExpenseAction',
         Id,
@@ -75,7 +101,29 @@ export default defineComponent({
   },
 
   mounted() {
-    this.selected = this.obj.Label;
+    this.selected = this.expense.Label;
   },
 });
 </script>
+
+<style lang="scss">
+.fr {
+  &__card {
+    /* From https://css.glass */
+    background: rgba(220, 231, 218, 0.8);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0 1rem;
+    margin: 1rem;
+  }
+  &__card-header,
+  &__card-body {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+</style>
