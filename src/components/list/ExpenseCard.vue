@@ -1,11 +1,4 @@
 <template>
-  <!-- TODO:
-    - header with title, amount in same level but far to right
-    - description in optional body
-
-    - icons to the right of body
-
--->
   <div class="fr__card">
     <div class="fr__card-header">
       <h3>{{ expense.Expense }}</h3>
