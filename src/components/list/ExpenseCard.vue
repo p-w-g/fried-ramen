@@ -11,12 +11,17 @@
       <h3>{{ expense.Expense }}</h3>
       <h4>{{ expense.Amount }}</h4>
     </div>
-    <div class="fr__card-body">
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit
-        voluptates consequatur nulla harum? Perferendis, voluptatum.
+    <div
+      :class="
+        expense.description
+          ? 'fr__card-body'
+          : 'fr__card-body fr__card-body--no-desc'
+      "
+    >
+      <p v-if="expense.description">
+        {{ expense.description }}
       </p>
-      <ul>
+      <ul class="fr__card-options">
         <li>
           <img
             :src="CheckIcon"
@@ -124,6 +129,9 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     width: 100%;
+  }
+  &__card-body--no-desc {
+    justify-content: flex-end;
   }
 }
 </style>
