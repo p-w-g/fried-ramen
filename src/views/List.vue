@@ -19,7 +19,7 @@
 import { defineComponent } from 'vue';
 
 import TheExpenseForm from '@/components/form/ExpenseForm.vue';
-import TheExpenseList from '@/components/list/ExpenseWrapper.vue';
+import TheExpenseList from '@/components/list/Expenses.vue';
 import Accordion from '@/components/shared/Accordion.vue';
 
 const themNomNoms = [
@@ -27,7 +27,7 @@ const themNomNoms = [
   '☕️ run.',
   '🍔 it is.',
   '🍕 Time',
-  '🍣 just like that'
+  '🍣 just like that',
 ];
 
 export default defineComponent({
@@ -38,7 +38,7 @@ export default defineComponent({
   computed: {
     randomTitle() {
       return themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
-    }
-  }
+    },
+  },
 });
 </script>
