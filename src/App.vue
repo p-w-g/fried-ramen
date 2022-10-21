@@ -7,14 +7,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ExpenseList from './views/List.vue';
-import pkgjson from '../package.json';
 
-console.info('v:', pkgjson.version);
 export default defineComponent({
   name: 'App',
   components: {
-    ExpenseList
-  }
+    ExpenseList,
+  },
 });
 </script>
 <style lang="scss">
