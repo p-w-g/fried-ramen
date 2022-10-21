@@ -24,8 +24,8 @@
           <label for="description">Description</label>
           <input
             id="description"
-            v-model.number="Description"
-            type="number"
+            v-model="Description"
+            type="text"
             class="fr__input-box"
           />
         </div>
