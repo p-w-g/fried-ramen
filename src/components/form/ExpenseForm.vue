@@ -49,7 +49,7 @@ import { defineComponent } from 'vue';
 import store from '@/store/index';
 
 export default defineComponent({
-  name: 'TheExpenseForm',
+  name: 'ExpenseForm',
 
   data: () => ({
     Expense: '',

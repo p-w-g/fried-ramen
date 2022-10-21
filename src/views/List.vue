@@ -5,21 +5,21 @@
         <h1>{{ randomTitle }}</h1>
         <accordion>
           <template #content>
-            <the-expense-form />
+            <expense-form />
           </template>
         </accordion>
       </header>
     </div>
 
-    <the-expense-list />
+    <expenses-list />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import TheExpenseForm from '@/components/form/ExpenseForm.vue';
-import TheExpenseList from '@/components/list/Expenses.vue';
+import ExpenseForm from '@/components/form/ExpenseForm.vue';
+import ExpensesList from '@/components/list/Expenses.vue';
 import Accordion from '@/components/shared/Accordion.vue';
 
 const themNomNoms = [
@@ -33,7 +33,7 @@ const themNomNoms = [
 export default defineComponent({
   name: 'ExpenseList',
 
-  components: { TheExpenseForm, TheExpenseList, Accordion },
+  components: { ExpenseForm, ExpensesList, Accordion },
 
   computed: {
     randomTitle() {
