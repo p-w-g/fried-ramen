@@ -42,6 +42,7 @@ export default createStore({
       state.allExpensesList.push({
         Expense: expense.Expense,
         Amount: expense.Amount,
+        Description: expense.Description,
         Id: state.latestID,
         isPostponed: false,
       });
