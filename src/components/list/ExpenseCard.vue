@@ -6,13 +6,13 @@
     </div>
     <div
       :class="
-        expense.description
+        expense.Description
           ? 'fr__card-body'
           : 'fr__card-body fr__card-body--no-desc'
       "
     >
-      <p v-if="expense.description">
-        {{ expense.description }}
+      <p v-if="expense.Description">
+        {{ expense.Description }}
       </p>
       <ul class="fr__card-options">
         <li>
