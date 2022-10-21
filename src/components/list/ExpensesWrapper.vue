@@ -1,23 +1,10 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <th>{{ label }}:</th>
-        <th>
-          <b>{{ labeledExpensesTotal }}</b>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="(obj, index) in labeledExpenses"
-        :key="index"
-        :expense="obj.Expense"
-      >
-        <the-expense :obj="obj" />
-      </tr>
-    </tbody>
-  </table>
+  <h2>{{ label }}: {{ labeledExpensesTotal }}</h2>
+  <expense-card
+    v-for="(expense, index) in labeledExpenses"
+    :key="index"
+    :expense="expense"
+  />
 </template>
 
 <script lang="ts">
@@ -25,17 +12,17 @@
 import { expenseModel } from '@/models';
 import store from '@/store';
 import { defineComponent } from 'vue';
-import TheExpense from '@/components/list/Expense.vue';
+import ExpenseCard from './ExpenseCard.vue';
 
 export default defineComponent({
-  name: 'TheExpensesTable',
+  name: 'ExpensesWrapper',
 
   components: {
-    TheExpense
+    ExpenseCard,
   },
 
   props: {
-    label: String
+    label: String,
   },
 
   computed: {
@@ -50,12 +37,12 @@ export default defineComponent({
     labeledAmounts(): Array<number> {
       return this.labeledExpenses.map((e: expenseModel) => e.Amount);
     },
-    
+
     labeledExpenses(): Array<expenseModel> {
       return store.state.allExpensesList.filter(
         (e: expenseModel) => e.Label === this.label
       );
-    }
-  }
+    },
+  },
 });
 </script>

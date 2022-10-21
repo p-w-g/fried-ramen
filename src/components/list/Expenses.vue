@@ -1,28 +1,15 @@
 <template>
   <div class="fr__content-column">
-    <table>
-      <thead>
-        <tr>
-          <th>All:</th>
-          <th>
-            <b>{{ totalExpenses }}</b>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(obj, index) in unassignedExpenses"
-          :key="index"
-          :expense="obj.Expense"
-        >
-          <the-expense :obj="obj" />
-        </tr>
-      </tbody>
-    </table>
-    <the-expenses-table
+    <h2>All: {{ totalExpenses }}</h2>
+    <expenses-wrapper
       v-for="(label, index) in labels"
       :label="label"
       :key="index"
+    />
+    <expense-card
+      v-for="(expense, index) in unassignedExpenses"
+      :key="index"
+      :expense="expense"
     />
     <img
       :src="FlameIcon"
@@ -38,22 +25,22 @@ import store from '@/store/index';
 // eslint-disable-next-line no-unused-vars
 import { expenseModel } from '@/models';
 
-import TheExpense from '@/components/list/Expense.vue';
-import TheExpensesTable from '@/components/list/ExpensesTable.vue';
+import ExpensesWrapper from '@/components/list/ExpensesWrapper.vue';
 import FlameIcon from '@/assets/icons/whatshot-24px.svg';
+import ExpenseCard from '@/components/list/ExpenseCard.vue';
 
 export default defineComponent({
-  name: 'TheExpenseList',
+  name: 'ExpensesList',
 
   setup() {
     return {
-      FlameIcon
+      FlameIcon,
     };
   },
 
   components: {
-    TheExpense,
-    TheExpensesTable
+    ExpensesWrapper,
+    ExpenseCard,
   },
 
   computed: {
@@ -78,7 +65,7 @@ export default defineComponent({
     },
     activeExpenses(): number {
       return store.getters.filterActive;
-    }
+    },
   },
 
   mounted() {
@@ -88,7 +75,7 @@ export default defineComponent({
   methods: {
     removeAllTasks() {
       store.dispatch('removeAllTasksAction');
-    }
-  }
+    },
+  },
 });
 </script>

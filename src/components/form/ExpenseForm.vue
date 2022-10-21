@@ -1,7 +1,7 @@
 <template>
   <div>
     <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense()">
-      <fieldset>
+      <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
           <label for="expense">Expense</label>
           <input
@@ -20,22 +20,31 @@
             class="fr__input-box"
           />
         </div>
-        <button form="expenses-form">add expense</button>
+        <div class="fr__label-wrapper">
+          <label for="description">Description</label>
+          <input
+            id="description"
+            v-model="Description"
+            type="text"
+            class="fr__input-box"
+          />
+        </div>
+        <button form="expenses-form">Save Expense</button>
       </fieldset>
     </form>
     <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
-      <fieldset>
+      <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
-          <label for="expense">Label</label>
+          <label for="expense">Category</label>
           <input id="label" v-model="Label" type="text" class="fr__input-box" />
         </div>
-        <button form="labels-form">add label</button>
+        <button form="labels-form">Save Category</button>
       </fieldset>
     </form>
-    <div class="fr__label-wrapper">
-      <label for="removal-menu">Select to delete an empty label</label>
+    <div class="fr__label-wrapper" v-if="labels.length > 0">
+      <label for="removal-menu">Delete empty category </label>
       <select id="removal-menu" v-model="selected" @change="removeLabel()">
-        <option value="" disabled></option>
+        <option value="" disabled>Select to delete</option>
         <option v-for="(label, index) in labels" :value="label" :key="index">
           {{ label }}
         </option>
@@ -49,32 +58,39 @@ import { defineComponent } from 'vue';
 import store from '@/store/index';
 
 export default defineComponent({
-  name: 'TheExpenseForm',
+  name: 'ExpenseForm',
 
   data: () => ({
     Expense: '',
     Amount: '',
+    Description: '',
     Label: '',
     selected: '',
   }),
+
   computed: {
     labels(): Array<string> {
       return store.getters.labels;
     },
   },
+
   methods: {
     addNewExpense() {
       this.newObjectPush();
       this.resetExpenseForm();
     },
+
     resetExpenseForm() {
       this.Expense = '';
       this.Amount = '';
+      this.Description = '';
     },
+
     addNewLabel() {
       this.newLabelPush();
       this.resetLabelForm();
     },
+
     resetLabelForm() {
       this.Label = '';
     },
@@ -85,14 +101,17 @@ export default defineComponent({
         type: 'addNewExpenseAction',
         Expense: this.Expense,
         Amount: this.Amount,
+        Description: this.Description,
       });
     },
+
     newLabelPush() {
       store.dispatch({
         type: 'addNewLabelAction',
         Label: this.Label,
       });
     },
+
     removeLabel() {
       const Label = this.selected;
 

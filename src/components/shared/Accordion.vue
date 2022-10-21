@@ -1,6 +1,9 @@
 <template>
   <div>
     <slot name="header" />
+    <transition name="fade" appear>
+      <slot v-if="isOpen" name="content"></slot>
+    </transition>
     <input
       class="accordion"
       type="image"
@@ -10,9 +13,6 @@
       :class="isOpen ? 'accordion--open' : 'accordion--close'"
     />
   </div>
-  <transition name="fade" appear>
-    <slot v-if="isOpen" name="content"></slot>
-  </transition>
 </template>
 
 <script lang="ts">
@@ -23,17 +23,17 @@ export default defineComponent({
   name: 'fr-accordion',
   setup() {
     return {
-      Chevron
+      Chevron,
     };
   },
   data: () => ({
-    isOpen: false
+    isOpen: false,
   }),
   methods: {
     toggleAccordion() {
       this.isOpen = !this.isOpen;
-    }
-  }
+    },
+  },
 });
 </script>
 <style lang="scss" scoped>

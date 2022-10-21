@@ -5,7 +5,7 @@ export default createStore({
   state: {
     latestID: 0,
     labels: [],
-    allExpensesList: Array<expenseModel>()
+    allExpensesList: Array<expenseModel>(),
   },
 
   mutations: {
@@ -42,8 +42,9 @@ export default createStore({
       state.allExpensesList.push({
         Expense: expense.Expense,
         Amount: expense.Amount,
+        Description: expense.Description,
         Id: state.latestID,
-        isPostponed: false
+        isPostponed: false,
       });
     },
 
@@ -52,7 +53,7 @@ export default createStore({
     },
 
     updateLatestID(state) {
-      const filterOutIds = state.allExpensesList.map(el => el.Id);
+      const filterOutIds = state.allExpensesList.map((el) => el.Id);
       const highestId = Math.max(...filterOutIds);
 
       highestId > state.latestID
@@ -90,7 +91,7 @@ export default createStore({
     deleteAll(state) {
       state.allExpensesList = [];
       state.labels = [];
-    }
+    },
   },
 
   actions: {
@@ -146,12 +147,12 @@ export default createStore({
     removeLabelAttemptAction(context, payload) {
       context.commit('deleteLabelIfEmpty', payload.Label);
       context.commit('saveLabelJson');
-    }
+    },
   },
   getters: {
-    filterUnassigned: state => {
+    filterUnassigned: (state) => {
       return state.allExpensesList != null
-        ? state.allExpensesList.filter(expense => !expense.Label)
+        ? state.allExpensesList.filter((expense) => !expense.Label)
         : [];
     },
 
@@ -166,9 +167,11 @@ export default createStore({
         0
       );
     },
+
     labels: (state): Array<string> => {
       return state.labels;
     },
+
     unassignedTotal: (state, getters) => {
       const amounts: Array<number> = getters.filterUnassigned.map(
         (e: expenseModel) => e.Amount
@@ -179,6 +182,6 @@ export default createStore({
           Number(accumulator) + Number(current),
         0
       );
-    }
-  }
+    },
+  },
 });
