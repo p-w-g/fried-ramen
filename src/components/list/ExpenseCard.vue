@@ -117,12 +117,14 @@ export default defineComponent({
     padding: 0 1rem;
     margin: 1rem;
   }
+
   &__card-header,
   &__card-body {
     display: flex;
     justify-content: space-between;
     width: 100%;
   }
+
   &__card-body--no-desc {
     justify-content: flex-end;
   }
