@@ -35,7 +35,7 @@
     <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
       <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
-          <label for="expense">Label</label>
+          <label for="expense">Category</label>
           <input id="label" v-model="Label" type="text" class="fr__input-box" />
         </div>
         <button form="labels-form">Save Category</button>
@@ -44,7 +44,7 @@
     <div class="fr__label-wrapper" v-if="labels.length > 0">
       <label for="removal-menu">Delete empty category </label>
       <select id="removal-menu" v-model="selected" @change="removeLabel()">
-        <option value="" disabled></option>
+        <option value="" disabled>Select to delete</option>
         <option v-for="(label, index) in labels" :value="label" :key="index">
           {{ label }}
         </option>
