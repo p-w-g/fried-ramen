@@ -41,8 +41,8 @@
         <button form="labels-form">add label</button>
       </fieldset>
     </form>
-    <div class="fr__label-wrapper">
-      <label for="removal-menu">Select to delete an empty label</label>
+    <div class="fr__label-wrapper" v-if="labels.length > 0">
+      <label for="removal-menu">Delete empty label </label>
       <select id="removal-menu" v-model="selected" @change="removeLabel()">
         <option value="" disabled></option>
         <option v-for="(label, index) in labels" :value="label" :key="index">
