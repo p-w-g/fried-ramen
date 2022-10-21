@@ -55,15 +55,6 @@
     grid-template-rows: auto auto;
   }
 
-  &__summary {
-    // wycieto, trzeba przesunac border gdzies indziej
-    margin-bottom: 0;
-    border-bottom: #2c3e50 2px solid;
-    width: 100%;
-    justify-content: space-evenly;
-    display: inline-flex;
-  }
-
   &__heading {
     background-color: #eee;
     grid-column: 2;
