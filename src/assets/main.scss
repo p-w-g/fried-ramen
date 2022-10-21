@@ -2,27 +2,28 @@
 @import 'generics';
 
 .fr {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Quicksand';
   color: #2c3e50;
 
   &__button {
     border-radius: 0.5rem;
     border: 0;
-    box-shadow: 0 0 2px 0 #92bfb1;
-    background-color: $alt-bg;
     height: 1.6rem;
     margin-right: 0.1rem;
 
     &:hover,
     &:focus {
-      background-color: #ab947e;
-      box-shadow: 0 0 2px 0 #6f8f72;
+      background: rgb(218, 225, 231);
+    }
+
+    &:active {
+      background: rgb(167, 175, 184);
     }
 
     &--expedite,
     &--advance,
     &--postpone {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Quicksand';
       color: #2c3e50;
     }
   }
