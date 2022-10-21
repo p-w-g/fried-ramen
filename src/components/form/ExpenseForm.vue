@@ -1,7 +1,7 @@
 <template>
   <div>
     <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense()">
-      <fieldset>
+      <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
           <label for="expense">Expense</label>
           <input
@@ -29,20 +29,20 @@
             class="fr__input-box"
           />
         </div>
-        <button form="expenses-form">add expense</button>
+        <button form="expenses-form">Save Expense</button>
       </fieldset>
     </form>
     <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
-      <fieldset>
+      <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
           <label for="expense">Label</label>
           <input id="label" v-model="Label" type="text" class="fr__input-box" />
         </div>
-        <button form="labels-form">add label</button>
+        <button form="labels-form">Save Category</button>
       </fieldset>
     </form>
     <div class="fr__label-wrapper" v-if="labels.length > 0">
-      <label for="removal-menu">Delete empty label </label>
+      <label for="removal-menu">Delete empty category </label>
       <select id="removal-menu" v-model="selected" @change="removeLabel()">
         <option value="" disabled></option>
         <option v-for="(label, index) in labels" :value="label" :key="index">
