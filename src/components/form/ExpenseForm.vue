@@ -20,6 +20,15 @@
             class="fr__input-box"
           />
         </div>
+        <div class="fr__label-wrapper">
+          <label for="description">Description</label>
+          <input
+            id="description"
+            v-model.number="Description"
+            type="number"
+            class="fr__input-box"
+          />
+        </div>
         <button form="expenses-form">add expense</button>
       </fieldset>
     </form>
@@ -54,27 +63,34 @@ export default defineComponent({
   data: () => ({
     Expense: '',
     Amount: '',
+    Description: '',
     Label: '',
     selected: '',
   }),
+
   computed: {
     labels(): Array<string> {
       return store.getters.labels;
     },
   },
+
   methods: {
     addNewExpense() {
       this.newObjectPush();
       this.resetExpenseForm();
     },
+
     resetExpenseForm() {
       this.Expense = '';
       this.Amount = '';
+      this.Description = '';
     },
+
     addNewLabel() {
       this.newLabelPush();
       this.resetLabelForm();
     },
+
     resetLabelForm() {
       this.Label = '';
     },
@@ -85,14 +101,17 @@ export default defineComponent({
         type: 'addNewExpenseAction',
         Expense: this.Expense,
         Amount: this.Amount,
+        Description: this.Description,
       });
     },
+
     newLabelPush() {
       store.dispatch({
         type: 'addNewLabelAction',
         Label: this.Label,
       });
     },
+
     removeLabel() {
       const Label = this.selected;
 
