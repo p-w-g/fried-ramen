@@ -116,6 +116,19 @@ export default defineComponent({
     border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 0 1rem;
     margin: 1rem;
+
+    &-options {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+  }
+
+  &__card-header {
+    > h3,
+    > h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
   }
 
   &__card-header,
