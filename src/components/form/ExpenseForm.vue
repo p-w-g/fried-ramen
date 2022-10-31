@@ -41,7 +41,7 @@
         <button form="labels-form">Save Category</button>
       </fieldset>
     </form>
-    <div class="fr__label-wrapper" v-if="labels.length > 0">
+    <div class="fr__label-wrapper" v-if="!!labels.length">
       <label for="removal-menu">Delete empty category </label>
       <select id="removal-menu" v-model="selected" @change="removeLabel()">
         <option value="" disabled>Select to delete</option>
