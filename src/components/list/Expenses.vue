@@ -1,15 +1,15 @@
 <template>
   <div class="fr__content-column">
     <h2>All: {{ totalExpenses }}</h2>
-    <expenses-wrapper
-      v-for="(label, index) in labels"
-      :label="label"
-      :key="index"
-    />
     <expense-card
       v-for="(expense, index) in unassignedExpenses"
       :key="index"
       :expense="expense"
+    />
+    <expenses-wrapper
+      v-for="(label, index) in labels"
+      :label="label"
+      :key="index"
     />
     <img
       :src="FlameIcon"
