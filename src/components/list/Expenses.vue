@@ -88,10 +88,13 @@ export default defineComponent({
     },
 
     dropCard(event: DragEvent, label: string) {
-      const cardID = event.dataTransfer.getData('cardID');
-
-      console.log(cardID, label);
-      // implement function to move card with ID to label, with vuex action
+      const Id = parseInt(event.dataTransfer.getData('cardID'), 10);
+      const Label = label;
+      store.dispatch({
+        type: 'labelThisExpenseAction',
+        Id,
+        Label,
+      });
     },
   },
 });
