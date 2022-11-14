@@ -1,10 +1,14 @@
 <template>
-  <h2>{{ label }}: {{ labeledExpensesTotal }}</h2>
-  <expense-card
-    v-for="(expense, index) in labeledExpenses"
-    :key="index"
-    :expense="expense"
-  />
+  <div @drop="dropCard($event, label)" @dragenter.prevent @dragover.prevent>
+    <h2>{{ label }}: {{ labeledExpensesTotal }}</h2>
+    <expense-card
+      v-for="(expense, index) in labeledExpenses"
+      :key="index"
+      :expense="expense"
+      draggable="true"
+      @dragstart="pullCard($event, expense)"
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -42,6 +46,24 @@ export default defineComponent({
       return store.state.allExpensesList.filter(
         (e: expenseModel) => e.Label === this.label
       );
+    },
+  },
+
+  methods: {
+    pullCard(event: DragEvent, card: expenseModel) {
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('cardID', card.Id.toString());
+    },
+
+    dropCard(event: DragEvent, label: string) {
+      const Id = parseInt(event.dataTransfer.getData('cardID'), 10);
+      const Label = label;
+      store.dispatch({
+        type: 'labelThisExpenseAction',
+        Id,
+        Label,
+      });
     },
   },
 });

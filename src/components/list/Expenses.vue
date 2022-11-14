@@ -1,11 +1,15 @@
 <template>
   <div class="fr__content-column">
-    <h2>All: {{ totalExpenses }}</h2>
-    <expense-card
-      v-for="(expense, index) in unassignedExpenses"
-      :key="index"
-      :expense="expense"
-    />
+    <div @drop="dropCard($event, '')" @dragenter.prevent @dragover.prevent>
+      <h2>All: {{ totalExpenses }}</h2>
+      <expense-card
+        v-for="(expense, index) in unassignedExpenses"
+        :key="index"
+        :expense="expense"
+        draggable="true"
+        @dragstart="pullCard($event, expense)"
+      />
+    </div>
     <expenses-wrapper
       v-for="(label, index) in labels"
       :label="label"
@@ -75,6 +79,22 @@ export default defineComponent({
   methods: {
     removeAllTasks() {
       store.dispatch('removeAllTasksAction');
+    },
+
+    pullCard(event: DragEvent, card: expenseModel) {
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('cardID', card.Id.toString());
+    },
+
+    dropCard(event: DragEvent, label: string) {
+      const Id = parseInt(event.dataTransfer.getData('cardID'), 10);
+      const Label = label;
+      store.dispatch({
+        type: 'labelThisExpenseAction',
+        Id,
+        Label,
+      });
     },
   },
 });
