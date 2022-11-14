@@ -4,6 +4,8 @@
     v-for="(expense, index) in labeledExpenses"
     :key="index"
     :expense="expense"
+    draggable="true"
+    @dragstart="pullCard($event, expense)"
   />
 </template>
 
@@ -42,6 +44,14 @@ export default defineComponent({
       return store.state.allExpensesList.filter(
         (e: expenseModel) => e.Label === this.label
       );
+    },
+  },
+
+  methods: {
+    pullCard(event: DragEvent, card: expenseModel) {
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('cardID', card.Id.toString());
     },
   },
 });

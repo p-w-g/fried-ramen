@@ -5,6 +5,8 @@
       v-for="(expense, index) in unassignedExpenses"
       :key="index"
       :expense="expense"
+      draggable="true"
+      @dragstart="pullCard($event, expense)"
     />
     <expenses-wrapper
       v-for="(label, index) in labels"
@@ -75,6 +77,12 @@ export default defineComponent({
   methods: {
     removeAllTasks() {
       store.dispatch('removeAllTasksAction');
+    },
+
+    pullCard(event: DragEvent, card: expenseModel) {
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('cardID', card.Id.toString());
     },
   },
 });
