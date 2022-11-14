@@ -1,12 +1,14 @@
 <template>
-  <h2>{{ label }}: {{ labeledExpensesTotal }}</h2>
-  <expense-card
-    v-for="(expense, index) in labeledExpenses"
-    :key="index"
-    :expense="expense"
-    draggable="true"
-    @dragstart="pullCard($event, expense)"
-  />
+  <div @drop="dropCard($event, label)" @dragenter.prevent @dragover.prevent>
+    <h2>{{ label }}: {{ labeledExpensesTotal }}</h2>
+    <expense-card
+      v-for="(expense, index) in labeledExpenses"
+      :key="index"
+      :expense="expense"
+      draggable="true"
+      @dragstart="pullCard($event, expense)"
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -52,6 +54,13 @@ export default defineComponent({
       event.dataTransfer.dropEffect = 'move';
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('cardID', card.Id.toString());
+    },
+
+    dropCard(event: DragEvent, label: string) {
+      const cardID = event.dataTransfer.getData('cardID');
+
+      console.log(cardID, label);
+      // implement function to move card with ID to label, with vuex action
     },
   },
 });
