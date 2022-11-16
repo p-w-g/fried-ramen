@@ -1,13 +1,17 @@
 <template>
   <div @drop="dropCard($event, label)" @dragenter.prevent @dragover.prevent>
-    <h2>{{ label }}: {{ labeledExpensesTotal }}</h2>
-    <expense-card
-      v-for="(expense, index) in labeledExpenses"
-      :key="index"
-      :expense="expense"
-      draggable="true"
-      @dragstart="pullCard($event, expense)"
-    />
+    <h2 @click="toggleCard">{{ label }}: {{ labeledExpensesTotal }}</h2>
+    <transition name="fade" appear>
+      <div v-show="isOpen">
+        <expense-card
+          v-for="(expense, index) in labeledExpenses"
+          :key="index"
+          :expense="expense"
+          draggable="true"
+          @dragstart="pullCard($event, expense)"
+        />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -20,6 +24,10 @@ import ExpenseCard from './ExpenseCard.vue';
 
 export default defineComponent({
   name: 'ExpensesWrapper',
+
+  data: () => ({
+    isOpen: true,
+  }),
 
   components: {
     ExpenseCard,
@@ -65,6 +73,22 @@ export default defineComponent({
         Label,
       });
     },
+
+    toggleCard() {
+      this.isOpen = !this.isOpen;
+    },
   },
 });
 </script>
+<style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  transform: translateY(-50px);
+  opacity: 0;
+}
+</style>
