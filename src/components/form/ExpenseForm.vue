@@ -41,15 +41,20 @@
         <button form="labels-form">Save Category</button>
       </fieldset>
     </form>
-    <div class="fr__label-wrapper" v-if="!!labels.length">
-      <label for="removal-menu">Delete empty category </label>
-      <select id="removal-menu" v-model="selected" @change="removeLabel()">
-        <option value="" disabled>Select to delete</option>
-        <option v-for="(label, index) in labels" :value="label" :key="index">
-          {{ label }}
-        </option>
-      </select>
-    </div>
+    <form class="fr__form" @submit.prevent>
+      <div
+        class="fr__label-wrapper fr__label-wrapper--lean"
+        v-if="!!labels.length"
+      >
+        <label for="removal-menu">Delete empty category </label>
+        <select id="removal-menu" v-model="selected" @change="removeLabel()">
+          <option value="" disabled>Select to delete</option>
+          <option v-for="(label, index) in labels" :value="label" :key="index">
+            {{ label }}
+          </option>
+        </select>
+      </div>
+    </form>
   </div>
 </template>
 
