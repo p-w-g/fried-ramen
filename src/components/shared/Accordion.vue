@@ -40,6 +40,8 @@ export default defineComponent({
 .accordion {
   transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
   transform: rotate(90deg);
+  -webkit-tap-highlight-color: transparent;
+
   &--open {
     transform: rotate(270deg);
   }
