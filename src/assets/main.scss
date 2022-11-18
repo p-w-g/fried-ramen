@@ -5,6 +5,24 @@
   font-family: 'Quicksand';
   color: #2c3e50;
 
+  &__glassy {
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    width: fit-content;
+    padding: 0 1rem;
+
+    margin: 0.5em auto;
+
+    &--open {
+      background: rgba(220, 231, 218, 0.8);
+    }
+    &--closed {
+      background: rgb(218, 225, 231);
+    }
+  }
+
   &__button {
     border-radius: 0.5rem;
     border: 0;

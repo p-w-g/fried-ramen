@@ -1,6 +1,12 @@
 <template>
   <div @drop="dropCard($event, label)" @dragenter.prevent @dragover.prevent>
-    <h2 @click="toggleCard">{{ label }}: {{ labeledExpensesTotal }}</h2>
+    <h2
+      class="fr__glassy"
+      :class="isOpen ? 'fr__glassy--open' : 'fr__glassy--closed'"
+      @click="toggleCard"
+    >
+      {{ label }}: {{ labeledExpensesTotal }}
+    </h2>
     <transition name="fade" appear>
       <div v-show="isOpen">
         <expense-card
