@@ -23,6 +23,13 @@
           />
         </li>
         <li>
+          <img
+            :src="EditIcon"
+            class="fr__button fr__button--expedite"
+            @click="toggleEdit()"
+          />
+        </li>
+        <li>
           <select v-model="selected" @change="selectLabel()">
             <option value=""></option>
             <option
@@ -45,6 +52,7 @@ import { defineComponent } from 'vue';
 import store from '@/store/index';
 
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
+import EditIcon from '@/assets/icons/edit_square.svg';
 
 export default defineComponent({
   name: 'TheExpenseCard',
@@ -52,6 +60,7 @@ export default defineComponent({
   setup() {
     return {
       CheckIcon,
+      EditIcon,
     };
   },
 
@@ -62,6 +71,7 @@ export default defineComponent({
   data() {
     return {
       selected: '',
+      editable: false,
     };
   },
 
@@ -95,6 +105,10 @@ export default defineComponent({
 
     removeAllTasks() {
       store.dispatch('removeAllTasksAction');
+    },
+
+    toggleEdit() {
+      alert('TBD');
     },
   },
 
