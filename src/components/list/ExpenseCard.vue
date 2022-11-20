@@ -139,7 +139,14 @@ export default defineComponent({
 
     stopEditing() {
       this.editable = false;
-      alert('To Be Implemented');
+
+      store.dispatch({
+        type: 'updateExpenseAction',
+        Expense: this.Expense,
+        Amount: this.Amount,
+        // Description: this.Description,
+        Id: this.expense.Id
+      });
     },
   },
 
