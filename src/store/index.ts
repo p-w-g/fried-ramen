@@ -76,12 +76,12 @@ export default createStore({
         payload.Label;
     },
 
-    remove(state, index) {
-      for (let i = 0; i < state.allExpensesList.length; i++) {
-        if (index.index === state.allExpensesList[i].Id) {
-          state.allExpensesList.splice(i, 1);
-        }
-      }
+    remove(state, payload) {
+      const expense_to_remove = state.allExpensesList.findIndex(
+        ({ Id }) => Id === payload.index
+      );
+
+      state.allExpensesList.splice(expense_to_remove, 1);
     },
 
     /**
