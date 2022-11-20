@@ -48,6 +48,16 @@ export default createStore({
       });
     },
 
+    updateExpense(state, payload: expenseModel) {
+      const targetExpense = state.allExpensesList.find(
+        ({ Id }) => Id === payload.Id
+      );
+
+      targetExpense.Amount = payload.Amount;
+      targetExpense.Description = payload.Description;
+      targetExpense.Expense = payload.Expense;
+    },
+
     addNewLabel(state, payload) {
       state.labels.push(payload.Label);
     },
@@ -98,6 +108,11 @@ export default createStore({
     addNewExpenseAction(context, payload) {
       context.commit('updateLatestID');
       context.commit('addNewExpense', payload);
+      context.commit('saveJson');
+    },
+
+    updateExpenseAction(context, payload) {
+      context.commit('updateExpense', payload);
       context.commit('saveJson');
     },
 
