@@ -36,11 +36,18 @@
             @click="remove(expense.Id)"
           />
         </li>
-        <li>
+        <li v-if="!editable">
           <img
             :src="EditIcon"
             class="fr__button fr__button--expedite"
             @click="startEditing()"
+          />
+        </li>
+        <li v-if="editable">
+          <img
+            :src="SaveIcon"
+            class="fr__button fr__button--expedite"
+            @click="stopEditing()"
           />
         </li>
         <li>
@@ -67,6 +74,7 @@ import store from '@/store/index';
 
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
 import EditIcon from '@/assets/icons/edit_square.svg';
+import SaveIcon from '@/assets/icons/save_as.svg';
 
 export default defineComponent({
   name: 'TheExpenseCard',
@@ -75,6 +83,7 @@ export default defineComponent({
     return {
       CheckIcon,
       EditIcon,
+      SaveIcon,
     };
   },
 
@@ -126,6 +135,11 @@ export default defineComponent({
 
     startEditing() {
       this.editable = true;
+    },
+
+    stopEditing() {
+      this.editable = false;
+      alert('To Be Implemented');
     },
   },
 
