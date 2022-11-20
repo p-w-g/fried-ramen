@@ -170,9 +170,9 @@ export default defineComponent({
 .fr {
   &__card {
     /* From https://css.glass */
-    background: rgba(220, 231, 218, 0.8);
+    background: rgba(210, 221, 239, 0.3);
     border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -194,6 +194,10 @@ export default defineComponent({
     > h4 {
       margin-top: 5px;
       margin-bottom: 5px;
+    }
+
+    > input {
+      margin: 5px;
     }
   }
 
