@@ -144,14 +144,17 @@ export default defineComponent({
         type: 'updateExpenseAction',
         Expense: this.Expense,
         Amount: this.Amount,
-        // Description: this.Description,
-        Id: this.expense.Id
+        Description: this.Description,
+        Id: this.expense.Id,
       });
     },
   },
 
   mounted() {
     this.selected = this.expense.Label;
+    this.Expense = this.expense.Expense;
+    this.Amount = this.expense.Amount;
+    this.Description = this.expense.Description;
   },
 });
 </script>
