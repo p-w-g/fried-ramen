@@ -1,8 +1,18 @@
 <template>
-  <div class="fr__card">
+  <div :class="!editable ? 'fr__card' : 'fr__card fr__card--edit-mode'">
     <div class="fr__card-header" v-if="editable">
-      <input :placeholder="expense.Expense" />
-      <input :placeholder="expense.Amount" />
+      <input
+        :placeholder="expense.Expense"
+        v-model="Expense"
+        type="text"
+        class="fr__input-box"
+      />
+      <input
+        :placeholder="expense.Amount"
+        v-model.number="Amount"
+        type="number"
+        class="fr__input-box"
+      />
     </div>
     <div class="fr__card-header" v-else>
       <h3>{{ expense.Expense }}</h3>
@@ -76,6 +86,9 @@ export default defineComponent({
     return {
       selected: '',
       editable: false,
+      Expense: '',
+      Amount: '',
+      Description: '',
     };
   },
 
@@ -134,6 +147,10 @@ export default defineComponent({
     border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 0 1rem;
     margin: 1rem;
+
+    &--edit-mode {
+      background: rgb(218, 225, 231);
+    }
 
     &-options {
       margin-top: 5px;
