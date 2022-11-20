@@ -25,9 +25,16 @@
           : 'fr__card-body fr__card-body--no-desc'
       "
     >
-      <p v-if="expense.Description">
+      <p v-if="expense.Description && !editable">
         {{ expense.Description }}
       </p>
+      <input
+        v-if="editable"
+        :placeholder="expense.Description"
+        v-model="Description"
+        type="text"
+        class="fr__input-box"
+      />
       <ul class="fr__card-options">
         <li>
           <img
