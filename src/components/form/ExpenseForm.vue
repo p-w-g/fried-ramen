@@ -49,7 +49,12 @@
         <label for="removal-menu">Delete empty category </label>
         <select id="removal-menu" v-model="selected" @change="removeLabel()">
           <option value="" disabled>Select to delete</option>
-          <option v-for="(label, index) in labels" :value="label" :key="index">
+          <option
+            v-for="(label, index) in labels"
+            :value="label"
+            :key="index"
+            :selected="false"
+          >
             {{ label }}
           </option>
         </select>
@@ -124,6 +129,8 @@ export default defineComponent({
         type: 'removeLabelAttemptAction',
         Label,
       });
+
+      this.selected = '';
     },
   },
 });
