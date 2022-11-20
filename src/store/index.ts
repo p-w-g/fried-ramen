@@ -49,13 +49,13 @@ export default createStore({
     },
 
     updateExpense(state, payload: expenseModel) {
-      const targetExpense = state.allExpensesList.find(
+      const target_expense = state.allExpensesList.find(
         ({ Id }) => Id === payload.Id
       );
 
-      targetExpense.Amount = payload.Amount;
-      targetExpense.Description = payload.Description;
-      targetExpense.Expense = payload.Expense;
+      target_expense.Amount = payload.Amount;
+      target_expense.Description = payload.Description;
+      target_expense.Expense = payload.Expense;
     },
 
     addNewLabel(state, payload) {
@@ -63,11 +63,11 @@ export default createStore({
     },
 
     updateLatestID(state) {
-      const filterOutIds = state.allExpensesList.map((el) => el.Id);
-      const highestId = Math.max(...filterOutIds);
+      const list_of_IDs = state.allExpensesList.map((el) => el.Id);
+      const highest_id = Math.max(...list_of_IDs);
 
-      highestId > state.latestID
-        ? (state.latestID = highestId)
+      highest_id > state.latestID
+        ? (state.latestID = highest_id)
         : state.latestID++;
     },
 
