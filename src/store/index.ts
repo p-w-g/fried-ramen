@@ -89,12 +89,16 @@ export default createStore({
      * doesnt find any object assigned to that label
      */
     deleteLabelIfEmpty(state, lbl) {
-      for (let i = 0; i < state.labels.length; i++) {
-        if (!state.allExpensesList.find(({ Label }) => lbl === Label)) {
-          if (lbl === state.labels[i]) {
-            state.labels.splice(i, 1);
-          }
-        }
+      const label_to_delete = state.labels.findIndex((Label) => {
+        lbl === Label;
+      });
+
+      const no_expenses_with_label = !state.allExpensesList.find(
+        ({ Label }) => lbl === Label
+      );
+
+      if (no_expenses_with_label) {
+        state.labels.splice(label_to_delete, 1);
       }
     },
 
