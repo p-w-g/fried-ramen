@@ -48,16 +48,26 @@ export default createStore({
       });
     },
 
+    updateExpense(state, payload: expenseModel) {
+      const target_expense = state.allExpensesList.find(
+        ({ Id }) => Id === payload.Id
+      );
+
+      target_expense.Amount = payload.Amount;
+      target_expense.Description = payload.Description;
+      target_expense.Expense = payload.Expense;
+    },
+
     addNewLabel(state, payload) {
       state.labels.push(payload.Label);
     },
 
     updateLatestID(state) {
-      const filterOutIds = state.allExpensesList.map((el) => el.Id);
-      const highestId = Math.max(...filterOutIds);
+      const list_of_IDs = state.allExpensesList.map((el) => el.Id);
+      const highest_id = Math.max(...list_of_IDs);
 
-      highestId > state.latestID
-        ? (state.latestID = highestId)
+      highest_id > state.latestID
+        ? (state.latestID = highest_id)
         : state.latestID++;
     },
 
@@ -66,12 +76,12 @@ export default createStore({
         payload.Label;
     },
 
-    remove(state, index) {
-      for (let i = 0; i < state.allExpensesList.length; i++) {
-        if (index.index === state.allExpensesList[i].Id) {
-          state.allExpensesList.splice(i, 1);
-        }
-      }
+    remove(state, payload) {
+      const expense_to_remove = state.allExpensesList.findIndex(
+        ({ Id }) => Id === payload.index
+      );
+
+      state.allExpensesList.splice(expense_to_remove, 1);
     },
 
     /**
@@ -79,12 +89,16 @@ export default createStore({
      * doesnt find any object assigned to that label
      */
     deleteLabelIfEmpty(state, lbl) {
-      for (let i = 0; i < state.labels.length; i++) {
-        if (!state.allExpensesList.find(({ Label }) => lbl === Label)) {
-          if (lbl === state.labels[i]) {
-            state.labels.splice(i, 1);
-          }
-        }
+      const label_to_delete = state.labels.findIndex((Label) => {
+        lbl === Label;
+      });
+
+      const no_expenses_with_label = !state.allExpensesList.find(
+        ({ Label }) => lbl === Label
+      );
+
+      if (no_expenses_with_label) {
+        state.labels.splice(label_to_delete, 1);
       }
     },
 
@@ -98,6 +112,11 @@ export default createStore({
     addNewExpenseAction(context, payload) {
       context.commit('updateLatestID');
       context.commit('addNewExpense', payload);
+      context.commit('saveJson');
+    },
+
+    updateExpenseAction(context, payload) {
+      context.commit('updateExpense', payload);
       context.commit('saveJson');
     },
 
