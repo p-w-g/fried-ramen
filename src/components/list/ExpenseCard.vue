@@ -40,7 +40,7 @@
           <img
             :src="EditIcon"
             class="fr__button fr__button--expedite"
-            @click="toggleEdit()"
+            @click="startEditing()"
           />
         </li>
         <li>
@@ -124,8 +124,8 @@ export default defineComponent({
       store.dispatch('removeAllTasksAction');
     },
 
-    toggleEdit() {
-      this.editable = !this.editable;
+    startEditing() {
+      this.editable = true;
     },
   },
 
