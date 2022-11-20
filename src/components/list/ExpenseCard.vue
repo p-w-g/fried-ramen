@@ -1,6 +1,10 @@
 <template>
   <div class="fr__card">
-    <div class="fr__card-header">
+    <div class="fr__card-header" v-if="editable">
+      <input :placeholder="expense.Expense" />
+      <input :placeholder="expense.Amount" />
+    </div>
+    <div class="fr__card-header" v-else>
       <h3>{{ expense.Expense }}</h3>
       <h4>{{ expense.Amount }}</h4>
     </div>
@@ -108,7 +112,7 @@ export default defineComponent({
     },
 
     toggleEdit() {
-      alert('TBD');
+      this.editable = !this.editable;
     },
   },
 
