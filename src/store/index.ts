@@ -6,6 +6,7 @@ export default createStore({
     latestID: 0,
     labels: [],
     allExpensesList: Array<expenseModel>(),
+    expense_lists: Array<Array<expenseModel>>(),
   },
 
   mutations: {
