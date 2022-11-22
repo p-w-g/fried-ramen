@@ -16,6 +16,10 @@ export default createStore({
       );
     },
 
+    loadAllLists(state) {
+      state.expense_lists = JSON.parse(localStorage.getItem('expense_lists')!);
+    },
+
     loadLabelJson(state) {
       state.labels = JSON.parse(localStorage.getItem('labels')!);
     },
@@ -24,6 +28,13 @@ export default createStore({
       localStorage.setItem(
         'allExpensesList',
         JSON.stringify(state.allExpensesList)
+      );
+    },
+
+    saveAllLists(state) {
+      localStorage.setItem(
+        'expense_lists',
+        JSON.stringify(state.expense_lists)
       );
     },
 
@@ -39,6 +50,14 @@ export default createStore({
       localStorage.setItem('labels', JSON.stringify(state.labels));
     },
 
+    saveAllDataToLocalStorage(state) {
+      localStorage.setItem(
+        'expense_lists',
+        JSON.stringify(state.expense_lists)
+      );
+      localStorage.setItem('labels', JSON.stringify(state.labels));
+    },
+
     addNewExpense(state, expense: expenseModel) {
       state.allExpensesList.push({
         Expense: expense.Expense,
@@ -49,8 +68,28 @@ export default createStore({
       });
     },
 
+    addNewExpenseToList(state, payload) {
+      state.expense_lists[payload.list].push({
+        Expense: payload.Expense,
+        Amount: payload.Amount,
+        Description: payload.Description,
+        Id: state.latestID,
+        isPostponed: false,
+      });
+    },
+
     updateExpense(state, payload: expenseModel) {
       const target_expense = state.allExpensesList.find(
+        ({ Id }) => Id === payload.Id
+      );
+
+      target_expense.Amount = payload.Amount;
+      target_expense.Description = payload.Description;
+      target_expense.Expense = payload.Expense;
+    },
+
+    updateExpenseInList(state, payload) {
+      const target_expense = state.expense_lists[payload.list].find(
         ({ Id }) => Id === payload.Id
       );
 
@@ -72,13 +111,41 @@ export default createStore({
         : state.latestID++;
     },
 
+    updateLatestIDForAllLists(state) {
+      /**
+       * parse all lists to check for highest ID
+       * save it to state - latestID
+       * Save latestId to json
+       * assign the ID for all of the lists, meaning the ID is individual and doesnt come up again.
+       */
+      // const list_of_IDs = state.allExpensesList.map((el) => el.Id);
+      // const highest_id = Math.max(...list_of_IDs);
+      // highest_id > state.latestID
+      //   ? (state.latestID = highest_id)
+      //   : state.latestID++;
+    },
+
     labelExpense(state, payload) {
       state.allExpensesList.find(({ Id }) => Id === payload.Id).Label =
         payload.Label;
     },
 
+    labelExpenseInList(state, payload) {
+      state.expense_lists[payload.list].find(
+        ({ Id }) => Id === payload.Id
+      ).Label = payload.Label;
+    },
+
     remove(state, payload) {
       const expense_to_remove = state.allExpensesList.findIndex(
+        ({ Id }) => Id === payload.index
+      );
+
+      state.allExpensesList.splice(expense_to_remove, 1);
+    },
+
+    removeInList(state, payload) {
+      const expense_to_remove = state.expense_lists[payload.list].findIndex(
         ({ Id }) => Id === payload.index
       );
 
@@ -105,6 +172,16 @@ export default createStore({
 
     deleteAll(state) {
       state.allExpensesList = [];
+      state.labels = [];
+    },
+
+    deleteThisList(state, payload) {
+      /**
+       * TODO: for now set it to empty array,
+       * when implementing full programmatically added lists, and removal of lists,
+       * the list from payload needs to be nuked.
+       */
+      state.expense_lists[payload.list] = [];
       state.labels = [];
     },
   },
