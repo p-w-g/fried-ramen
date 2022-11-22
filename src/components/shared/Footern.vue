@@ -17,10 +17,10 @@ export default {
 .fr-footer {
   display: flex;
   position: sticky;
+  top: 100vh;
   border-radius: 16px;
   background-color: white;
-  bottom: 0;
-  margin-top: 0.5em;
+  margin-top: 1em;
 
   > button {
     flex-grow: 1;
