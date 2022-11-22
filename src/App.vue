@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
+  <div class="content">
     <expense-list />
-    <footern />
   </div>
+  <footern />
 </template>
 
 <script lang="ts">
