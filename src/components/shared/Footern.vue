@@ -14,16 +14,17 @@ export default {
 </script>
 
 <style lang="scss">
-// .fr-footer {
-//   display: flex;
-//   position: sticky;
-//   bottom: 0px;
-//   border-radius: 16px;
-//   background-color: white;
+.fr-footer {
+  display: flex;
+  position: sticky;
+  border-radius: 16px;
+  background-color: white;
+  bottom: 0;
+  margin-top: 0.5em;
 
-//   > button {
-//     flex-grow: 1;
-//     margin: auto;
-//   }
-// }
+  > button {
+    flex-grow: 1;
+    margin: auto;
+  }
+}
 </style>
