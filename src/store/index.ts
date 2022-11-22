@@ -1,12 +1,14 @@
 import { createStore } from 'vuex';
 import { expenseModel } from '../models';
+import { labels_list, label_payload, expense_list } from '../interfaces';
 
 export default createStore({
   state: {
     latestID: 0,
     labels: [],
+    labels_list: {} as labels_list,
     allExpensesList: Array<expenseModel>(),
-    expense_lists: Array<Array<expenseModel>>(),
+    expense_lists: {} as expense_list,
   },
 
   mutations: {
@@ -22,6 +24,10 @@ export default createStore({
 
     loadLabelJson(state) {
       state.labels = JSON.parse(localStorage.getItem('labels')!);
+    },
+
+    loadAllLabels(state) {
+      state.labels = JSON.parse(localStorage.getItem('labels_list')!);
     },
 
     saveJson(state) {
@@ -42,6 +48,10 @@ export default createStore({
       localStorage.setItem('labels', JSON.stringify(state.labels));
     },
 
+    saveAllLabels(state) {
+      localStorage.setItem('labels_list', JSON.stringify(state.labels_list));
+    },
+
     saveAllJson(state) {
       localStorage.setItem(
         'allExpensesList',
@@ -55,7 +65,7 @@ export default createStore({
         'expense_lists',
         JSON.stringify(state.expense_lists)
       );
-      localStorage.setItem('labels', JSON.stringify(state.labels));
+      localStorage.setItem('labels_list', JSON.stringify(state.labels_list));
     },
 
     addNewExpense(state, expense: expenseModel) {
@@ -102,6 +112,10 @@ export default createStore({
       state.labels.push(payload.Label);
     },
 
+    addNewLabelForList(state, payload: label_payload) {
+      state.labels_list[payload.list].push(payload.Label);
+    },
+
     updateLatestID(state) {
       const list_of_IDs = state.allExpensesList.map((el) => el.Id);
       const highest_id = Math.max(...list_of_IDs);
@@ -130,7 +144,7 @@ export default createStore({
         payload.Label;
     },
 
-    labelExpenseInList(state, payload) {
+    labelExpenseInList(state, payload: label_payload) {
       state.expense_lists[payload.list].find(
         ({ Id }) => Id === payload.Id
       ).Label = payload.Label;
@@ -149,7 +163,7 @@ export default createStore({
         ({ Id }) => Id === payload.index
       );
 
-      state.allExpensesList.splice(expense_to_remove, 1);
+      state.expense_lists[payload.list].splice(expense_to_remove, 1);
     },
 
     /**
@@ -170,6 +184,22 @@ export default createStore({
       }
     },
 
+    deleteLabelForList(state, payload: label_payload) {
+      const label_to_delete = state.labels_list[payload.list].findIndex(
+        (Label) => {
+          payload.Label === Label;
+        }
+      );
+
+      const no_expenses_with_label = !state.expense_lists[payload.list].find(
+        ({ Label }) => payload.Label === Label
+      );
+
+      if (no_expenses_with_label) {
+        state.labels_list[payload.list].splice(label_to_delete, 1);
+      }
+    },
+
     deleteAll(state) {
       state.allExpensesList = [];
       state.labels = [];
@@ -182,7 +212,7 @@ export default createStore({
        * the list from payload needs to be nuked.
        */
       state.expense_lists[payload.list] = [];
-      state.labels = [];
+      state.labels_list[payload.list] = [];
     },
   },
 
