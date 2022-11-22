@@ -5,13 +5,16 @@ import { labels_list, label_payload, expense_list } from '../interfaces';
 export default createStore({
   state: {
     latestID: 0,
-    labels: [],
+    labels: [], // deprecated, awaiting removal
     labels_list: {} as labels_list,
-    allExpensesList: Array<expenseModel>(),
+    allExpensesList: Array<expenseModel>(), // deprecated, awaiting removal
     expense_lists: {} as expense_list,
   },
 
   mutations: {
+    /**
+     * deprecated and awaiting removal
+     */
     loadJson(state) {
       state.allExpensesList = JSON.parse(
         localStorage.getItem('allExpensesList')!
@@ -22,6 +25,9 @@ export default createStore({
       state.expense_lists = JSON.parse(localStorage.getItem('expense_lists')!);
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     loadLabelJson(state) {
       state.labels = JSON.parse(localStorage.getItem('labels')!);
     },
@@ -30,6 +36,9 @@ export default createStore({
       state.labels = JSON.parse(localStorage.getItem('labels_list')!);
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     saveJson(state) {
       localStorage.setItem(
         'allExpensesList',
@@ -44,6 +53,9 @@ export default createStore({
       );
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     saveLabelJson(state) {
       localStorage.setItem('labels', JSON.stringify(state.labels));
     },
@@ -52,6 +64,9 @@ export default createStore({
       localStorage.setItem('labels_list', JSON.stringify(state.labels_list));
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     saveAllJson(state) {
       localStorage.setItem(
         'allExpensesList',
@@ -68,6 +83,9 @@ export default createStore({
       localStorage.setItem('labels_list', JSON.stringify(state.labels_list));
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     addNewExpense(state, expense: expenseModel) {
       state.allExpensesList.push({
         Expense: expense.Expense,
@@ -88,6 +106,9 @@ export default createStore({
       });
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     updateExpense(state, payload: expenseModel) {
       const target_expense = state.allExpensesList.find(
         ({ Id }) => Id === payload.Id
@@ -108,6 +129,9 @@ export default createStore({
       target_expense.Expense = payload.Expense;
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     addNewLabel(state, payload) {
       state.labels.push(payload.Label);
     },
@@ -116,6 +140,9 @@ export default createStore({
       state.labels_list[payload.list].push(payload.Label);
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     updateLatestID(state) {
       const list_of_IDs = state.allExpensesList.map((el) => el.Id);
       const highest_id = Math.max(...list_of_IDs);
@@ -139,6 +166,9 @@ export default createStore({
       //   : state.latestID++;
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     labelExpense(state, payload) {
       state.allExpensesList.find(({ Id }) => Id === payload.Id).Label =
         payload.Label;
@@ -150,6 +180,9 @@ export default createStore({
       ).Label = payload.Label;
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     remove(state, payload) {
       const expense_to_remove = state.allExpensesList.findIndex(
         ({ Id }) => Id === payload.index
@@ -167,6 +200,7 @@ export default createStore({
     },
 
     /**
+     * deprecated and awaiting removal
      * Attempts to delete label only if
      * doesnt find any object assigned to that label
      */
@@ -200,6 +234,9 @@ export default createStore({
       }
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     deleteAll(state) {
       state.allExpensesList = [];
       state.labels = [];
@@ -217,27 +254,42 @@ export default createStore({
   },
 
   actions: {
+    /**
+     * deprecated and awaiting removal
+     */
     addNewExpenseAction(context, payload) {
       context.commit('updateLatestID');
       context.commit('addNewExpense', payload);
       context.commit('saveJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     updateExpenseAction(context, payload) {
       context.commit('updateExpense', payload);
       context.commit('saveJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     addNewLabelAction(context, payload) {
       context.commit('addNewLabel', payload);
       context.commit('saveLabelJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     labelThisExpenseAction(context, payload) {
       context.commit('labelExpense', payload);
       context.commit('saveJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     loadJsonAttemptAction(context) {
       if (localStorage.getItem('allExpensesList')) {
         context.commit('loadJson');
@@ -248,41 +300,65 @@ export default createStore({
       }
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     saveToLocalStorageAction(context) {
       context.commit('saveJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     saveLabelToLocalStorageAction(context) {
       context.commit('saveLabelJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     saveAllToLocalStorageAction(context) {
       context.commit('saveJson');
       context.commit('saveLabelJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     removeThisTaskAction(context, index) {
       context.commit('remove', index);
       context.commit('saveJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     removeAllTasksAction(context) {
       context.commit('deleteAll');
       context.commit('saveAllJson');
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     removeLabelAttemptAction(context, payload) {
       context.commit('deleteLabelIfEmpty', payload.Label);
       context.commit('saveLabelJson');
     },
   },
   getters: {
+    /**
+     * deprecated and awaiting removal
+     */
     filterUnassigned: (state) => {
       return state.allExpensesList != null
         ? state.allExpensesList.filter((expense) => !expense.Label)
         : [];
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     totalTotal: (state): number => {
       const amounts: Array<number> = state.allExpensesList.map(
         (e: expenseModel) => e.Amount
@@ -295,10 +371,16 @@ export default createStore({
       );
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     labels: (state): Array<string> => {
       return state.labels;
     },
 
+    /**
+     * deprecated and awaiting removal
+     */
     unassignedTotal: (state, getters) => {
       const amounts: Array<number> = getters.filterUnassigned.map(
         (e: expenseModel) => e.Amount
