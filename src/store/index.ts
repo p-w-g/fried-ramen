@@ -485,20 +485,5 @@ export default createStore({
     labelsForList: (state, list): string[] => {
       return state.labels_list[list];
     },
-
-    /**
-     * deprecated and awaiting removal
-     */
-    unassignedTotal: (state, getters) => {
-      const amounts: Array<number> = getters.filterUnassigned.map(
-        (e: expenseModel) => e.Amount
-      );
-
-      return amounts.reduce(
-        (accumulator: number, current: number) =>
-          Number(accumulator) + Number(current),
-        0
-      );
-    },
   },
 });
