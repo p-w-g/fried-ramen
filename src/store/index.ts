@@ -1,6 +1,11 @@
 import { createStore } from 'vuex';
 import { expenseModel } from '../models';
-import { labels_list, label_payload, expense_list } from '../interfaces';
+import {
+  labels_list,
+  label_payload,
+  expense_list,
+  expense_payload,
+} from '../interfaces';
 
 export default createStore({
   state: {
@@ -263,12 +268,23 @@ export default createStore({
       context.commit('saveJson');
     },
 
+    addNewExpenseToListAction(context, payload) {
+      context.commit('updateLatestIDForAllLists');
+      context.commit('addNewExpenseToList', payload);
+      context.commit('saveAllLists');
+    },
+
     /**
      * deprecated and awaiting removal
      */
     updateExpenseAction(context, payload) {
       context.commit('updateExpense', payload);
       context.commit('saveJson');
+    },
+
+    updateExpenseInListAction(context, payload) {
+      context.commit('updateExpenseInList', payload);
+      context.commit('saveAllLists');
     },
 
     /**
@@ -279,6 +295,11 @@ export default createStore({
       context.commit('saveLabelJson');
     },
 
+    addNewLabelForListAction(context, payload) {
+      context.commit('addNewLabelForList', payload);
+      context.commit('saveAllLabels');
+    },
+
     /**
      * deprecated and awaiting removal
      */
@@ -287,6 +308,10 @@ export default createStore({
       context.commit('saveJson');
     },
 
+    labelExpenseInListAction(context, payload) {
+      context.commit('labelExpenseInList', payload);
+      context.commit('saveAllLists');
+    },
     /**
      * deprecated and awaiting removal
      */
@@ -301,10 +326,28 @@ export default createStore({
     },
 
     /**
+     * Also do a migrate on load
+     */
+    attemptLoadAllDataAction(context) {
+      if (localStorage.getItem('expense_lists')) {
+        context.commit('loadAllLists');
+        context.commit('updateLatestIDForAllLists');
+      }
+
+      if (localStorage.getItem('labels_list')) {
+        context.commit('loadAllLabels');
+      }
+    },
+
+    /**
      * deprecated and awaiting removal
      */
     saveToLocalStorageAction(context) {
       context.commit('saveJson');
+    },
+
+    saveExpensesToLocalStoradeAction(context) {
+      context.commit('saveAllLists');
     },
 
     /**
@@ -312,6 +355,10 @@ export default createStore({
      */
     saveLabelToLocalStorageAction(context) {
       context.commit('saveLabelJson');
+    },
+
+    saveLabelsToLocalStorageAction(context) {
+      context.commit('saveAllLabels');
     },
 
     /**
@@ -322,12 +369,27 @@ export default createStore({
       context.commit('saveLabelJson');
     },
 
+    saveLabelsAndExpensesAction(context) {
+      context.commit('saveAllLists');
+      context.commit('saveAllLabels');
+    },
+
     /**
      * deprecated and awaiting removal
      */
     removeThisTaskAction(context, index) {
       context.commit('remove', index);
       context.commit('saveJson');
+    },
+
+    removeTaskFromListAction(context, payload: expense_payload) {
+      /**
+       * need List and ID,
+       * it is critical to verify
+       * the functionality isnt affected
+       */
+      context.commit('removeInList', payload);
+      context.commit('saveAllLists');
     },
 
     /**
@@ -338,6 +400,14 @@ export default createStore({
       context.commit('saveAllJson');
     },
 
+    removeAListAction(context, payload: expense_payload) {
+      /**
+       * needs a List key at the least
+       */
+      context.commit('deleteThisList', payload);
+      context.commit('saveAllLists');
+    },
+
     /**
      * deprecated and awaiting removal
      */
@@ -345,7 +415,13 @@ export default createStore({
       context.commit('deleteLabelIfEmpty', payload.Label);
       context.commit('saveLabelJson');
     },
+
+    removeLabelFromAListAttemptAction(context, payload: label_payload) {
+      context.commit('deleteLabelForList', payload);
+      context.commit('saveLabelJson');
+    },
   },
+
   getters: {
     /**
      * deprecated and awaiting removal
