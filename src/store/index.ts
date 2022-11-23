@@ -5,6 +5,7 @@ import {
   label_payload,
   expense_list,
   expense_payload,
+  expense_model,
 } from '../interfaces';
 
 export default createStore({
@@ -433,6 +434,15 @@ export default createStore({
     },
 
     /**
+     * verify that its possible to send second argument
+     */
+    filterUnassignedForList: (state, list) => {
+      return state.expense_lists[list] != null
+        ? state.expense_lists[list].filter((expense) => !expense.Label)
+        : [];
+    },
+
+    /**
      * deprecated and awaiting removal
      */
     totalTotal: (state): number => {
@@ -448,10 +458,32 @@ export default createStore({
     },
 
     /**
+     * verify that its possible to send second argument
+     */
+    totalForList: (state, list): number => {
+      const amounts: number[] = state.expense_lists[list].map(
+        (e: expense_model) => e.Amount
+      );
+
+      return amounts.reduce(
+        (accumulator: number, current: number) =>
+          Number(accumulator) + Number(current),
+        0
+      );
+    },
+
+    /**
      * deprecated and awaiting removal
      */
     labels: (state): Array<string> => {
       return state.labels;
+    },
+
+    /**
+     * verify that its possible to send second argument
+     */
+    labelsForList: (state, list): string[] => {
+      return state.labels_list[list];
     },
 
     /**
