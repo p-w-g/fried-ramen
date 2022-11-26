@@ -38,6 +38,7 @@
       <ul class="fr__card-options">
         <li>
           <img
+            v-if="!editable"
             :src="CheckIcon"
             class="fr__button fr__button--expedite"
             @click="remove(expense.Id)"
