@@ -435,6 +435,7 @@ export default createStore({
 
     /**
      * verify that its possible to send second argument
+     * https://vuex.vuejs.org/guide/getters.html#method-style-access
      */
     filterUnassignedForList: (state, list) => {
       return state.expense_lists[list] != null
@@ -459,6 +460,7 @@ export default createStore({
 
     /**
      * verify that its possible to send second argument
+     * https://vuex.vuejs.org/guide/getters.html#method-style-access
      */
     totalForList: (state, list): number => {
       const amounts: number[] = state.expense_lists[list].map(
@@ -481,6 +483,7 @@ export default createStore({
 
     /**
      * verify that its possible to send second argument
+     * https://vuex.vuejs.org/guide/getters.html#method-style-access
      */
     labelsForList: (state, list): string[] => {
       return state.labels_list[list];
