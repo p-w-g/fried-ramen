@@ -23,3 +23,9 @@ export interface expense_model {
 export interface expense_payload extends expense_model {
   list: string;
 }
+
+export interface state_model {
+  latestID: number;
+  labels_list: labels_list;
+  expense_lists: expense_list;
+}
