@@ -6,6 +6,7 @@ export interface label_payload {
   list: string;
   Label: string;
   Id?: number;
+  index?: number; // when passing index from v-for
 }
 export interface expense_list {
   [key: string]: expense_model[];
