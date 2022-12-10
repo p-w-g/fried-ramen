@@ -1,9 +1,4 @@
-import {
-  expense_model,
-  expense_payload,
-  label_payload,
-  state_model,
-} from '@/interfaces';
+import { expense_payload, label_payload, state_model } from '@/interfaces';
 import { expenseModel } from '@/models';
 
 /**
