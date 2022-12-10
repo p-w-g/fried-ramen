@@ -29,4 +29,5 @@ export interface state_model {
   latestID: number;
   labels_list: labels_list;
   expense_lists: expense_list;
+  shown_list: number;
 }

@@ -65,3 +65,5 @@ export const labels = (state: any): Array<string> => {
 export const labelsForList = (state: state_model, list: string): string[] => {
   return state.labels_list[list];
 };
+
+export const shownList = (state: state_model) => state.shown_list;

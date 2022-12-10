@@ -7,6 +7,7 @@ import * as getters from './getters';
 
 const state = {
   latestID: 0,
+  shown_list: 1,
   labels: [] as string[], // deprecated, awaiting removal
   labels_list: {} as labels_list,
   allExpensesList: Array<expenseModel>(), // deprecated, awaiting removal
