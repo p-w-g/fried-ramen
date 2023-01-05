@@ -197,10 +197,10 @@ export const removeInList = (state: state_model, payload: label_payload) => {
  * Attempts to delete label only if
  * doesnt find any object assigned to that label
  */
-export const deleteLabelIfEmpty = (state: any, lbl: any) => {
-  const label_to_delete = state.labels.findIndex((Label: string) => {
-    lbl === Label;
-  });
+export const deleteLabelIfEmpty = (state: any, lbl: string) => {
+  const label_to_delete = state.labels.findIndex(
+    (Label: string) => lbl === Label
+  );
 
   const no_expenses_with_label = !state.allExpensesList.find(
     ({ Label }: { Label: string }) => lbl === Label
@@ -215,9 +215,9 @@ export const deleteLabelForList = (
   state: state_model,
   payload: label_payload
 ) => {
-  const label_to_delete = state.labels_list[payload.list].findIndex((Label) => {
-    payload.Label === Label;
-  });
+  const label_to_delete = state.labels_list[payload.list].findIndex(
+    (Label) => payload.Label === Label
+  );
 
   const no_expenses_with_label = !state.expense_lists[payload.list].find(
     ({ Label }) => payload.Label === Label
