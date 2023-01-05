@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('Correct label removal', () => {
   it('adds and removes empty label', () => {
     cy.visit('http://localhost:8080');
