@@ -8,7 +8,9 @@
     "lint:sass": "sass-lint src/**/*.scss -v -q",
     "lint:vue": "vue-cli-service lint --no-exit",
     "qc": "npm run lint:sass && npm run lint:vue",
-    "test": "vue-cli-service test:unit"
+    "test": "vue-cli-service test:unit",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "core-js": "^3.8.3",
