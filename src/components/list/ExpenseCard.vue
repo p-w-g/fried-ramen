@@ -119,6 +119,8 @@ export default defineComponent({
     selectLabel() {
       const Label = this.selected;
       const Id = this.expense.Id;
+
+      this.selected = '';
       store.dispatch({
         type: 'labelThisExpenseAction',
         Id,
