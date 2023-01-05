@@ -2,19 +2,19 @@
   <div class="content">
     <expense-list />
   </div>
-  <footern />
+  <!-- <footern /> -->
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ExpenseList from './views/List.vue';
-import Footern from './components/shared/Footern.vue';
+// import Footern from './components/shared/Footern.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
     ExpenseList,
-    Footern,
+    // Footern,
   },
 });
 </script>
