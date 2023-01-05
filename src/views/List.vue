@@ -23,11 +23,11 @@ import ExpensesList from '@/components/list/Expenses.vue';
 import Accordion from '@/components/shared/Accordion.vue';
 
 const themNomNoms = [
-  '🌮 Tuesday.',
-  '☕️ run.',
-  '🍔 it is.',
-  '🍕 Time',
-  '🍣 just like that',
+  '🌮 Tuesday!',
+  '☕️ run...',
+  '🍔🍔🍔 it is.',
+  '🍕 all the way',
+  '🍣 happens',
 ];
 
 export default defineComponent({

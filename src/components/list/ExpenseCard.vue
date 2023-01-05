@@ -38,6 +38,7 @@
       <ul class="fr__card-options">
         <li>
           <img
+            v-if="!editable"
             :src="CheckIcon"
             class="fr__button fr__button--expedite"
             @click="remove(expense.Id)"
@@ -118,6 +119,8 @@ export default defineComponent({
     selectLabel() {
       const Label = this.selected;
       const Id = this.expense.Id;
+
+      this.selected = '';
       store.dispatch({
         type: 'labelThisExpenseAction',
         Id,
