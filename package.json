@@ -10,7 +10,8 @@
     "qc": "npm run lint:sass && npm run lint:vue",
     "test": "vue-cli-service test:unit",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "tauri": "tauri"
   },
   "dependencies": {
     "core-js": "^3.8.3",
@@ -19,6 +20,7 @@
     "vuex": "^4.0.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.2.3",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
@@ -34,8 +36,8 @@
     "cypress": "^12.3.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.0.3",
     "prettier": "^2.4.1",
     "sass": "^1.32.7",
