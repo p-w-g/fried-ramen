@@ -192,6 +192,41 @@ export function app(page: Page) {
 
     categoryHeading,
 
+    /**
+     * From now on every IndexedDB write fails, as when storage is full.
+     * Waits for the start-up write (last opened budget) first, so its
+     * failure cannot be mistaken for the one under test.
+     */
+    breakStorageWrites: async () => {
+      await page.waitForFunction(
+        () =>
+          new Promise<boolean>((resolve) => {
+            const opening = indexedDB.open('fried-ramen');
+            opening.onsuccess = () => {
+              const database = opening.result;
+              const reading = database
+                .transaction('meta')
+                .objectStore('meta')
+                .get('lastBudgetId');
+              reading.onsuccess = () => {
+                database.close();
+                resolve(reading.result !== undefined);
+              };
+            };
+          }),
+      );
+      await page.evaluate(() => {
+        const fail = () => {
+          throw new DOMException('The disk is full', 'QuotaExceededError');
+        };
+        IDBObjectStore.prototype.add = fail;
+        IDBObjectStore.prototype.put = fail;
+        IDBCursor.prototype.update = fail;
+      });
+    },
+
+    errorAlert: () => page.getByRole('alert').filter({ hasText: 'went wrong' }),
+
     selectedText: () => page.evaluate(() => getSelection()?.toString() ?? ''),
 
     async longPress(expense: string) {

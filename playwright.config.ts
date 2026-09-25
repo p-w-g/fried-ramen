@@ -27,8 +27,10 @@ export default defineConfig({
       },
     },
     {
-      name: 'offline',
-      testMatch: /offline\.spec\.ts/,
+      // The production build: service worker on, and Vue's error handling
+      // as shipped (dev builds rethrow errors that prod only logs).
+      name: 'production',
+      testMatch: /(offline|errors)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
         baseURL: `http://localhost:${previewPort}`,

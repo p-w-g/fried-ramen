@@ -23,7 +23,9 @@ function dropZoneAt(x: number, y: number): string | null | undefined {
 const startsOnControl = (event: PointerEvent) =>
   (event.target as Element).closest('input, select, button, img, a') !== null;
 
-export function useDragToCategory(onDrop: (category: string | null) => void) {
+export function useDragToCategory(
+  onDrop: (category: string | null) => Promise<unknown>,
+) {
   const isDragging = ref(false);
   const offset = reactive({ x: 0, y: 0 });
   let start = { x: 0, y: 0, scrollY: 0 };
@@ -75,7 +77,8 @@ export function useDragToCategory(onDrop: (category: string | null) => void) {
   function onPointerUp(event: PointerEvent) {
     if (isDragging.value) {
       const category = dropZoneAt(event.clientX, event.clientY);
-      if (category !== undefined) onDrop(category);
+      // Runs outside Vue's handlers; a failure surfaces via unhandledrejection.
+      if (category !== undefined) void onDrop(category);
     }
     stop();
   }

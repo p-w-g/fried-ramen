@@ -33,17 +33,17 @@ function startEditing() {
   };
 }
 
-function saveEdit() {
+async function saveEdit() {
   if (!draft.value) return;
   const amount = parseAmount(draft.value.amount);
   if (amount === null) return; // stay in edit mode until the amount reads
-  budget.updateExpense(expense.id, { ...draft.value, amount });
+  await budget.updateExpense(expense.id, { ...draft.value, amount });
   draft.value = null;
 }
 
-function selectCategory(event: Event) {
+async function selectCategory(event: Event) {
   const category = (event.target as HTMLSelectElement).value;
-  budget.assignCategory(expense.id, category || null);
+  await budget.assignCategory(expense.id, category || null);
 }
 
 const drag = useDragToCategory((category) =>

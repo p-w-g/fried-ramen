@@ -22,7 +22,7 @@ const budget = useBudgetStore();
 watch(
   () => route.query.budget,
   (slug) => {
-    if (typeof slug === 'string') budget.open(slug);
+    if (typeof slug === 'string') void budget.open(slug);
   },
   { immediate: true },
 );

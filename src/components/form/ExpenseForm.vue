@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 import { AMOUNT_PATTERN, parseAmount } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 
@@ -10,27 +10,42 @@ const amount = ref('');
 const description = ref('');
 const category = ref('');
 
-function saveExpense() {
-  const parsed = parseAmount(amount.value);
-  if (parsed === null) return; // the pattern attribute already told them
-  budget.addExpense({
+/**
+ * Clears a field once its save landed, so a failure keeps what was typed,
+ * and only if it still holds what was sent, so a next entry typed while
+ * the save was in flight survives.
+ */
+function clearIfUnchanged(field: Ref<string>, sent: string) {
+  if (field.value === sent) field.value = '';
+}
+
+async function saveExpense() {
+  const sent = {
     name: name.value,
-    amount: parsed,
+    amount: amount.value,
     description: description.value,
+  };
+  const parsed = parseAmount(sent.amount);
+  if (parsed === null) return; // the pattern attribute already told them
+  await budget.addExpense({
+    name: sent.name,
+    amount: parsed,
+    description: sent.description,
   });
-  name.value = '';
-  amount.value = '';
-  description.value = '';
+  clearIfUnchanged(name, sent.name);
+  clearIfUnchanged(amount, sent.amount);
+  clearIfUnchanged(description, sent.description);
 }
 
-function saveCategory() {
-  budget.addCategory(category.value);
-  category.value = '';
+async function saveCategory() {
+  const sent = category.value;
+  await budget.addCategory(sent);
+  clearIfUnchanged(category, sent);
 }
 
-function deleteCategory(event: Event) {
+async function deleteCategory(event: Event) {
   const select = event.target as HTMLSelectElement;
-  budget.deleteCategoryIfEmpty(select.value);
+  await budget.deleteCategoryIfEmpty(select.value);
   select.value = '';
 }
 </script>

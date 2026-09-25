@@ -8,10 +8,10 @@ import FlameIcon from '@/assets/icons/whatshot-24px.svg';
 
 const budget = useBudgetStore();
 
-function clearBudget() {
+async function clearBudget() {
   const name = budget.budget?.name ?? 'this budget';
   if (confirm(`Clear every expense and category in “${name}”?`)) {
-    budget.clearBudget();
+    await budget.clearBudget();
   }
 }
 </script>
