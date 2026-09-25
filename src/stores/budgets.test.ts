@@ -93,12 +93,12 @@ describe('budgets', () => {
     expect(await db.expenses.where({ budgetId: debt.id }).count()).toBe(1);
   });
 
-  it('never deletes the last budget', async () => {
+  it('can delete every budget', async () => {
     const budgets = useBudgetsStore();
     const only = await budgets.create('Only');
 
     await budgets.remove(only.id);
 
-    expect(await db.budgets.count()).toBe(1);
+    expect(await db.budgets.count()).toBe(0);
   });
 });

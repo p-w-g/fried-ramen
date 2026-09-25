@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { db } from '@/db';
-import { ensureFirstBudget } from './legacyImport';
+import { runFirstStart } from './firstStart';
 
 const seedLegacy = (expenses: unknown, labels: unknown) => {
   localStorage.setItem('allExpensesList', JSON.stringify(expenses));
@@ -9,7 +9,7 @@ const seedLegacy = (expenses: unknown, labels: unknown) => {
 
 describe('first start', () => {
   it('creates an empty "Current" budget when there is no legacy data', async () => {
-    await ensureFirstBudget();
+    await runFirstStart();
 
     expect(await db.budgets.toArray()).toMatchObject([
       { name: 'Current', slug: 'current' },
@@ -33,7 +33,7 @@ describe('first start', () => {
       ['food', 'travel'],
     );
 
-    await ensureFirstBudget();
+    await runFirstStart();
 
     expect(await db.expenses.toArray()).toMatchObject([
       {
@@ -64,7 +64,7 @@ describe('first start', () => {
       ['food'],
     );
 
-    await ensureFirstBudget();
+    await runFirstStart();
 
     expect((await db.categories.toArray()).map((c) => c.name)).toEqual([
       'food',
@@ -78,8 +78,8 @@ describe('first start', () => {
       [],
     );
 
-    await Promise.all([ensureFirstBudget(), ensureFirstBudget()]);
-    await ensureFirstBudget();
+    await Promise.all([runFirstStart(), runFirstStart()]);
+    await runFirstStart();
 
     expect(await db.budgets.count()).toBe(1);
     expect(await db.expenses.count()).toBe(1);
@@ -91,7 +91,7 @@ describe('first start', () => {
       [],
     );
 
-    await ensureFirstBudget();
+    await runFirstStart();
 
     expect(localStorage.getItem('allExpensesList')).toContain('Coffee');
   });
@@ -100,9 +100,39 @@ describe('first start', () => {
     localStorage.setItem('allExpensesList', '{not json');
     localStorage.setItem('labels', 'null');
 
-    await ensureFirstBudget();
+    await runFirstStart();
 
     expect(await db.budgets.count()).toBe(1);
+    expect(await db.expenses.count()).toBe(0);
+  });
+
+  it('never runs again, so deleting every budget gives a clean slate', async () => {
+    seedLegacy(
+      [{ Expense: 'Coffee', Amount: 5, Id: 1, isPostponed: false }],
+      [],
+    );
+    await runFirstStart();
+
+    await db.budgets.clear();
+    await db.expenses.clear();
+    await runFirstStart();
+
+    expect(await db.budgets.count()).toBe(0);
+    expect(await db.expenses.count()).toBe(0);
+  });
+
+  it('leaves installs from before the flag as they are', async () => {
+    await db.budgets.add({ name: 'Japan', slug: 'japan' });
+    seedLegacy(
+      [{ Expense: 'Coffee', Amount: 5, Id: 1, isPostponed: false }],
+      [],
+    );
+
+    await runFirstStart();
+    await db.budgets.clear();
+    await runFirstStart();
+
+    expect(await db.budgets.count()).toBe(0);
     expect(await db.expenses.count()).toBe(0);
   });
 });

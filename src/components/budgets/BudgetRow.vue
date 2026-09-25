@@ -3,10 +3,7 @@ import { ref } from 'vue';
 import type { Budget } from '@/domain';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
 
-const { budget, isOnlyBudget } = defineProps<{
-  budget: Budget;
-  isOnlyBudget: boolean;
-}>();
+const { budget } = defineProps<{ budget: Budget }>();
 
 const budgets = useBudgetsStore();
 
@@ -57,14 +54,7 @@ async function remove() {
         Open
       </RouterLink>
       <button type="button" @click="draftName = budget.name">Rename</button>
-      <button
-        type="button"
-        :disabled="isOnlyBudget"
-        :title="isOnlyBudget ? 'The last budget cannot be deleted' : undefined"
-        @click="remove"
-      >
-        Delete
-      </button>
+      <button type="button" @click="remove">Delete</button>
     </template>
   </div>
 </template>

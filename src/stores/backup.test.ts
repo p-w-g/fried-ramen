@@ -43,6 +43,20 @@ describe('backup', () => {
     expect(await snapshot()).toEqual(before);
   });
 
+  it('restores an export taken with no budgets at all', async () => {
+    const backup = useBackupStore();
+    const empty = await backup.exportAll();
+    await seed();
+
+    await backup.importAll(empty);
+
+    expect(await snapshot()).toEqual({
+      budgets: [],
+      categories: [],
+      expenses: [],
+    });
+  });
+
   it('remembers when the last export happened', async () => {
     await seed();
     const backup = useBackupStore();
@@ -83,8 +97,8 @@ describe('backup', () => {
       'Backup version 2 is not supported.',
     ],
     [
-      'no budgets',
-      '{"app":"fried-ramen","version":1,"budgets":[],"categories":[],"expenses":[]}',
+      'budgets that are not a list',
+      '{"app":"fried-ramen","version":1,"budgets":{},"categories":[],"expenses":[]}',
       'This backup is damaged.',
     ],
     [

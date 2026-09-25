@@ -75,18 +75,24 @@ test('an unknown budget in the URL stays put and offers the way back', async ({
   ).toBeVisible();
 });
 
-test('deleting a budget removes it; the last one cannot be deleted', async ({
+test('deleting every budget leaves a clean slate to start from', async ({
   page,
 }) => {
   const fr = app(page);
+  await fr.addExpense('Coffee', 5);
   await fr.createBudget('Japan');
 
   await fr.deleteBudget('Japan');
-
   await expect(fr.budgetRow('Japan')).toHaveCount(0);
-  await expect(
-    fr.budgetRow('Current').getByRole('button', { name: 'Delete' }),
-  ).toBeDisabled();
+  await fr.deleteBudget('Current');
+
+  await expect(page.getByText('No budgets yet.')).toBeVisible();
+  await expect(fr.openBudgetTab()).toHaveText('Budgets');
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/budgets$/);
+
+  await fr.createBudget('Fresh start');
+  await fr.expectTotal(0);
 });
 
 test('reopening the app lands on the budget used last', async ({ page }) => {

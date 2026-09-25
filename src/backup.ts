@@ -95,7 +95,6 @@ export function parseBackup(text: string): Backup {
   const { budgets, categories, expenses } = data;
   const valid =
     Array.isArray(budgets) &&
-    budgets.length > 0 &&
     budgets.every(isBudget) &&
     Array.isArray(categories) &&
     categories.every(isCategory) &&

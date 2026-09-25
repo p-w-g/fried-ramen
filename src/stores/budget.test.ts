@@ -3,6 +3,7 @@ import type { Collection } from 'dexie';
 import { db } from '@/db';
 import type { Budget } from '@/domain';
 import { useBudgetStore } from './budget';
+import { runFirstStart } from './firstStart';
 
 const draft = (name: string, amount: number) => ({
   name,
@@ -11,6 +12,7 @@ const draft = (name: string, amount: number) => ({
 });
 
 async function openBudget() {
+  await runFirstStart();
   const budget = useBudgetStore();
   await budget.open('current');
   await vi.waitFor(() => expect(budget.status).toBe('open'));
@@ -146,12 +148,21 @@ describe('opening budgets by slug', () => {
   });
 
   it('falls back to the first budget when the last one was deleted', async () => {
+    await runFirstStart();
     const budget = useBudgetStore();
     const japanId = await db.budgets.add({ name: 'Japan', slug: 'japan' });
     await budget.open('japan');
     await db.budgets.delete(japanId);
 
     expect(await budget.defaultSlug()).toBe('current');
+  });
+
+  it('has no default when every budget was deleted', async () => {
+    const budget = await openBudget();
+
+    await db.budgets.clear();
+
+    expect(await budget.defaultSlug()).toBeNull();
   });
 
   it('turns "missing" when the open budget gets deleted elsewhere', async () => {

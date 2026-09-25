@@ -49,11 +49,13 @@ async function create() {
     </div>
 
     <div class="fr__content-column">
+      <p v-if="budgets.isLoaded && budgets.budgets.length === 0">
+        No budgets yet. Name one above to start.
+      </p>
       <BudgetRow
         v-for="budget in budgets.budgets"
         :key="budget.id"
         :budget="budget"
-        :is-only-budget="budgets.budgets.length === 1"
       />
       <BackupPanel />
     </div>

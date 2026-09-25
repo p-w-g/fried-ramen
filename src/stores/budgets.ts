@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
-import { shallowRef } from 'vue';
+import { ref, shallowRef } from 'vue';
 import { db } from '@/db';
 import { toSlug, type Budget } from '@/domain';
 
@@ -24,11 +24,15 @@ async function checkName(name: string, renamingId?: number) {
 
 export const useBudgetsStore = defineStore('budgets', () => {
   const budgets = shallowRef<Budget[]>([]);
+  const isLoaded = ref(false);
   let subscription: Subscription | undefined;
 
   function watchAll() {
     subscription ??= liveQuery(() => db.budgets.toArray()).subscribe(
-      (stored) => (budgets.value = stored),
+      (stored) => {
+        budgets.value = stored;
+        isLoaded.value = true;
+      },
     );
   }
 
@@ -44,14 +48,12 @@ export const useBudgetsStore = defineStore('budgets', () => {
       await db.budgets.update(id, await checkName(name, id));
     });
 
-  /** The last budget stays, so the app always has somewhere to open. */
   const remove = (id: number) =>
     db.transaction('rw', db.budgets, db.categories, db.expenses, async () => {
-      if ((await db.budgets.count()) <= 1) return;
       await db.expenses.where({ budgetId: id }).delete();
       await db.categories.where({ budgetId: id }).delete();
       await db.budgets.delete(id);
     });
 
-  return { budgets, watchAll, create, rename, remove };
+  return { budgets, isLoaded, watchAll, create, rename, remove };
 });

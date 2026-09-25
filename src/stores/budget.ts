@@ -9,7 +9,6 @@ import {
   type Expense,
   type ExpenseDraft,
 } from '@/domain';
-import { ensureFirstBudget } from './legacyImport';
 
 export const useBudgetStore = defineStore('budget', () => {
   const budget = shallowRef<Budget | null>(null);
@@ -31,19 +30,16 @@ export const useBudgetStore = defineStore('budget', () => {
     return budget.value.id;
   }
 
-  /** The budget to show when the URL does not name one. */
+  /** The budget to show when the URL names none; null when none exist. */
   async function defaultSlug() {
-    await ensureFirstBudget();
     const last = await db.meta.get('lastBudgetId');
     const lastOpened = last && (await db.budgets.get(last.value));
     const fallback = lastOpened || (await db.budgets.orderBy('id').first());
-    if (!fallback) throw new Error('ensureFirstBudget left no budget behind');
-    return fallback.slug;
+    return fallback?.slug ?? null;
   }
 
   async function open(slug: string) {
     requestedSlug = slug;
-    await ensureFirstBudget();
     const found = await db.budgets.where({ slug }).first();
     if (slug !== requestedSlug) return; // a newer open() took over
 
