@@ -9,6 +9,8 @@ type LegacyExpense = {
   Label?: string;
 };
 
+const LEGACY_KEYS = { expenses: 'allExpensesList', categories: 'labels' };
+
 function readJson<T>(key: string): T | null {
   try {
     return JSON.parse(localStorage.getItem(key) ?? 'null');
@@ -22,10 +24,10 @@ function readJson<T>(key: string): T | null {
  * legacy localStorage keys, if any. Never again afterwards: someone who
  * deletes every budget wants a clean slate, not their old data back.
  * Runs inside one transaction so two tabs opening at once cannot both import.
- * The legacy keys are left in place as a fallback.
+ * The legacy keys are removed only once that transaction has committed.
  */
-export const runFirstStart = () =>
-  db.transaction(
+export async function runFirstStart() {
+  await db.transaction(
     'rw',
     [db.budgets, db.categories, db.expenses, db.meta],
     async () => {
@@ -38,8 +40,9 @@ export const runFirstStart = () =>
         name: 'Current',
         slug: 'current',
       });
-      const legacyExpenses = readJson<LegacyExpense[]>('allExpensesList') ?? [];
-      const legacyCategories = readJson<string[]>('labels') ?? [];
+      const legacyExpenses =
+        readJson<LegacyExpense[]>(LEGACY_KEYS.expenses) ?? [];
+      const legacyCategories = readJson<string[]>(LEGACY_KEYS.categories) ?? [];
       // Legacy category deletion could remove the wrong entry, orphaning
       // expenses that still point at it; recreate those so nothing hides.
       const usedCategories = legacyExpenses.map((legacy) => legacy.Label ?? '');
@@ -60,3 +63,6 @@ export const runFirstStart = () =>
       );
     },
   );
+  localStorage.removeItem(LEGACY_KEYS.expenses);
+  localStorage.removeItem(LEGACY_KEYS.categories);
+}

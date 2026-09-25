@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { db } from '@/db';
 import { runFirstStart } from './firstStart';
 
@@ -85,7 +85,7 @@ describe('first start', () => {
     expect(await db.expenses.count()).toBe(1);
   });
 
-  it('leaves the legacy keys in place as a fallback', async () => {
+  it('removes the legacy keys once they are imported', async () => {
     seedLegacy(
       [{ Expense: 'Coffee', Amount: 5, Id: 1, isPostponed: false }],
       [],
@@ -93,7 +93,26 @@ describe('first start', () => {
 
     await runFirstStart();
 
+    expect(localStorage.getItem('allExpensesList')).toBeNull();
+    expect(localStorage.getItem('labels')).toBeNull();
+  });
+
+  it('keeps the legacy keys when the import fails, to try again', async () => {
+    seedLegacy(
+      [{ Expense: 'Coffee', Amount: 5, Id: 1, isPostponed: false }],
+      [],
+    );
+    const failingWrite = vi
+      .spyOn(db.expenses, 'bulkAdd')
+      .mockRejectedValueOnce(new Error('disk full'));
+
+    await expect(runFirstStart()).rejects.toThrow('disk full');
+    failingWrite.mockRestore();
+
     expect(localStorage.getItem('allExpensesList')).toContain('Coffee');
+    expect(await db.budgets.count()).toBe(0);
+    await runFirstStart();
+    expect(await db.expenses.count()).toBe(1);
   });
 
   it('starts empty instead of crashing on corrupt or null legacy data', async () => {
