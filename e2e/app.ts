@@ -13,6 +13,18 @@ export function app(page: Page) {
   const startEditing = (name: string) =>
     card(name).locator('li').nth(1).locator('img').click();
 
+  const nav = page.getByRole('navigation');
+
+  const goToBudgets = async () => {
+    await nav.getByRole('link', { name: 'Budgets', exact: true }).click();
+    await expect(page).toHaveURL(/\/budgets$/);
+  };
+
+  const budgetRow = (name: string) =>
+    page.locator('.fr__budget').filter({
+      has: page.locator('h3', { hasText: new RegExp(`^${name}$`) }),
+    });
+
   const openForm = async () => {
     if (!(await page.locator('#expenses-form').isVisible())) {
       await page.locator('input.accordion').click();
@@ -88,16 +100,49 @@ export function app(page: Page) {
       await editing.locator('li').nth(1).locator('img').click();
     },
 
+    goToBudgets,
+
+    budgetRow,
+
+    /** The navbar tab naming the budget that is open. */
+    openBudgetTab: () => nav.getByRole('link').first(),
+
+    async createBudget(name: string) {
+      await goToBudgets();
+      await page.fill('#budget-name', name);
+      await page.getByRole('button', { name: 'Create budget' }).click();
+    },
+
+    async openBudget(name: string) {
+      await goToBudgets();
+      await page.getByRole('link', { name: `Open ${name}` }).click();
+    },
+
+    async renameBudget(name: string, newName: string) {
+      await goToBudgets();
+      await budgetRow(name).getByRole('button', { name: 'Rename' }).click();
+      await page.getByLabel(`New name for ${name}`).fill(newName);
+      await page.getByRole('button', { name: 'Save name' }).click();
+    },
+
+    async deleteBudget(name: string) {
+      await goToBudgets();
+      page.once('dialog', (dialog) => dialog.accept());
+      await budgetRow(name).getByRole('button', { name: 'Delete' }).click();
+    },
+
+    problem: () => page.getByRole('alert'),
+
     /** Returns the path of the downloaded backup file. */
     async exportBackup() {
-      await openForm();
+      await goToBudgets();
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: 'Export backup' }).click();
       return (await download).path();
     },
 
     async importBackup(file: string | { name: string; buffer: Buffer }) {
-      await openForm();
+      await goToBudgets();
       page.once('dialog', (dialog) => dialog.accept());
       const files =
         typeof file === 'string'
@@ -106,11 +151,10 @@ export function app(page: Page) {
       await page.setInputFiles('input[type=file]', files);
     },
 
-    backupProblem: () => page.getByRole('alert'),
-
     lastBackup: () => page.getByText(/^Last backup:/),
 
     async clearEverything() {
+      page.once('dialog', (dialog) => dialog.accept());
       await page.locator('.fr__button--advance').click();
     },
 

@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { Collection } from 'dexie';
 import { db } from '@/db';
+import type { Budget } from '@/domain';
 import { useBudgetStore } from './budget';
 
 const draft = (name: string, amount: number) => ({
@@ -10,9 +12,33 @@ const draft = (name: string, amount: number) => ({
 
 async function openBudget() {
   const budget = useBudgetStore();
-  await budget.open();
-  await vi.waitFor(() => expect(budget.ready).toBe(true));
+  await budget.open('current');
+  await vi.waitFor(() => expect(budget.status).toBe('open'));
   return budget;
+}
+
+/** Makes the next slug lookup resolve after any lookup that follows it. */
+function slowDownFirstSlugLookup() {
+  const realWhere = db.budgets.where.bind(db.budgets) as (
+    query: object | string,
+  ) => Collection<Budget>;
+  let isFirstLookup = true;
+  const slowWhere = (query: object | string) => {
+    const result = realWhere(query);
+    // Dexie resolves where({ slug }) through where('slug'); only slow the outer one.
+    if (typeof query === 'object' && isFirstLookup) {
+      isFirstLookup = false;
+      const realFirst = result.first.bind(result);
+      result.first = (() =>
+        new Promise((resolve) => setTimeout(resolve, 30)).then(
+          realFirst,
+        )) as typeof result.first;
+    }
+    return result;
+  };
+  return vi
+    .spyOn(db.budgets, 'where')
+    .mockImplementation(slowWhere as typeof db.budgets.where);
 }
 
 const names = (expenses: { name: string }[]) => expenses.map((e) => e.name);
@@ -97,5 +123,53 @@ describe('categories', () => {
     await budget.clearBudget();
 
     expect(names(await db.expenses.toArray())).toEqual(['ramen']);
+  });
+});
+
+describe('opening budgets by slug', () => {
+  it('shows "missing" for a slug no budget has', async () => {
+    const budget = useBudgetStore();
+    await budget.open('nope');
+
+    expect(budget.status).toBe('missing');
+    expect(budget.budget).toBeNull();
+  });
+
+  it('defaults to the budget opened last', async () => {
+    const budget = await openBudget();
+    await db.budgets.add({ name: 'Japan', slug: 'japan' });
+    expect(await budget.defaultSlug()).toBe('current');
+
+    await budget.open('japan');
+
+    expect(await budget.defaultSlug()).toBe('japan');
+  });
+
+  it('falls back to the first budget when the last one was deleted', async () => {
+    const budget = useBudgetStore();
+    const japanId = await db.budgets.add({ name: 'Japan', slug: 'japan' });
+    await budget.open('japan');
+    await db.budgets.delete(japanId);
+
+    expect(await budget.defaultSlug()).toBe('current');
+  });
+
+  it('turns "missing" when the open budget gets deleted elsewhere', async () => {
+    const budget = await openBudget();
+
+    await db.budgets.clear();
+
+    await vi.waitFor(() => expect(budget.status).toBe('missing'));
+  });
+
+  it('shows the newest of two quick opens, even if the older resolves last', async () => {
+    const budget = await openBudget();
+    await db.budgets.add({ name: 'Japan', slug: 'japan' });
+    const slowFirstLookup = slowDownFirstSlugLookup();
+
+    await Promise.all([budget.open('current'), budget.open('japan')]);
+    slowFirstLookup.mockRestore();
+
+    await vi.waitFor(() => expect(budget.budget?.slug).toBe('japan'));
   });
 });

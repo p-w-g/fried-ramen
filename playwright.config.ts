@@ -9,7 +9,12 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   reporter: 'list',
   expect: {
-    toHaveScreenshot: { threshold: 0 },
+    toHaveScreenshot: {
+      threshold: 0,
+      // Full-page captures would paint the sticky navbar over the middle of
+      // the page; pinning it to the end keeps every card visible.
+      stylePath: './e2e/screenshot.css',
+    },
   },
   projects: [
     {

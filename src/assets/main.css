@@ -30,6 +30,16 @@ body {
   height: 100%;
 }
 
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+
+  & > .content {
+    flex: 1;
+  }
+}
+
 ul {
   list-style-type: none;
   padding-left: 0;
@@ -57,7 +67,8 @@ input {
   }
 }
 
-button {
+button,
+.fr__link-button {
   font-family: 'Quicksand';
   color: var(--text);
   font-size: 16px;
@@ -77,6 +88,15 @@ button {
   &:active {
     background: var(--pressed);
   }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.fr__link-button {
+  display: inline-block;
+  text-decoration: none;
 }
 
 select {

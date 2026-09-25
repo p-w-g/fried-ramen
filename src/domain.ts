@@ -27,6 +27,10 @@ export type ExpenseDraft = {
   description: string;
 };
 
+/** Two names that give the same slug would fight over one URL. */
+export const toSlug = (name: string) =>
+  name.trim().toLowerCase().replace(/\s+/g, '_');
+
 export const toCents = (amount: number) => Math.round(amount * 100);
 
 export const fromCents = (cents: number) => cents / 100;

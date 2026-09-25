@@ -16,10 +16,12 @@ test('an exported backup restores everything after a wipe', async ({
 
   const backupFile = await fr.exportBackup();
   await expect(fr.lastBackup()).toHaveText('Last backup: today');
+  await fr.openBudget('Current');
   await fr.clearEverything();
   await fr.expectTotal(0);
 
   await fr.importBackup(backupFile);
+  await fr.openBudget('Current');
 
   await fr.expectCategoryTotal('food', 4.5);
   await expect(fr.card('Coffee')).toContainText('flat white');
@@ -37,8 +39,7 @@ test('a file that is not a backup is refused and changes nothing', async ({
     buffer: Buffer.from('{"hello": "world"}'),
   });
 
-  await expect(fr.backupProblem()).toHaveText(
-    'This is not a Fried Ramen backup.',
-  );
+  await expect(fr.problem()).toHaveText('This is not a Fried Ramen backup.');
+  await fr.openBudget('Current');
   await fr.expectTotal(5);
 });

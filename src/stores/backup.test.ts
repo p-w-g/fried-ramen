@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { db } from '@/db';
 import { InvalidBackupError } from '@/backup';
@@ -59,14 +59,18 @@ describe('backup', () => {
     );
   });
 
-  it('reopens the budget after importing', async () => {
+  it('reopens the budget in the URL after importing', async () => {
     await seed();
     const backup = useBackupStore();
     const json = await backup.exportAll();
     const budget = useBudgetStore();
+    await budget.open('current');
+    await db.budgets.clear();
+    await vi.waitFor(() => expect(budget.status).toBe('missing'));
 
     await backup.importAll(json);
 
+    await vi.waitFor(() => expect(budget.status).toBe('open'));
     expect(budget.budget?.slug).toBe('current');
   });
 

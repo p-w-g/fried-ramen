@@ -42,3 +42,18 @@ test('collapsed category', async ({ page }) => {
 
   await expect(page).toHaveScreenshot('collapsed.png', { fullPage: true });
 });
+
+test('budgets page', async ({ page }) => {
+  const fr = app(page);
+  await fr.createBudget('April Tour of Japan');
+  await fr.goToBudgets();
+
+  await expect(page).toHaveScreenshot('budgets.png', { fullPage: true });
+});
+
+test('unknown budget', async ({ page }) => {
+  await page.goto('/?budget=nope');
+  await page.getByText('There is no budget called “nope”.').waitFor();
+
+  await expect(page).toHaveScreenshot('unknown-budget.png', { fullPage: true });
+});

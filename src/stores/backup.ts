@@ -33,7 +33,7 @@ export const useBackupStore = defineStore('backup', () => {
   /** Throws InvalidBackupError before touching any data if the file is bad. */
   async function importAll(text: string) {
     await restoreBackup(parseBackup(text));
-    await useBudgetStore().open();
+    await useBudgetStore().reopen();
   }
 
   return {

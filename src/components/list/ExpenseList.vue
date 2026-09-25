@@ -8,6 +8,13 @@ import FlameIcon from '@/assets/icons/whatshot-24px.svg';
 
 const budget = useBudgetStore();
 
+function clearBudget() {
+  const name = budget.budget?.name ?? 'this budget';
+  if (confirm(`Clear every expense and category in “${name}”?`)) {
+    budget.clearBudget();
+  }
+}
+
 function unassignDropped(event: DragEvent) {
   const id = droppedExpenseId(event);
   if (id !== null) budget.assignCategory(id, null);
@@ -32,7 +39,7 @@ function unassignDropped(event: DragEvent) {
     <img
       :src="FlameIcon"
       class="fr__button fr__button--advance"
-      @click="budget.clearBudget()"
+      @click="clearBudget"
     />
   </div>
 </template>

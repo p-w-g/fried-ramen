@@ -21,4 +21,7 @@ test('keeps working offline once the service worker is installed', async ({
   await fr.expectTotal(5);
   await fr.addExpense('Tea', 3);
   await fr.expectTotal(8);
+
+  await page.goto('/budgets');
+  await expect(fr.budgetRow('Current')).toBeVisible();
 });

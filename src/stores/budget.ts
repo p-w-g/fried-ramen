@@ -15,7 +15,8 @@ export const useBudgetStore = defineStore('budget', () => {
   const budget = shallowRef<Budget | null>(null);
   const expenses = shallowRef<Expense[]>([]);
   const categories = shallowRef<string[]>([]);
-  const ready = ref(false);
+  const status = ref<'loading' | 'open' | 'missing'>('loading');
+  let requestedSlug = '';
   let subscription: Subscription | undefined;
 
   const totalCents = computed(() => sumCents(expenses.value));
@@ -30,25 +31,57 @@ export const useBudgetStore = defineStore('budget', () => {
     return budget.value.id;
   }
 
-  async function open() {
+  /** The budget to show when the URL does not name one. */
+  async function defaultSlug() {
     await ensureFirstBudget();
-    const first = await db.budgets.orderBy('id').first();
-    if (!first) throw new Error('ensureFirstBudget left no budget behind');
-    watchBudget(first);
+    const last = await db.meta.get('lastBudgetId');
+    const lastOpened = last && (await db.budgets.get(last.value));
+    const fallback = lastOpened || (await db.budgets.orderBy('id').first());
+    if (!fallback) throw new Error('ensureFirstBudget left no budget behind');
+    return fallback.slug;
   }
 
-  function watchBudget(opened: Budget) {
+  async function open(slug: string) {
+    requestedSlug = slug;
+    await ensureFirstBudget();
+    const found = await db.budgets.where({ slug }).first();
+    if (slug !== requestedSlug) return; // a newer open() took over
+
     subscription?.unsubscribe();
-    budget.value = opened;
+    if (!found) {
+      showMissing();
+      return;
+    }
+    watchBudget(found.id);
+    await db.meta.put({ key: 'lastBudgetId', value: found.id });
+  }
+
+  /** Re-resolves the current URL, e.g. after a backup replaced every budget. */
+  const reopen = () => open(requestedSlug);
+
+  function showMissing() {
+    budget.value = null;
+    expenses.value = [];
+    categories.value = [];
+    status.value = 'missing';
+  }
+
+  function watchBudget(budgetId: number) {
     subscription = liveQuery(() =>
       Promise.all([
-        db.expenses.where({ budgetId: opened.id }).toArray(),
-        db.categories.where({ budgetId: opened.id }).toArray(),
+        db.budgets.get(budgetId),
+        db.expenses.where({ budgetId }).toArray(),
+        db.categories.where({ budgetId }).toArray(),
       ]),
-    ).subscribe(([storedExpenses, storedCategories]) => {
+    ).subscribe(([storedBudget, storedExpenses, storedCategories]) => {
+      if (!storedBudget) {
+        showMissing();
+        return;
+      }
+      budget.value = storedBudget;
       expenses.value = storedExpenses;
       categories.value = storedCategories.map((category) => category.name);
-      ready.value = true;
+      status.value = 'open';
     });
   }
 
@@ -106,11 +139,13 @@ export const useBudgetStore = defineStore('budget', () => {
     budget,
     expenses,
     categories,
-    ready,
+    status,
     totalCents,
     unassigned,
     expensesIn,
+    defaultSlug,
     open,
+    reopen,
     addExpense,
     updateExpense,
     assignCategory,
