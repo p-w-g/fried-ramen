@@ -22,5 +22,6 @@ Stop buying random stuff, start buying useful stuff. Get an overview with montly
 - `npm test` — unit tests (Vitest)
 - `npm run test:e2e` — Playwright: behaviour + zero-tolerance screenshots on the dev server, offline check on the production build
 - `npm run lint` / `npm run format`
+- `npm run check` — everything above; runs as the git pre-push hook (installed by `npm install`)
 
 Node 24 (`.nvmrc`). TypeScript stays on 6.0 until `vue-tsc` and `typescript-eslint` support TypeScript 7 (tsgo): TS 7 only exposes an unstable API, and both crash on it.
