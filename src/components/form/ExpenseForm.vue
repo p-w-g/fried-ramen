@@ -1,12 +1,64 @@
+<script setup lang="ts">
+import { ref, type Ref } from 'vue';
+import { AMOUNT_PATTERN, parseAmount } from '@/domain';
+import { useBudgetStore } from '@/stores/budget';
+
+const budget = useBudgetStore();
+
+const name = ref('');
+const amount = ref('');
+const description = ref('');
+const category = ref('');
+
+/**
+ * Clears a field once its save landed, so a failure keeps what was typed,
+ * and only if it still holds what was sent, so a next entry typed while
+ * the save was in flight survives.
+ */
+function clearIfUnchanged(field: Ref<string>, sent: string) {
+  if (field.value === sent) field.value = '';
+}
+
+async function saveExpense() {
+  const sent = {
+    name: name.value,
+    amount: amount.value,
+    description: description.value,
+  };
+  const parsed = parseAmount(sent.amount);
+  if (parsed === null) return; // the pattern attribute already told them
+  await budget.addExpense({
+    name: sent.name,
+    amount: parsed,
+    description: sent.description,
+  });
+  clearIfUnchanged(name, sent.name);
+  clearIfUnchanged(amount, sent.amount);
+  clearIfUnchanged(description, sent.description);
+}
+
+async function saveCategory() {
+  const sent = category.value;
+  await budget.addCategory(sent);
+  clearIfUnchanged(category, sent);
+}
+
+async function deleteCategory(event: Event) {
+  const select = event.target as HTMLSelectElement;
+  await budget.deleteCategoryIfEmpty(select.value);
+  select.value = '';
+}
+</script>
+
 <template>
   <div>
-    <form id="expenses-form" class="fr__form" @submit.prevent="addNewExpense()">
+    <form id="expenses-form" class="fr__form" @submit.prevent="saveExpense">
       <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
           <label for="expense">Expense</label>
           <input
             id="expense"
-            v-model="Expense"
+            v-model="name"
             type="text"
             class="fr__input-box"
           />
@@ -15,8 +67,10 @@
           <label for="amount">Amount</label>
           <input
             id="amount"
-            v-model.number="Amount"
-            type="number"
+            v-model="amount"
+            type="text"
+            inputmode="decimal"
+            :pattern="AMOUNT_PATTERN"
             class="fr__input-box"
           />
         </div>
@@ -24,7 +78,7 @@
           <label for="description">Description</label>
           <input
             id="description"
-            v-model="Description"
+            v-model="description"
             type="text"
             class="fr__input-box"
           />
@@ -32,103 +86,34 @@
         <button form="expenses-form">Save Expense</button>
       </fieldset>
     </form>
-    <form id="labels-form" class="fr__form" @submit.prevent="addNewLabel()">
+    <form id="labels-form" class="fr__form" @submit.prevent="saveCategory">
       <fieldset class="fr__label-wrapper">
         <div class="fr__label-wrapper">
-          <label for="expense">Category</label>
-          <input id="label" v-model="Label" type="text" class="fr__input-box" />
+          <label for="label">Category</label>
+          <input
+            id="label"
+            v-model="category"
+            type="text"
+            class="fr__input-box"
+          />
         </div>
         <button form="labels-form">Save Category</button>
       </fieldset>
     </form>
-    <form class="fr__form" @submit.prevent v-if="!!labels.length">
+    <form v-if="budget.categories.length" class="fr__form" @submit.prevent>
       <div class="fr__label-wrapper fr__label-wrapper--lean">
         <label for="removal-menu">Delete empty category </label>
-        <select id="removal-menu" v-model="selected" @change="removeLabel()">
-          <option value="" disabled>Select to delete</option>
+        <select id="removal-menu" @change="deleteCategory">
+          <option value="" disabled selected>Select to delete</option>
           <option
-            v-for="(label, index) in labels"
-            :value="label"
-            :key="index"
-            :selected="false"
+            v-for="existing in budget.categories"
+            :key="existing"
+            :value="existing"
           >
-            {{ label }}
+            {{ existing }}
           </option>
         </select>
       </div>
     </form>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-import store from '@/store/index';
-
-export default defineComponent({
-  name: 'ExpenseForm',
-
-  data: () => ({
-    Expense: '',
-    Amount: '',
-    Description: '',
-    Label: '',
-    selected: '',
-  }),
-
-  computed: {
-    labels(): Array<string> {
-      return store.getters.labels;
-    },
-  },
-
-  methods: {
-    addNewExpense() {
-      this.newObjectPush();
-      this.resetExpenseForm();
-    },
-
-    resetExpenseForm() {
-      this.Expense = '';
-      this.Amount = '';
-      this.Description = '';
-    },
-
-    addNewLabel() {
-      this.newLabelPush();
-      this.resetLabelForm();
-    },
-
-    resetLabelForm() {
-      this.Label = '';
-    },
-
-    // store
-    newObjectPush() {
-      store.dispatch({
-        type: 'addNewExpenseAction',
-        Expense: this.Expense,
-        Amount: this.Amount,
-        Description: this.Description,
-      });
-    },
-
-    newLabelPush() {
-      store.dispatch({
-        type: 'addNewLabelAction',
-        Label: this.Label,
-      });
-    },
-
-    removeLabel() {
-      const Label = this.selected;
-
-      store.dispatch({
-        type: 'removeLabelAttemptAction',
-        Label,
-      });
-
-      this.selected = '';
-    },
-  },
-});
-</script>

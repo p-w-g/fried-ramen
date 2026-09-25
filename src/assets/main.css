@@ -1,0 +1,248 @@
+@font-face {
+  font-family: 'Quicksand';
+  src: url('./Quicksand-VariableFont.ttf') format('truetype');
+}
+
+:root {
+  --text: #2c3e50;
+  --page-bg: #eee;
+  --glass-green: rgba(220, 231, 218, 0.8);
+  --glass-steel: rgb(218, 225, 231);
+  --pressed: rgb(167, 175, 184);
+  --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+  --radius: 16px;
+  --danger: #d62839;
+}
+
+html {
+  background-color: var(--page-bg);
+  height: 100%;
+}
+
+body {
+  font-family: 'Quicksand';
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  text-align: center;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+
+  & > .content {
+    flex: 1;
+  }
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+li {
+  padding: 5px;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+input {
+  border: 0;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+button,
+.fr__link-button {
+  font-family: 'Quicksand';
+  color: var(--text);
+  font-size: 16px;
+  background: var(--glass-green);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: var(--glass-border);
+  padding: 0.5rem 1rem;
+  margin: 1rem;
+
+  &:hover {
+    background: var(--glass-steel);
+  }
+
+  &:active {
+    background: var(--pressed);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+/* Wraps an icon or heading text so it works as a button without looking like one. */
+button.fr__icon-button {
+  all: unset;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+}
+
+.fr__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+.fr__link-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+select {
+  margin: 1em 0.5em;
+}
+
+.fr {
+  font-family: 'Quicksand';
+  color: var(--text);
+}
+
+.fr__glassy {
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  width: fit-content;
+  padding: 0 1rem;
+  margin: 0.5em auto;
+
+  &.fr__glassy--open {
+    background: var(--glass-green);
+  }
+
+  &.fr__glassy--closed {
+    background: var(--glass-steel);
+  }
+}
+
+.fr__button {
+  border-radius: 0.5rem;
+  border: 0;
+  height: 1.6rem;
+  margin-right: 0.1rem;
+
+  &:hover,
+  &:focus {
+    background: var(--glass-steel);
+  }
+
+  &:active {
+    background: var(--pressed);
+  }
+}
+
+.fr__label-wrapper {
+  background-color: white;
+  padding-top: 0.4em;
+
+  &.fr__label-wrapper--lean {
+    padding: 0;
+  }
+}
+
+.fr__form {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.fr__input-box {
+  background: var(--glass-green);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: var(--glass-border);
+  width: calc(100% - 2rem);
+  margin-bottom: 0.5rem;
+}
+
+.fr__grid-container {
+  display: grid;
+  grid-template-columns: 2rem auto 2rem;
+  grid-template-rows: auto auto;
+}
+
+.fr__heading {
+  background-color: var(--page-bg);
+  grid-column: 2;
+  grid-row: 1;
+
+  & h1,
+  & h2 {
+    font-weight: 400;
+  }
+
+  & h1 {
+    margin-bottom: 0.3em;
+  }
+}
+
+.fr__content-column {
+  grid-column: 2;
+  grid-row: 2;
+  background-color: white;
+  padding-bottom: 0.4em;
+}
+
+input[type='text'],
+textarea {
+  font-size: 16px;
+}
+
+.fr__drop-zone--hovered {
+  outline: 2px dashed var(--pressed);
+  outline-offset: -2px;
+  border-radius: var(--radius);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  transform: translateY(-50px);
+  opacity: 0;
+}

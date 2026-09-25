@@ -1,73 +1,153 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import {
+  AMOUNT_PATTERN,
+  fromCents,
+  parseAmount,
+  type Expense,
+  type ExpenseDraft,
+} from '@/domain';
+import { useBudgetStore } from '@/stores/budget';
+import { useDragToCategory } from './dragAndDrop';
+import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
+import EditIcon from '@/assets/icons/edit_square.svg';
+import SaveIcon from '@/assets/icons/save_as.svg';
+
+const { expense } = defineProps<{ expense: Expense }>();
+
+const budget = useBudgetStore();
+
+/** What assistive tech calls this expense; quick entries have no name yet. */
+const label = () => expense.name || 'unnamed expense';
+
+/** Only exists while editing, and is always copied from the current expense. */
+const draft = ref<(Omit<ExpenseDraft, 'amount'> & { amount: string }) | null>(
+  null,
+);
+
+function startEditing() {
+  draft.value = {
+    name: expense.name,
+    amount: String(fromCents(expense.amountCents)),
+    description: expense.description,
+  };
+}
+
+async function saveEdit() {
+  if (!draft.value) return;
+  const amount = parseAmount(draft.value.amount);
+  if (amount === null) return; // stay in edit mode until the amount reads
+  await budget.updateExpense(expense.id, { ...draft.value, amount });
+  draft.value = null;
+}
+
+async function selectCategory(event: Event) {
+  const category = (event.target as HTMLSelectElement).value;
+  await budget.assignCategory(expense.id, category || null);
+}
+
+const drag = useDragToCategory((category) =>
+  budget.assignCategory(expense.id, category),
+);
+
+function startDrag(event: PointerEvent) {
+  if (!draft.value) drag.onPointerDown(event);
+}
+</script>
+
 <template>
-  <div :class="!editable ? 'fr__card' : 'fr__card fr__card--edit-mode'">
-    <div class="fr__card-header" v-if="editable">
+  <div
+    class="fr__card"
+    :class="{
+      'fr__card--edit-mode': draft,
+      'fr__card--dragging': drag.isDragging.value,
+    }"
+    :style="
+      drag.isDragging.value
+        ? `transform: translate(${drag.offset.x}px, ${drag.offset.y}px)`
+        : undefined
+    "
+    @pointerdown="startDrag"
+  >
+    <div v-if="draft" class="fr__card-header">
       <input
-        :placeholder="expense.Expense"
-        v-model="Expense"
+        v-model="draft.name"
+        :placeholder="expense.name"
+        :aria-label="`Name of ${label()}`"
         type="text"
         class="fr__input-box"
       />
       <input
-        :placeholder="expense.Amount"
-        v-model.number="Amount"
-        type="number"
+        v-model="draft.amount"
+        :placeholder="String(fromCents(expense.amountCents))"
+        :aria-label="`Amount of ${label()}`"
+        type="text"
+        inputmode="decimal"
+        :pattern="AMOUNT_PATTERN"
         class="fr__input-box"
       />
     </div>
-    <div class="fr__card-header" v-else>
-      <h3>{{ expense.Expense }}</h3>
-      <h4>{{ expense.Amount }}</h4>
+    <div v-else class="fr__card-header">
+      <h3 v-if="expense.name">{{ expense.name }}</h3>
+      <h3 v-else><span class="fr__visually-hidden">Unnamed expense</span></h3>
+      <h4>{{ fromCents(expense.amountCents) }}</h4>
     </div>
     <div
-      :class="
-        expense.Description
-          ? 'fr__card-body'
-          : 'fr__card-body fr__card-body--no-desc'
-      "
+      class="fr__card-body"
+      :class="{ 'fr__card-body--no-desc': !expense.description }"
     >
-      <p v-if="expense.Description && !editable">
-        {{ expense.Description }}
+      <p v-if="expense.description && !draft">
+        {{ expense.description }}
       </p>
       <input
-        v-if="editable"
-        :placeholder="expense.Description"
-        v-model="Description"
+        v-if="draft"
+        v-model="draft.description"
+        :placeholder="expense.description"
+        :aria-label="`Description of ${label()}`"
         type="text"
         class="fr__input-box"
       />
       <ul class="fr__card-options">
         <li>
-          <img
-            v-if="!editable"
-            :src="CheckIcon"
-            class="fr__button fr__button--expedite"
-            @click="remove(expense.Id)"
-          />
+          <button
+            v-if="!draft"
+            type="button"
+            class="fr__icon-button"
+            :aria-label="`Complete ${label()}`"
+            @click="budget.completeExpense(expense.id)"
+          >
+            <img :src="CheckIcon" alt="" class="fr__button" />
+          </button>
         </li>
-        <li v-if="!editable">
-          <img
-            :src="EditIcon"
-            class="fr__button fr__button--expedite"
-            @click="startEditing()"
-          />
+        <li v-if="!draft">
+          <button
+            type="button"
+            class="fr__icon-button"
+            :aria-label="`Edit ${label()}`"
+            @click="startEditing"
+          >
+            <img :src="EditIcon" alt="" class="fr__button" />
+          </button>
         </li>
-        <li v-if="editable">
-          <img
-            :src="SaveIcon"
-            class="fr__button fr__button--expedite"
-            @click="stopEditing()"
-          />
+        <li v-if="draft">
+          <button
+            type="button"
+            class="fr__icon-button"
+            :aria-label="`Save ${label()}`"
+            @click="saveEdit"
+          >
+            <img :src="SaveIcon" alt="" class="fr__button" />
+          </button>
         </li>
         <li>
-          <select v-model="selected" @change="selectLabel()">
+          <select
+            :value="expense.category ?? ''"
+            :aria-label="`Category of ${label()}`"
+            @change="selectCategory"
+          >
             <option value=""></option>
-            <option
-              v-for="(label, index) in labels"
-              :selected="false"
-              :value="label"
-              :key="index"
-            >
-              {{ label }}
+            <option v-for="name in budget.categories" :key="name" :value="name">
+              {{ name }}
             </option>
           </select>
         </li>
@@ -76,143 +156,62 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import store from '@/store/index';
+<style>
+.fr__card {
+  /* From https://css.glass */
+  background: rgba(210, 221, 239, 0.3);
+  border-radius: var(--radius);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: var(--glass-border);
+  padding: 0 1rem;
+  margin: 1rem;
 
-import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
-import EditIcon from '@/assets/icons/edit_square.svg';
-import SaveIcon from '@/assets/icons/save_as.svg';
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 
-export default defineComponent({
-  name: 'TheExpenseCard',
-
-  setup() {
-    return {
-      CheckIcon,
-      EditIcon,
-      SaveIcon,
-    };
-  },
-
-  props: {
-    expense: Object,
-  },
-
-  data() {
-    return {
-      selected: '',
-      editable: false,
-      Expense: '',
-      Amount: '',
-      Description: '',
-    };
-  },
-
-  computed: {
-    labels(): Array<string> {
-      return store.getters.labels;
-    },
-  },
-
-  methods: {
-    selectLabel() {
-      const Label = this.selected;
-      const Id = this.expense.Id;
-
-      this.selected = '';
-      store.dispatch({
-        type: 'labelThisExpenseAction',
-        Id,
-        Label,
-      });
-    },
-
-    remove(index: number) {
-      store.dispatch({
-        type: 'removeThisTaskAction',
-        index,
-      });
-    },
-
-    saveExpenseList() {
-      store.dispatch('saveToLocalStorageAction');
-    },
-
-    removeAllTasks() {
-      store.dispatch('removeAllTasksAction');
-    },
-
-    startEditing() {
-      this.editable = true;
-    },
-
-    stopEditing() {
-      this.editable = false;
-
-      store.dispatch({
-        type: 'updateExpenseAction',
-        Expense: this.Expense,
-        Amount: this.Amount,
-        Description: this.Description,
-        Id: this.expense.Id,
-      });
-    },
-  },
-
-  mounted() {
-    this.selected = this.expense.Label;
-    this.Expense = this.expense.Expense;
-    this.Amount = this.expense.Amount;
-    this.Description = this.expense.Description;
-  },
-});
-</script>
-
-<style lang="scss">
-.fr {
-  &__card {
-    /* From https://css.glass */
-    background: rgba(210, 221, 239, 0.3);
-    border-radius: 16px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 0 1rem;
-    margin: 1rem;
-
-    &--edit-mode {
-      background: rgb(218, 225, 231);
-    }
-
-    &-options {
-      margin-top: 5px;
-      margin-bottom: 5px;
-    }
+  &.fr__card--edit-mode {
+    background: var(--glass-steel);
+    -webkit-user-select: auto;
+    user-select: auto;
   }
 
-  &__card-header {
-    > h3,
-    > h4 {
-      margin-top: 5px;
-      margin-bottom: 5px;
-    }
+  &.fr__card--dragging {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.85;
+    box-shadow: var(--glass-shadow);
+  }
+}
 
-    > input {
-      margin: 5px;
-    }
+.fr__card-options {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.fr__card-header {
+  & > h3,
+  & > h4 {
+    margin-top: 5px;
+    margin-bottom: 5px;
   }
 
-  &__card-header,
-  &__card-body {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  & > input {
+    margin: 5px;
   }
+}
 
-  &__card-body--no-desc {
-    justify-content: flex-end;
-  }
+.fr__card-header,
+.fr__card-body {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.fr__card-body--no-desc {
+  justify-content: flex-end;
 }
 </style>

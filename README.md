@@ -4,17 +4,24 @@ Cost tracker slash budget planner, helps with tracking expenses, and planning fu
 
 I know I should've called this app cup-ramen, because that's what students tend to eat when broke, but meh, felt fancy with frying the noodles afterwards.
 
-
 ### webpage
 
 ~~https://fried-ramen.herokuapp.com/~~
 project was moved to netlify, which allowed to remove simple server, config and unnecessary deps.
 
 https://fried-ramen.netlify.app/
+
 ## purpose
+
 Stop buying random stuff, start buying useful stuff. Get an overview with montly, yearly or whatever scope I need.
 
 ### dev thingies.
 
-localhost: npm run serve
-~~because, npm run start is used by basic server on heroku deploy~~ (no longer in use, since moved to netlify)
+- `npm run dev` — local dev server
+- `npm run build` — typecheck + production build (PWA, `service-worker.js`)
+- `npm test` — unit tests (Vitest)
+- `npm run test:e2e` — Playwright: behaviour + zero-tolerance screenshots on the dev server, offline check on the production build
+- `npm run lint` / `npm run format`
+- `npm run check` — everything above; runs as the git pre-push hook (installed by `npm install`)
+
+Node 24 (`.nvmrc`). TypeScript stays on 6.0 until `vue-tsc` and `typescript-eslint` support TypeScript 7 (tsgo): TS 7 only exposes an unstable API, and both crash on it.
