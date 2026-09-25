@@ -42,5 +42,8 @@
     "type": "git",
     "url": "git+https://github.com/sltPrz/fried-ramen.git"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  }
 }
