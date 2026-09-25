@@ -5,7 +5,7 @@ export const NOWHERE = Symbol('nowhere');
 
 /**
  * The only file that knows the DOM. Specs describe behaviour through these
- * helpers so the same specs run against the legacy app and the ported one.
+ * helpers so specs survive markup changes; only this file needs updating.
  */
 export function app(page: Page) {
   const card = (name: string) =>
@@ -56,18 +56,6 @@ export function app(page: Page) {
 
     async goto() {
       await page.addInitScript(() => (Math.random = () => 0));
-      await page.goto('/');
-    },
-
-    /** Seeds what the Vue CLI build left in localStorage, then opens the app. */
-    async gotoWithLegacyData(expenses: object[], labels: string[]) {
-      await page.addInitScript(
-        ([expenses, labels]) => {
-          localStorage.setItem('allExpensesList', JSON.stringify(expenses));
-          localStorage.setItem('labels', JSON.stringify(labels));
-        },
-        [expenses, labels] as const,
-      );
       await page.goto('/');
     },
 
