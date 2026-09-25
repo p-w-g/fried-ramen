@@ -19,7 +19,7 @@ export default defineConfig({
   projects: [
     {
       name: 'mobile',
-      testIgnore: /offline\.spec\.ts/,
+      testIgnore: /(offline|update)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
         baseURL: `http://localhost:${devPort}`,
@@ -30,7 +30,7 @@ export default defineConfig({
       // The production build: service worker on, and Vue's error handling
       // as shipped (dev builds rethrow errors that prod only logs).
       name: 'production',
-      testMatch: /(offline|errors)\.spec\.ts/,
+      testMatch: /(offline|errors|update)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
         baseURL: `http://localhost:${previewPort}`,
@@ -45,7 +45,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: `npm run build && npx vite preview --port ${previewPort} --strictPort`,
+      command: `npm run build && E2E_SIMULATED_RELEASE=1 npx vite preview --port ${previewPort} --strictPort`,
       port: previewPort,
       // Always rebuild: a reused preview server would test a stale build.
       reuseExistingServer: false,
