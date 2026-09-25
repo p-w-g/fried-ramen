@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { AMOUNT_PATTERN, parseAmount } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 
 const budget = useBudgetStore();
 
 const name = ref('');
-const amount = ref<number | ''>('');
+const amount = ref('');
 const description = ref('');
 const category = ref('');
 
 function saveExpense() {
+  const parsed = parseAmount(amount.value);
+  if (parsed === null) return; // the pattern attribute already told them
   budget.addExpense({
     name: name.value,
-    amount: Number(amount.value) || 0,
+    amount: parsed,
     description: description.value,
   });
   name.value = '';
@@ -49,9 +52,10 @@ function deleteCategory(event: Event) {
           <label for="amount">Amount</label>
           <input
             id="amount"
-            v-model.number="amount"
-            type="number"
-            step="0.01"
+            v-model="amount"
+            type="text"
+            inputmode="decimal"
+            :pattern="AMOUNT_PATTERN"
             class="fr__input-box"
           />
         </div>

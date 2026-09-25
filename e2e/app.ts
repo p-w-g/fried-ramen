@@ -75,7 +75,7 @@ export function app(page: Page) {
 
     startEditing,
 
-    async addExpense(name: string, amount: number | '', description = '') {
+    async addExpense(name: string, amount: number | string, description = '') {
       await openForm();
       await page.fill('#expense', name);
       await page.fill('#amount', String(amount));
@@ -106,7 +106,11 @@ export function app(page: Page) {
 
     async editExpense(
       name: string,
-      changes: { name?: string; amount?: number; description?: string },
+      changes: {
+        name?: string;
+        amount?: number | string;
+        description?: string;
+      },
     ) {
       await startEditing(name);
       const editing = page.locator('.fr__card--edit-mode');
@@ -203,6 +207,14 @@ export function app(page: Page) {
         gestureSourceType: 'touch',
       });
     },
+
+    /** The form's amount field plus the one on any card being edited. */
+    amountFields: async () => [
+      page.locator('#amount'),
+      ...(
+        await page.locator('.fr__card--edit-mode .fr__card-header input').all()
+      ).slice(1),
+    ],
 
     /** Drags a card by its title onto a category heading (null: "All"). */
     async dragCard(

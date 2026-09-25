@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { fromCents, type Expense, type ExpenseDraft } from '@/domain';
+import {
+  AMOUNT_PATTERN,
+  fromCents,
+  parseAmount,
+  type Expense,
+  type ExpenseDraft,
+} from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 import { useDragToCategory } from './dragAndDrop';
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
@@ -12,22 +18,23 @@ const { expense } = defineProps<{ expense: Expense }>();
 const budget = useBudgetStore();
 
 /** Only exists while editing, and is always copied from the current expense. */
-const draft = ref<ExpenseDraft | null>(null);
+const draft = ref<(Omit<ExpenseDraft, 'amount'> & { amount: string }) | null>(
+  null,
+);
 
 function startEditing() {
   draft.value = {
     name: expense.name,
-    amount: fromCents(expense.amountCents),
+    amount: String(fromCents(expense.amountCents)),
     description: expense.description,
   };
 }
 
 function saveEdit() {
   if (!draft.value) return;
-  budget.updateExpense(expense.id, {
-    ...draft.value,
-    amount: Number(draft.value.amount) || 0,
-  });
+  const amount = parseAmount(draft.value.amount);
+  if (amount === null) return; // stay in edit mode until the amount reads
+  budget.updateExpense(expense.id, { ...draft.value, amount });
   draft.value = null;
 }
 
@@ -67,10 +74,11 @@ function startDrag(event: PointerEvent) {
         class="fr__input-box"
       />
       <input
-        v-model.number="draft.amount"
+        v-model="draft.amount"
         :placeholder="String(fromCents(expense.amountCents))"
-        type="number"
-        step="0.01"
+        type="text"
+        inputmode="decimal"
+        :pattern="AMOUNT_PATTERN"
         class="fr__input-box"
       />
     </div>

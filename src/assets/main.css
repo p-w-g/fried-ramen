@@ -61,10 +61,6 @@ input {
   border: 0;
   padding: 0.5rem;
   text-align: center;
-
-  &[type='number'] {
-    appearance: textfield;
-  }
 }
 
 button,
@@ -196,7 +192,6 @@ select {
 }
 
 input[type='text'],
-input[type='number'],
 textarea {
   font-size: 16px;
 }

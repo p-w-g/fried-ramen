@@ -59,6 +59,35 @@ test('amounts can have cents, and totals stay exact', async ({ page }) => {
   await fr.expectTotal(1.35);
 });
 
+test('a comma works as the decimal separator', async ({ page }) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', '4,5');
+  await fr.expectTotal(4.5);
+
+  await fr.editExpense('Coffee', { amount: '2,25' });
+  await fr.expectTotal(2.25);
+});
+
+test('an amount that is not a number is refused, not saved as 0', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', 'abc');
+
+  await expect(page.locator('#amount')).toHaveValue('abc');
+  await expect(fr.card('Coffee')).toHaveCount(0);
+});
+
+test('amount fields ask phones for the decimal keyboard', async ({ page }) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', 5);
+  await fr.startEditing('Coffee');
+
+  for (const amountField of await fr.amountFields()) {
+    await expect(amountField).toHaveAttribute('inputmode', 'decimal');
+  }
+});
+
 test('editing an expense updates it and the total', async ({ page }) => {
   const fr = app(page);
   await fr.addExpense('Coffee', 5);

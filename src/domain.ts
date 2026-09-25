@@ -31,6 +31,18 @@ export type ExpenseDraft = {
 export const toSlug = (name: string) =>
   name.trim().toLowerCase().replace(/\s+/g, '_');
 
+/** Up to two decimals, with a comma or a dot, as phones in any locale type it. */
+export const AMOUNT_PATTERN = '-?[0-9]*([.,][0-9]{0,2})?';
+
+/** A blank amount is a valid quick entry and counts as 0; junk gives null. */
+export function parseAmount(typed: string): number | null {
+  const trimmed = typed.trim();
+  if (!new RegExp(`^${AMOUNT_PATTERN}$`).test(trimmed)) return null;
+  if (trimmed === '') return 0;
+  const amount = Number(trimmed.replace(',', '.'));
+  return Number.isNaN(amount) ? null : amount;
+}
+
 export const toCents = (amount: number) => Math.round(amount * 100);
 
 export const fromCents = (cents: number) => cents / 100;
