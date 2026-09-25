@@ -3,6 +3,10 @@ import { app } from './app';
 
 test.beforeEach(async ({ page }) => {
   const fr = app(page);
+  // Whether the browser grants persistent storage varies by environment.
+  await page.addInitScript(() => {
+    navigator.storage.persist = async () => false;
+  });
   await fr.goto();
   await page.evaluate(() => document.fonts.ready);
 });

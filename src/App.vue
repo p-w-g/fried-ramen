@@ -2,9 +2,11 @@
 import BudgetView from './views/BudgetView.vue';
 import UpdatePrompt from './components/shared/UpdatePrompt.vue';
 import { useBudgetStore } from './stores/budget';
+import { useBackupStore } from './stores/backup';
 
 const budget = useBudgetStore();
 budget.open();
+useBackupStore().checkUp();
 </script>
 
 <template>

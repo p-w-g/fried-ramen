@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackupPanel from '@/components/form/BackupPanel.vue';
 import ExpenseForm from '@/components/form/ExpenseForm.vue';
 import ExpenseList from '@/components/list/ExpenseList.vue';
 import BaseAccordion from '@/components/shared/BaseAccordion.vue';
@@ -21,7 +22,10 @@ const randomTitle = themNomNoms[Math.floor(Math.random() * themNomNoms.length)];
         <h1>{{ randomTitle }}</h1>
         <BaseAccordion>
           <template #content>
-            <ExpenseForm />
+            <div>
+              <ExpenseForm />
+              <BackupPanel />
+            </div>
           </template>
         </BaseAccordion>
       </header>
