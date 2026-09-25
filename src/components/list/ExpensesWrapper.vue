@@ -22,9 +22,15 @@ const total = computed(() => fromCents(sumCents(expenses.value)));
     <h2
       class="fr__glassy"
       :class="isOpen ? 'fr__glassy--open' : 'fr__glassy--closed'"
-      @click="isOpen = !isOpen"
     >
-      {{ category }}: {{ total }}
+      <button
+        type="button"
+        class="fr__icon-button"
+        :aria-expanded="isOpen"
+        @click="isOpen = !isOpen"
+      >
+        {{ category }}: {{ total }}
+      </button>
     </h2>
     <transition name="fade" appear>
       <div v-show="isOpen">

@@ -34,10 +34,13 @@ function clearBudget() {
       :key="category"
       :category="category"
     />
-    <img
-      :src="FlameIcon"
-      class="fr__button fr__button--advance"
+    <button
+      type="button"
+      class="fr__icon-button"
+      :aria-label="`Clear ${budget.budget?.name ?? 'this budget'}`"
       @click="clearBudget"
-    />
+    >
+      <img :src="FlameIcon" alt="" class="fr__button" />
+    </button>
   </div>
 </template>

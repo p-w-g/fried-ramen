@@ -15,7 +15,8 @@ const isOpen = ref(false);
       class="accordion"
       type="image"
       :src="Chevron"
-      alt="Accordion toggle"
+      alt="Expense form"
+      :aria-expanded="isOpen"
       :class="isOpen ? 'accordion--open' : 'accordion--close'"
       @click="isOpen = !isOpen"
     />

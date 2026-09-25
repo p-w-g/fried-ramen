@@ -7,9 +7,9 @@ useBackupStore().checkUp();
 </script>
 
 <template>
-  <div class="content">
+  <main class="content">
     <RouterView />
-  </div>
+  </main>
   <NavBar />
   <UpdatePrompt />
 </template>

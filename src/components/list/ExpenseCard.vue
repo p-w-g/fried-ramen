@@ -17,6 +17,9 @@ const { expense } = defineProps<{ expense: Expense }>();
 
 const budget = useBudgetStore();
 
+/** What assistive tech calls this expense; quick entries have no name yet. */
+const label = () => expense.name || 'unnamed expense';
+
 /** Only exists while editing, and is always copied from the current expense. */
 const draft = ref<(Omit<ExpenseDraft, 'amount'> & { amount: string }) | null>(
   null,
@@ -70,12 +73,14 @@ function startDrag(event: PointerEvent) {
       <input
         v-model="draft.name"
         :placeholder="expense.name"
+        :aria-label="`Name of ${label()}`"
         type="text"
         class="fr__input-box"
       />
       <input
         v-model="draft.amount"
         :placeholder="String(fromCents(expense.amountCents))"
+        :aria-label="`Amount of ${label()}`"
         type="text"
         inputmode="decimal"
         :pattern="AMOUNT_PATTERN"
@@ -83,7 +88,8 @@ function startDrag(event: PointerEvent) {
       />
     </div>
     <div v-else class="fr__card-header">
-      <h3>{{ expense.name }}</h3>
+      <h3 v-if="expense.name">{{ expense.name }}</h3>
+      <h3 v-else><span class="fr__visually-hidden">Unnamed expense</span></h3>
       <h4>{{ fromCents(expense.amountCents) }}</h4>
     </div>
     <div
@@ -97,34 +103,48 @@ function startDrag(event: PointerEvent) {
         v-if="draft"
         v-model="draft.description"
         :placeholder="expense.description"
+        :aria-label="`Description of ${label()}`"
         type="text"
         class="fr__input-box"
       />
       <ul class="fr__card-options">
         <li>
-          <img
+          <button
             v-if="!draft"
-            :src="CheckIcon"
-            class="fr__button fr__button--expedite"
+            type="button"
+            class="fr__icon-button"
+            :aria-label="`Complete ${label()}`"
             @click="budget.completeExpense(expense.id)"
-          />
+          >
+            <img :src="CheckIcon" alt="" class="fr__button" />
+          </button>
         </li>
         <li v-if="!draft">
-          <img
-            :src="EditIcon"
-            class="fr__button fr__button--expedite"
+          <button
+            type="button"
+            class="fr__icon-button"
+            :aria-label="`Edit ${label()}`"
             @click="startEditing"
-          />
+          >
+            <img :src="EditIcon" alt="" class="fr__button" />
+          </button>
         </li>
         <li v-if="draft">
-          <img
-            :src="SaveIcon"
-            class="fr__button fr__button--expedite"
+          <button
+            type="button"
+            class="fr__icon-button"
+            :aria-label="`Save ${label()}`"
             @click="saveEdit"
-          />
+          >
+            <img :src="SaveIcon" alt="" class="fr__button" />
+          </button>
         </li>
         <li>
-          <select :value="expense.category ?? ''" @change="selectCategory">
+          <select
+            :value="expense.category ?? ''"
+            :aria-label="`Category of ${label()}`"
+            @change="selectCategory"
+          >
             <option value=""></option>
             <option v-for="name in budget.categories" :key="name" :value="name">
               {{ name }}

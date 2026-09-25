@@ -10,11 +10,19 @@ export const NOWHERE = Symbol('nowhere');
 export function app(page: Page) {
   const card = (name: string) =>
     page.locator('.fr__card').filter({
-      has: page.locator('h3', { hasText: new RegExp(`^${name}$`) }),
+      has: page.locator('h3', {
+        hasText: new RegExp(`^${name || 'Unnamed expense'}$`),
+      }),
     });
 
-  const startEditing = (name: string) =>
-    card(name).locator('li').nth(1).locator('img').click();
+  /** Buttons are named after their expense; nameless ones are "unnamed expense". */
+  const expenseButton = (action: string, name: string) =>
+    page.getByRole('button', {
+      name: `${action} ${name || 'unnamed expense'}`,
+      exact: true,
+    });
+
+  const startEditing = (name: string) => expenseButton('Edit', name).click();
 
   const nav = page.getByRole('navigation');
 
@@ -101,7 +109,7 @@ export function app(page: Page) {
     categoryPicker: (expense: string) => card(expense).locator('select'),
 
     async completeExpense(name: string) {
-      await card(name).locator('li').nth(0).locator('img').click();
+      await expenseButton('Complete', name).click();
     },
 
     async editExpense(
@@ -121,7 +129,7 @@ export function app(page: Page) {
         await amountInput.fill(String(changes.amount));
       if (changes.description !== undefined)
         await editing.locator('.fr__card-body input').fill(changes.description);
-      await editing.locator('li').nth(1).locator('img').click();
+      await expenseButton('Save', name).click();
     },
 
     goToBudgets,
@@ -179,7 +187,7 @@ export function app(page: Page) {
 
     async clearEverything() {
       page.once('dialog', (dialog) => dialog.accept());
-      await page.locator('.fr__button--advance').click();
+      await page.getByRole('button', { name: /^Clear / }).click();
     },
 
     async expectTotal(total: number) {

@@ -49,6 +49,7 @@ async function create() {
     </div>
 
     <div class="fr__content-column">
+      <h2 class="fr__visually-hidden">Your budgets</h2>
       <p v-if="budgets.isLoaded && budgets.budgets.length === 0">
         No budgets yet. Name one above to start.
       </p>
