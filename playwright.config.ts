@@ -19,7 +19,7 @@ export default defineConfig({
   projects: [
     {
       name: 'mobile',
-      testIgnore: /(offline|update)\.spec\.ts/,
+      testIgnore: /(offline|update|manifest)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
         baseURL: `http://localhost:${devPort}`,
@@ -30,7 +30,7 @@ export default defineConfig({
       // The production build: service worker on, and Vue's error handling
       // as shipped (dev builds rethrow errors that prod only logs).
       name: 'production',
-      testMatch: /(offline|errors|update)\.spec\.ts/,
+      testMatch: /(offline|errors|update|manifest)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
         baseURL: `http://localhost:${previewPort}`,
