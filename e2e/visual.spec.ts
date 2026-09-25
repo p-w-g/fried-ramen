@@ -11,9 +11,7 @@ test('empty app with the form closed', async ({ page }) => {
   await expect(page).toHaveScreenshot('empty.png', { fullPage: true });
 });
 
-test('form open with categorised and unassigned expenses', async ({
-  page,
-}) => {
+test('form open with categorised and unassigned expenses', async ({ page }) => {
   const fr = app(page);
   await fr.addExpense('Coffee', 5, 'flat white');
   await fr.addExpense('Shoes', 25);

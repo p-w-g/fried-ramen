@@ -1,23 +1,11 @@
+<script setup lang="ts">
+import BudgetView from './views/BudgetView.vue';
+import UpdatePrompt from './components/shared/UpdatePrompt.vue';
+</script>
+
 <template>
   <div class="content">
-    <expense-list />
+    <BudgetView />
   </div>
-  <!-- <footern /> -->
+  <UpdatePrompt />
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-import ExpenseList from './views/List.vue';
-// import Footern from './components/shared/Footern.vue';
-
-export default defineComponent({
-  name: 'App',
-  components: {
-    ExpenseList,
-    // Footern,
-  },
-});
-</script>
-<style lang="scss">
-@import '@/assets/main.scss';
-</style>

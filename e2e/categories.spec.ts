@@ -68,7 +68,6 @@ test.describe('card state follows its expense, not its position', () => {
   test('editing the next card does not overwrite it with the moved one', async ({
     page,
   }) => {
-    test.fail(true, 'legacy bug: cards keyed by index keep a stale edit buffer');
     const fr = app(page);
     await fr.addExpense('First', 1, 'one');
     await fr.addExpense('Second', 2, 'two');

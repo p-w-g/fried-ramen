@@ -62,13 +62,12 @@ export function app(page: Page) {
 
     async editExpense(
       name: string,
-      changes: { name?: string; amount?: number; description?: string }
+      changes: { name?: string; amount?: number; description?: string },
     ) {
       await startEditing(name);
       const editing = page.locator('.fr__card--edit-mode');
-      const [nameInput, amountInput] = await editing
-        .locator('.fr__card-header input')
-        .all();
+      const nameInput = editing.locator('.fr__card-header input').nth(0);
+      const amountInput = editing.locator('.fr__card-header input').nth(1);
       if (changes.name !== undefined) await nameInput.fill(changes.name);
       if (changes.amount !== undefined)
         await amountInput.fill(String(changes.amount));
@@ -83,13 +82,13 @@ export function app(page: Page) {
 
     async expectTotal(total: number) {
       await expect(page.locator('h2', { hasText: /^All:/ })).toHaveText(
-        `All: ${total}`
+        `All: ${total}`,
       );
     },
 
     async expectCategoryTotal(category: string, total: number) {
       await expect(
-        page.locator('h2', { hasText: new RegExp(`^\\s*${category}:`) })
+        page.locator('h2', { hasText: new RegExp(`^\\s*${category}:`) }),
       ).toHaveText(`${category}: ${total}`);
     },
 

@@ -21,7 +21,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npx vue-cli-service serve --port ${port}`,
+    command: `npx vite --port ${port} --strictPort`,
     port,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
