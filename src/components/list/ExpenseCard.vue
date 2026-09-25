@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { fromCents, type Expense, type ExpenseDraft } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
+import { useDragToCategory } from './dragAndDrop';
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
 import EditIcon from '@/assets/icons/edit_square.svg';
 import SaveIcon from '@/assets/icons/save_as.svg';
@@ -35,20 +36,28 @@ function selectCategory(event: Event) {
   budget.assignCategory(expense.id, category || null);
 }
 
-function pullCard(event: DragEvent) {
-  if (!event.dataTransfer) return;
-  event.dataTransfer.dropEffect = 'move';
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('cardID', String(expense.id));
+const drag = useDragToCategory((category) =>
+  budget.assignCategory(expense.id, category),
+);
+
+function startDrag(event: PointerEvent) {
+  if (!draft.value) drag.onPointerDown(event);
 }
 </script>
 
 <template>
   <div
     class="fr__card"
-    :class="{ 'fr__card--edit-mode': draft }"
-    draggable="true"
-    @dragstart="pullCard"
+    :class="{
+      'fr__card--edit-mode': draft,
+      'fr__card--dragging': drag.isDragging.value,
+    }"
+    :style="
+      drag.isDragging.value
+        ? `transform: translate(${drag.offset.x}px, ${drag.offset.y}px)`
+        : undefined
+    "
+    @pointerdown="startDrag"
   >
     <div v-if="draft" class="fr__card-header">
       <input
@@ -131,8 +140,20 @@ function pullCard(event: DragEvent) {
   padding: 0 1rem;
   margin: 1rem;
 
+  user-select: none;
+  -webkit-touch-callout: none;
+
   &.fr__card--edit-mode {
     background: var(--glass-steel);
+    user-select: auto;
+  }
+
+  &.fr__card--dragging {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.85;
+    box-shadow: var(--glass-shadow);
   }
 }
 

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { fromCents, sumCents } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
-import { droppedExpenseId } from './dragAndDrop';
+import { hoveredDropZone } from './dragAndDrop';
 import ExpenseCard from './ExpenseCard.vue';
 
 const { category } = defineProps<{ category: string }>();
@@ -12,15 +12,13 @@ const isOpen = ref(true);
 
 const expenses = computed(() => budget.expensesIn(category));
 const total = computed(() => fromCents(sumCents(expenses.value)));
-
-function assignDropped(event: DragEvent) {
-  const id = droppedExpenseId(event);
-  if (id !== null) budget.assignCategory(id, category);
-}
 </script>
 
 <template>
-  <div @drop="assignDropped" @dragenter.prevent @dragover.prevent>
+  <div
+    :data-drop-category="category"
+    :class="{ 'fr__drop-zone--hovered': hoveredDropZone === category }"
+  >
     <h2
       class="fr__glassy"
       :class="isOpen ? 'fr__glassy--open' : 'fr__glassy--closed'"

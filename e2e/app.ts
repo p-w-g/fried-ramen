@@ -1,4 +1,7 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+
+/** Drag target outside every drop zone: the page title. */
+export const NOWHERE = Symbol('nowhere');
 
 /**
  * The only file that knows the DOM. Specs describe behaviour through these
@@ -24,6 +27,15 @@ export function app(page: Page) {
     page.locator('.fr__budget').filter({
       has: page.locator('h3', { hasText: new RegExp(`^${name}$`) }),
     });
+
+  const categoryHeading = (category: string) =>
+    page.locator('h2', { hasText: new RegExp(`^\\s*${category}:`) });
+
+  const center = async (locator: Locator) => {
+    const box = await locator.boundingBox();
+    if (!box) throw new Error('element is not visible');
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  };
 
   const openForm = async () => {
     if (!(await page.locator('#expenses-form').isVisible())) {
@@ -52,6 +64,14 @@ export function app(page: Page) {
     },
 
     openForm,
+
+    /** Waits for the closing animation, so positions measured next are final. */
+    async closeForm() {
+      if (await page.locator('#expenses-form').isVisible()) {
+        await page.locator('input.accordion').click();
+      }
+      await expect(page.locator('#expenses-form')).toHaveCount(0);
+    },
 
     startEditing,
 
@@ -170,8 +190,47 @@ export function app(page: Page) {
       ).toHaveText(`${category}: ${total}`);
     },
 
-    categoryHeading: (category: string) =>
-      page.locator('h2', { hasText: new RegExp(`^\\s*${category}:`) }),
+    categoryHeading,
+
+    /** Drags a card by its title onto a category heading (null: "All"). */
+    async dragCard(
+      expense: string,
+      category: string | null | typeof NOWHERE,
+      how: { with: 'mouse' } | { with: 'touch'; holdMs: number },
+    ) {
+      const from = await center(card(expense).locator('h3'));
+      const target =
+        category === NOWHERE
+          ? page.locator('h1')
+          : category === null
+            ? page.locator('h2', { hasText: /^All:/ })
+            : categoryHeading(category);
+      const to = await center(target);
+      const steps = Array.from({ length: 10 }, (_, i) => ({
+        x: from.x + ((to.x - from.x) * (i + 1)) / 10,
+        y: from.y + ((to.y - from.y) * (i + 1)) / 10,
+      }));
+
+      if (how.with === 'mouse') {
+        await page.mouse.move(from.x, from.y);
+        await page.mouse.down();
+        for (const step of steps) await page.mouse.move(step.x, step.y);
+        await page.mouse.up();
+        return;
+      }
+
+      const cdp = await page.context().newCDPSession(page);
+      type TouchType = 'touchStart' | 'touchMove' | 'touchEnd';
+      const touch = (type: TouchType, point?: { x: number; y: number }) =>
+        cdp.send('Input.dispatchTouchEvent', {
+          type,
+          touchPoints: point ? [point] : [],
+        });
+      await touch('touchStart', from);
+      await page.waitForTimeout(how.holdMs);
+      for (const step of steps) await touch('touchMove', step);
+      await touch('touchEnd');
+    },
 
     cardsIn: (category: string | null) =>
       category === null
