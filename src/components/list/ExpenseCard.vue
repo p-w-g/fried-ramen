@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Expense, ExpenseDraft } from '@/domain';
+import { fromCents, type Expense, type ExpenseDraft } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
 import EditIcon from '@/assets/icons/edit_square.svg';
@@ -16,7 +16,7 @@ const draft = ref<ExpenseDraft | null>(null);
 function startEditing() {
   draft.value = {
     name: expense.name,
-    amount: expense.amount,
+    amount: fromCents(expense.amountCents),
     description: expense.description,
   };
 }
@@ -59,14 +59,15 @@ function pullCard(event: DragEvent) {
       />
       <input
         v-model.number="draft.amount"
-        :placeholder="String(expense.amount)"
+        :placeholder="String(fromCents(expense.amountCents))"
         type="number"
+        step="0.01"
         class="fr__input-box"
       />
     </div>
     <div v-else class="fr__card-header">
       <h3>{{ expense.name }}</h3>
-      <h4>{{ expense.amount }}</h4>
+      <h4>{{ fromCents(expense.amountCents) }}</h4>
     </div>
     <div
       class="fr__card-body"

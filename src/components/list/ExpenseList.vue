@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fromCents } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 import { droppedExpenseId } from './dragAndDrop';
 import ExpensesWrapper from './ExpensesWrapper.vue';
@@ -16,7 +17,7 @@ function unassignDropped(event: DragEvent) {
 <template>
   <div class="fr__content-column">
     <div @drop="unassignDropped" @dragenter.prevent @dragover.prevent>
-      <h2>All: {{ budget.total }}</h2>
+      <h2>All: {{ fromCents(budget.totalCents) }}</h2>
       <ExpenseCard
         v-for="expense in budget.unassigned"
         :key="expense.id"
@@ -31,7 +32,7 @@ function unassignDropped(event: DragEvent) {
     <img
       :src="FlameIcon"
       class="fr__button fr__button--advance"
-      @click="budget.clearEverything()"
+      @click="budget.clearBudget()"
     />
   </div>
 </template>

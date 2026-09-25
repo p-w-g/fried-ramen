@@ -27,6 +27,18 @@ export function app(page: Page) {
       await page.goto('/');
     },
 
+    /** Seeds what the Vue CLI build left in localStorage, then opens the app. */
+    async gotoWithLegacyData(expenses: object[], labels: string[]) {
+      await page.addInitScript(
+        ([expenses, labels]) => {
+          localStorage.setItem('allExpensesList', JSON.stringify(expenses));
+          localStorage.setItem('labels', JSON.stringify(labels));
+        },
+        [expenses, labels] as const,
+      );
+      await page.goto('/');
+    },
+
     openForm,
 
     startEditing,
@@ -75,6 +87,28 @@ export function app(page: Page) {
         await editing.locator('.fr__card-body input').fill(changes.description);
       await editing.locator('li').nth(1).locator('img').click();
     },
+
+    /** Returns the path of the downloaded backup file. */
+    async exportBackup() {
+      await openForm();
+      const download = page.waitForEvent('download');
+      await page.getByRole('button', { name: 'Export backup' }).click();
+      return (await download).path();
+    },
+
+    async importBackup(file: string | { name: string; buffer: Buffer }) {
+      await openForm();
+      page.once('dialog', (dialog) => dialog.accept());
+      const files =
+        typeof file === 'string'
+          ? file
+          : { ...file, mimeType: 'application/json' };
+      await page.setInputFiles('input[type=file]', files);
+    },
+
+    backupProblem: () => page.getByRole('alert'),
+
+    lastBackup: () => page.getByText(/^Last backup:/),
 
     async clearEverything() {
       await page.locator('.fr__button--advance').click();

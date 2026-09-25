@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { sumAmounts } from '@/domain';
+import { fromCents, sumCents } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 import { droppedExpenseId } from './dragAndDrop';
 import ExpenseCard from './ExpenseCard.vue';
@@ -11,7 +11,7 @@ const budget = useBudgetStore();
 const isOpen = ref(true);
 
 const expenses = computed(() => budget.expensesIn(category));
-const total = computed(() => sumAmounts(expenses.value));
+const total = computed(() => fromCents(sumCents(expenses.value)));
 
 function assignDropped(event: DragEvent) {
   const id = droppedExpenseId(event);

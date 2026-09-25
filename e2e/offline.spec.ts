@@ -14,6 +14,7 @@ test('keeps working offline once the service worker is installed', async ({
   expect(new URL(workerUrl!).pathname).toBe('/service-worker.js');
 
   await fr.addExpense('Coffee', 5);
+  await fr.expectTotal(5);
   await context.setOffline(true);
   await page.reload();
 

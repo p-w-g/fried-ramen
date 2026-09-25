@@ -49,6 +49,16 @@ test('completing an expense removes exactly that one', async ({ page }) => {
   await fr.expectTotal(30);
 });
 
+test('amounts can have cents, and totals stay exact', async ({ page }) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', 0.1);
+  await fr.addExpense('Tea', 0.2);
+  await fr.expectTotal(0.3);
+
+  await fr.editExpense('Tea', { amount: 1.25 });
+  await fr.expectTotal(1.35);
+});
+
 test('editing an expense updates it and the total', async ({ page }) => {
   const fr = app(page);
   await fr.addExpense('Coffee', 5);
@@ -65,6 +75,7 @@ test('expenses and categories survive a reload', async ({ page }) => {
   await fr.addExpense('Coffee', 5);
   await fr.addCategory('food');
   await fr.assignCategory('Coffee', 'food');
+  await fr.expectCategoryTotal('food', 5);
 
   await page.reload();
 

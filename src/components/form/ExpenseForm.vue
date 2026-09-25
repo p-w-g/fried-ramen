@@ -51,6 +51,7 @@ function deleteCategory(event: Event) {
             id="amount"
             v-model.number="amount"
             type="number"
+            step="0.01"
             class="fr__input-box"
           />
         </div>

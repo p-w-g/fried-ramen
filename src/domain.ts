@@ -1,12 +1,35 @@
-export type Expense = {
+export type Budget = {
   id: number;
   name: string;
-  amount: number;
+  slug: string;
+};
+
+export type Category = {
+  id: number;
+  budgetId: number;
+  name: string;
+};
+
+export type Expense = {
+  id: number;
+  budgetId: number;
+  name: string;
+  /** Integer cents, so totals never pick up floating point dust. */
+  amountCents: number;
   description: string;
   category: string | null;
 };
 
-export type ExpenseDraft = Pick<Expense, 'name' | 'amount' | 'description'>;
+/** What a person types: amount in whole currency units, e.g. 4.5. */
+export type ExpenseDraft = {
+  name: string;
+  amount: number;
+  description: string;
+};
 
-export const sumAmounts = (expenses: Expense[]) =>
-  expenses.reduce((total, expense) => total + expense.amount, 0);
+export const toCents = (amount: number) => Math.round(amount * 100);
+
+export const fromCents = (cents: number) => cents / 100;
+
+export const sumCents = (expenses: Expense[]) =>
+  expenses.reduce((total, expense) => total + expense.amountCents, 0);
