@@ -192,6 +192,18 @@ export function app(page: Page) {
 
     categoryHeading,
 
+    selectedText: () => page.evaluate(() => getSelection()?.toString() ?? ''),
+
+    async longPress(expense: string) {
+      const at = await center(card(expense).locator('h3'));
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send('Input.synthesizeTapGesture', {
+        ...at,
+        duration: 900,
+        gestureSourceType: 'touch',
+      });
+    },
+
     /** Drags a card by its title onto a category heading (null: "All"). */
     async dragCard(
       expense: string,

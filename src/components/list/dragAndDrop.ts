@@ -39,10 +39,17 @@ export function useDragToCategory(onDrop: (category: string | null) => void) {
     window.addEventListener('pointerup', onPointerUp);
     window.addEventListener('pointercancel', stop);
     window.addEventListener('touchmove', keepPageStill, { passive: false });
+    document.addEventListener('selectstart', preventSelection);
   }
 
   function pickUp() {
+    getSelection()?.removeAllRanges();
     isDragging.value = true;
+  }
+
+  /** Long presses and drags would otherwise select whatever they cross. */
+  function preventSelection(event: Event) {
+    event.preventDefault();
   }
 
   function onPointerMove(event: PointerEvent) {
@@ -87,6 +94,7 @@ export function useDragToCategory(onDrop: (category: string | null) => void) {
     window.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('pointercancel', stop);
     window.removeEventListener('touchmove', keepPageStill);
+    document.removeEventListener('selectstart', preventSelection);
   }
 
   onBeforeUnmount(stop);

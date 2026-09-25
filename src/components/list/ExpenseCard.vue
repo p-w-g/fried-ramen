@@ -140,11 +140,13 @@ function startDrag(event: PointerEvent) {
   padding: 0 1rem;
   margin: 1rem;
 
+  -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 
   &.fr__card--edit-mode {
     background: var(--glass-steel);
+    -webkit-user-select: auto;
     user-select: auto;
   }
 

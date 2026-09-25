@@ -48,3 +48,11 @@ test('dropping outside any category changes nothing', async ({ page }) => {
   await expect(fr.cardsIn(null)).toHaveCount(2);
   await fr.expectCategoryTotal('food', 0);
 });
+
+test('holding a finger on a card does not select text', async ({ page }) => {
+  const fr = app(page);
+
+  await fr.longPress('Coffee');
+
+  expect(await fr.selectedText()).toBe('');
+});
