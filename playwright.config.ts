@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const port = 4173;
+const devPort = 4173;
+const previewPort = 4174;
 
 export default defineConfig({
   testDir: './e2e',
@@ -10,20 +11,38 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: { threshold: 0 },
   },
-  use: {
-    baseURL: `http://localhost:${port}`,
-    serviceWorkers: 'block',
-  },
   projects: [
     {
       name: 'mobile',
-      use: { ...devices['Pixel 7'] },
+      testIgnore: /offline\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
+        baseURL: `http://localhost:${devPort}`,
+        serviceWorkers: 'block',
+      },
+    },
+    {
+      name: 'offline',
+      testMatch: /offline\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
+        baseURL: `http://localhost:${previewPort}`,
+        serviceWorkers: 'allow',
+      },
     },
   ],
-  webServer: {
-    command: `npx vite --port ${port} --strictPort`,
-    port,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: `npx vite --port ${devPort} --strictPort`,
+      port: devPort,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `npm run build && npx vite preview --port ${previewPort} --strictPort`,
+      port: previewPort,
+      // Always rebuild: a reused preview server would test a stale build.
+      reuseExistingServer: false,
+      timeout: 120_000,
+    },
+  ],
 });

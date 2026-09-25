@@ -13,7 +13,7 @@ export default defineConfig({
       registerType: 'prompt',
       manifest: false,
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,ttf}'],
+        globPatterns: ['**/*.{js,css,html,ttf}', 'manifest.json'],
       },
     }),
   ],
