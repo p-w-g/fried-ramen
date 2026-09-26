@@ -47,5 +47,13 @@ export const toCents = (amount: number) => Math.round(amount * 100);
 
 export const fromCents = (cents: number) => cents / 100;
 
+const ledger = new Intl.NumberFormat(undefined, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** Always two decimals, so amounts line up in a column. */
+export const formatAmount = (cents: number) => ledger.format(fromCents(cents));
+
 export const sumCents = (expenses: Expense[]) =>
   expenses.reduce((total, expense) => total + expense.amountCents, 0);

@@ -7,9 +7,16 @@ export const NOWHERE = Symbol('nowhere');
  * The only file that knows the DOM. Specs describe behaviour through these
  * helpers so specs survive markup changes; only this file needs updating.
  */
+/** Amounts show with two decimals, as the en-US test browsers format them. */
+const shown = (amount: number) =>
+  amount.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
 export function app(page: Page) {
   const card = (name: string) =>
-    page.locator('.fr__card').filter({
+    page.locator('.fr__entry').filter({
       has: page.locator('h3', {
         hasText: new RegExp(`^${name || 'Unnamed expense'}$`),
       }),
@@ -36,8 +43,13 @@ export function app(page: Page) {
       has: page.locator('h3', { hasText: new RegExp(`^${name}$`) }),
     });
 
-  const categoryHeading = (category: string) =>
-    page.locator('h2', { hasText: new RegExp(`^\\s*${category}:`) });
+  /** A category's section; null is the one for uncategorised expenses. */
+  const group = (category: string | null) =>
+    page.locator(`[data-drop-category=${JSON.stringify(category ?? '')}]`);
+
+  const categoryHeading = (category: string) => group(category).locator('h2');
+
+  const formToggle = page.getByRole('button', { name: 'Add expense' });
 
   const center = async (locator: Locator) => {
     const box = await locator.boundingBox();
@@ -54,7 +66,7 @@ export function app(page: Page) {
 
   const openForm = async () => {
     if (!(await page.locator('#expenses-form').isVisible())) {
-      await page.locator('input.accordion').click();
+      await formToggle.click();
     }
   };
 
@@ -68,10 +80,12 @@ export function app(page: Page) {
 
     openForm,
 
+    formToggle,
+
     /** Waits for the closing animation, so positions measured next are final. */
     async closeForm() {
       if (await page.locator('#expenses-form').isVisible()) {
-        await page.locator('input.accordion').click();
+        await formToggle.click();
       }
       await expect(page.locator('#expenses-form')).toHaveCount(0);
     },
@@ -116,14 +130,17 @@ export function app(page: Page) {
       },
     ) {
       await startEditing(name);
-      const editing = page.locator('.fr__card--edit-mode');
-      const nameInput = editing.locator('.fr__card-header input').nth(0);
-      const amountInput = editing.locator('.fr__card-header input').nth(1);
-      if (changes.name !== undefined) await nameInput.fill(changes.name);
+      const editing = page.locator('.fr__entry--edit-mode');
+      if (changes.name !== undefined)
+        await editing.locator('input.fr__entry-name').fill(changes.name);
       if (changes.amount !== undefined)
-        await amountInput.fill(String(changes.amount));
+        await editing
+          .locator('input.fr__entry-amount')
+          .fill(String(changes.amount));
       if (changes.description !== undefined)
-        await editing.locator('.fr__card-body input').fill(changes.description);
+        await editing
+          .locator('input.fr__entry-description')
+          .fill(changes.description);
       await expenseButton('Save', name).click();
     },
 
@@ -197,15 +214,15 @@ export function app(page: Page) {
     },
 
     async expectTotal(total: number) {
-      await expect(page.locator('h2', { hasText: /^All:/ })).toHaveText(
-        `All: ${total}`,
+      await expect(page.locator('.fr__total .fr__amount')).toHaveText(
+        shown(total),
       );
     },
 
     async expectCategoryTotal(category: string, total: number) {
-      await expect(
-        page.locator('h2', { hasText: new RegExp(`^\\s*${category}:`) }),
-      ).toHaveText(`${category}: ${total}`);
+      await expect(categoryHeading(category).locator('.fr__amount')).toHaveText(
+        shown(total),
+      );
     },
 
     categoryHeading,
@@ -260,9 +277,9 @@ export function app(page: Page) {
     /** The form's amount field plus the one on any card being edited. */
     amountFields: async () => [
       page.locator('#amount'),
-      ...(
-        await page.locator('.fr__card--edit-mode .fr__card-header input').all()
-      ).slice(1),
+      ...(await page
+        .locator('.fr__entry--edit-mode input.fr__entry-amount')
+        .all()),
     ],
 
     /** Drags a card by its title onto a category heading (null: "All"). */
@@ -276,7 +293,7 @@ export function app(page: Page) {
         category === NOWHERE
           ? page.locator('h1')
           : category === null
-            ? page.locator('h2', { hasText: /^All:/ })
+            ? group(null).locator('h2')
             : categoryHeading(category);
       const to = await center(target);
       const steps = Array.from({ length: 10 }, (_, i) => ({
@@ -305,12 +322,6 @@ export function app(page: Page) {
       await touch('touchEnd');
     },
 
-    cardsIn: (category: string | null) =>
-      category === null
-        ? page.locator('.fr__content-column > div').first().locator('.fr__card')
-        : page
-            .locator('.fr__content-column > div')
-            .filter({ has: page.locator('h2', { hasText: `${category}:` }) })
-            .locator('.fr__card'),
+    cardsIn: (category: string | null) => group(category).locator('.fr__entry'),
   };
 }

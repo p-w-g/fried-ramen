@@ -50,7 +50,6 @@ body {
   color: var(--text);
   background-color: var(--bg);
   margin: 0;
-  text-align: center;
   display: grid;
   grid-template-rows: 1fr auto;
   height: 100%;
@@ -75,13 +74,8 @@ h3 {
 
 ul {
   list-style-type: none;
-  padding-left: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-li {
-  padding: 5px;
+  margin: 0;
+  padding: 0;
 }
 
 fieldset {
@@ -136,11 +130,13 @@ button,
   border-radius: var(--radius-control);
   padding: 0.5rem 1rem;
   min-height: 2.75rem;
-  margin: 1rem;
+  margin: 0;
   cursor: pointer;
 
-  &:hover {
-    background: var(--accent-soft);
+  @media (hover: hover) {
+    &:hover {
+      background: var(--accent-soft);
+    }
   }
 
   &:disabled {
@@ -153,8 +149,10 @@ button,
   background: var(--accent);
   border-color: var(--accent);
 
-  &:hover {
-    background: color-mix(in srgb, var(--accent) 85%, var(--text));
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(in srgb, var(--accent) 85%, var(--text));
+    }
   }
 }
 
@@ -163,20 +161,40 @@ button,
   background: var(--danger);
   border-color: var(--danger);
 
-  &:hover {
-    background: color-mix(in srgb, var(--danger) 85%, var(--text));
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(in srgb, var(--danger) 85%, var(--text));
+    }
   }
 }
 
-/* Wraps an icon or heading text so it works as a button without looking like one. */
-button.fr__icon-button {
-  all: unset;
-  cursor: pointer;
-  border-radius: var(--radius-control);
+/* For actions that sit inside a row and must not compete with its content. */
+.fr__button--quiet,
+.fr__button--quiet-danger {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
 
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+.fr__button--quiet-danger {
+  color: var(--danger);
+}
+
+/* An icon with a full-size touch target around it. */
+button.fr__icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--text);
+    }
   }
 }
 
@@ -203,77 +221,15 @@ button.fr__icon-button {
 
 .fr__link-button {
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   box-sizing: border-box;
   text-decoration: none;
 }
 
-select {
-  margin: 1em 0.5em;
-}
-
-.fr__glassy {
-  border-radius: var(--radius-control);
-  width: fit-content;
-  padding: 0 1rem;
-  margin: 0.5em auto;
-
-  &.fr__glassy--open {
-    background: var(--accent-soft);
-  }
-
-  &.fr__glassy--closed {
-    background: var(--surface);
-    border: 1px solid var(--control-border);
-  }
-}
-
-.fr__label-wrapper {
-  background-color: var(--surface);
-  padding-top: 0.4em;
-
-  &.fr__label-wrapper--lean {
-    padding: 0;
-  }
-}
-
-.fr__form {
-  padding-top: 1em;
-  padding-bottom: 1em;
-}
-
-.fr__input-box {
-  width: calc(100% - 2rem);
-  margin-bottom: 0.5rem;
-}
-
-.fr__grid-container {
-  display: grid;
-  grid-template-columns: 2rem auto 2rem;
-  grid-template-rows: auto auto;
-}
-
-.fr__heading {
-  background-color: var(--bg);
-  grid-column: 2;
-  grid-row: 1;
-
-  & h1 {
-    margin-bottom: 0.3em;
-  }
-}
-
-.fr__content-column {
-  grid-column: 2;
-  grid-row: 2;
-  background-color: var(--surface);
-  padding-bottom: 0.4em;
-}
-
 .fr__drop-zone--hovered {
   outline: 2px dashed var(--accent);
-  outline-offset: -2px;
-  border-radius: var(--radius-container);
+  outline-offset: 2px;
 }
 
 .fade-enter-active,
@@ -298,4 +254,191 @@ select {
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-muted);
+}
+
+.fr__page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  & > h1 {
+    margin: 1rem 0 0;
+    font-size: 1.5rem;
+  }
+}
+
+/* The one number that matters, first and largest. */
+.fr__summary {
+  padding: 1.5rem 0 0.5rem;
+
+  & h1 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+}
+
+.fr__total {
+  display: flex;
+  flex-direction: column;
+  margin: 0.25rem 0 0;
+
+  & .fr__amount {
+    font-size: 2.75rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+}
+
+.fr__total-label {
+  order: 1;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.fr__amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fr__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fr__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+
+  & label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+}
+
+.fr__field--amount {
+  flex: 0 0 7rem;
+
+  & input {
+    text-align: right;
+  }
+}
+
+/* Fields side by side; a button in the row lines up with the inputs. */
+.fr__field-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.fr__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.fr__subheading {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.fr__problem {
+  margin: 0;
+  color: var(--danger);
+}
+
+.fr__hint,
+.fr__empty {
+  color: var(--text-muted);
+}
+
+.fr__empty {
+  margin: 0;
+  padding: 1rem;
+}
+
+.fr__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  & > .fr__button--quiet-danger {
+    align-self: center;
+  }
+}
+
+.fr__group {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-container);
+  overflow: hidden;
+}
+
+/* A category name on the left, its subtotal on the right. */
+.fr__group-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+
+  &:has(.fr__group-toggle) {
+    padding: 0;
+  }
+}
+
+button.fr__group-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+
+  & .fr__chevron {
+    transform: none;
+  }
+
+  & .fr__chevron--open {
+    transform: rotate(90deg);
+  }
+
+  &[aria-expanded='false'] {
+    color: var(--text);
+  }
+}
+
+.fr__group-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Collapsed or empty lists take their separator with them. */
+.fr__group-heading + .fr__rows:not(:empty) {
+  border-top: 1px solid var(--divider);
 }

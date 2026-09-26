@@ -34,45 +34,81 @@ async function remove() {
 </script>
 
 <template>
-  <div class="fr__card fr__budget">
-    <form v-if="draftName !== null" @submit.prevent="saveName">
+  <li class="fr__budget">
+    <form
+      v-if="draftName !== null"
+      class="fr__stack"
+      @submit.prevent="saveName"
+    >
       <input
         v-model="draftName"
         type="text"
-        class="fr__input-box"
         :aria-label="`New name for ${budget.name}`"
       />
-      <p v-if="problem" role="alert">{{ problem }}</p>
-      <button>Save name</button>
-      <button type="button" @click="draftName = null">Cancel</button>
+      <p v-if="problem" role="alert" class="fr__problem">{{ problem }}</p>
+      <div class="fr__actions">
+        <button type="button" @click="draftName = null">Cancel</button>
+        <button class="fr__button--primary">Save name</button>
+      </div>
     </form>
     <template v-else>
-      <h3>{{ budget.name }}</h3>
-      <RouterLink
-        :to="{ name: 'budget', query: { budget: budget.slug } }"
-        class="fr__link-button"
-        :aria-label="`Open ${budget.name}`"
+      <h3>
+        <RouterLink
+          :to="{ name: 'budget', query: { budget: budget.slug } }"
+          :aria-label="`Open ${budget.name}`"
+        >
+          {{ budget.name }}
+        </RouterLink>
+      </h3>
+      <button
+        type="button"
+        class="fr__button--quiet"
+        @click="draftName = budget.name"
       >
-        Open
-      </RouterLink>
-      <button type="button" @click="draftName = budget.name">Rename</button>
-      <button type="button" @click="remove">Delete</button>
+        Rename
+      </button>
+      <button type="button" class="fr__button--quiet-danger" @click="remove">
+        Delete
+      </button>
     </template>
-  </div>
+  </li>
 </template>
 
 <style>
 .fr__budget {
-  width: auto;
-  padding-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
 
-  & h3 {
-    margin: 0.75rem 0 0;
+  & + & {
+    border-top: 1px solid var(--divider);
   }
 
-  & button,
-  & .fr__link-button {
-    margin: 0.5rem 0.25rem 0;
+  & > form {
+    flex: 1;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+  }
+
+  & h3 {
+    flex: 1;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  & h3 a {
+    color: var(--text);
+    text-decoration: none;
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+    }
   }
 }
 </style>

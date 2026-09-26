@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { fromCents, sumCents } from '@/domain';
+import { formatAmount, sumCents } from '@/domain';
+import AppIcon from '@/components/shared/AppIcon.vue';
+import Chevron from '@/assets/icons/chevron_right.svg';
 import { useBudgetStore } from '@/stores/budget';
 import { hoveredDropZone } from './dragAndDrop';
 import ExpenseCard from './ExpenseCard.vue';
@@ -11,35 +13,39 @@ const budget = useBudgetStore();
 const isOpen = ref(true);
 
 const expenses = computed(() => budget.expensesIn(category));
-const total = computed(() => fromCents(sumCents(expenses.value)));
+const total = computed(() => formatAmount(sumCents(expenses.value)));
 </script>
 
 <template>
-  <div
+  <section
     :data-drop-category="category"
+    class="fr__group"
     :class="{ 'fr__drop-zone--hovered': hoveredDropZone === category }"
   >
-    <h2
-      class="fr__glassy"
-      :class="isOpen ? 'fr__glassy--open' : 'fr__glassy--closed'"
-    >
+    <h2 class="fr__group-heading">
       <button
         type="button"
-        class="fr__icon-button"
+        class="fr__group-toggle"
         :aria-expanded="isOpen"
         @click="isOpen = !isOpen"
       >
-        {{ category }}: {{ total }}
+        <AppIcon
+          :src="Chevron"
+          class="fr__chevron"
+          :class="{ 'fr__chevron--open': isOpen }"
+        />
+        <span class="fr__group-name">{{ category }}</span>
+        <span class="fr__amount">{{ total }}</span>
       </button>
     </h2>
     <transition name="fade" appear>
-      <div v-show="isOpen">
+      <ul v-show="isOpen" class="fr__rows">
         <ExpenseCard
           v-for="expense in expenses"
           :key="expense.id"
           :expense="expense"
         />
-      </div>
+      </ul>
     </transition>
-  </div>
+  </section>
 </template>

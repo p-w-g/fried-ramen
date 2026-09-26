@@ -40,7 +40,8 @@ watch(
 
 <style>
 .fr__dialog {
-  max-width: min(24rem, calc(100vw - 2rem));
+  box-sizing: border-box;
+  width: min(24rem, calc(100vw - 2rem));
   padding: 1rem 1.25rem;
   color: var(--text);
   background: var(--surface);

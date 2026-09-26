@@ -68,8 +68,8 @@ test('toggles say whether they are open and work from the keyboard', async ({
   page,
 }) => {
   const fr = app(page);
-  const formToggle = page.getByRole('button', { name: 'Expense form' });
-  const foodToggle = page.getByRole('button', { name: 'food: 5' });
+  const formToggle = fr.formToggle;
+  const foodToggle = page.getByRole('button', { name: 'food 5.00' });
   await expect(formToggle).toHaveAttribute('aria-expanded', 'true');
   await expect(foodToggle).toHaveAttribute('aria-expanded', 'true');
 

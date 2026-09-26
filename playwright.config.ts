@@ -11,6 +11,9 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: {
       threshold: 0,
+      // Anti-aliasing on bordered rounded corners varies by a few pixels
+      // between identical runs; any real change moves far more than this.
+      maxDiffPixels: 20,
       // Full-page captures would paint the sticky navbar over the middle of
       // the page; pinning it to the end keeps every card visible.
       stylePath: './e2e/screenshot.css',

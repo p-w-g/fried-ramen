@@ -26,39 +26,38 @@ async function create() {
 </script>
 
 <template>
-  <div class="fr__grid-container">
-    <div class="fr__heading">
-      <header>
-        <h1>🍱 Budgets</h1>
-        <form id="budget-form" class="fr__form" @submit.prevent="create">
-          <fieldset class="fr__label-wrapper">
-            <div class="fr__label-wrapper">
-              <label for="budget-name">New budget</label>
-              <input
-                id="budget-name"
-                v-model="newName"
-                type="text"
-                class="fr__input-box"
-              />
-            </div>
-            <p v-if="problem" role="alert">{{ problem }}</p>
-            <button form="budget-form">Create budget</button>
-          </fieldset>
-        </form>
-      </header>
-    </div>
+  <div class="fr__page">
+    <h1>Budgets</h1>
+    <form id="budget-form" class="fr__stack" @submit.prevent="create">
+      <div class="fr__field-row">
+        <div class="fr__field">
+          <label for="budget-name">New budget</label>
+          <input id="budget-name" v-model="newName" type="text" />
+        </div>
+        <button form="budget-form" class="fr__button--primary">
+          Create budget
+        </button>
+      </div>
+      <p v-if="problem" role="alert" class="fr__problem">{{ problem }}</p>
+    </form>
 
-    <div class="fr__content-column">
+    <section class="fr__group">
       <h2 class="fr__visually-hidden">Your budgets</h2>
-      <p v-if="budgets.isLoaded && budgets.budgets.length === 0">
+      <p
+        v-if="budgets.isLoaded && budgets.budgets.length === 0"
+        class="fr__empty"
+      >
         No budgets yet. Name one above to start.
       </p>
-      <BudgetRow
-        v-for="budget in budgets.budgets"
-        :key="budget.id"
-        :budget="budget"
-      />
-      <BackupPanel />
-    </div>
+      <ul class="fr__rows">
+        <BudgetRow
+          v-for="budget in budgets.budgets"
+          :key="budget.id"
+          :budget="budget"
+        />
+      </ul>
+    </section>
+
+    <BackupPanel />
   </div>
 </template>

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import {
   AMOUNT_PATTERN,
+  formatAmount,
   fromCents,
   parseAmount,
   type Expense,
@@ -57,11 +58,11 @@ function startDrag(event: PointerEvent) {
 </script>
 
 <template>
-  <div
-    class="fr__card"
+  <li
+    class="fr__entry"
     :class="{
-      'fr__card--edit-mode': draft,
-      'fr__card--dragging': drag.isDragging.value,
+      'fr__entry--edit-mode': draft,
+      'fr__entry--dragging': drag.isDragging.value,
     }"
     :style="
       drag.isDragging.value
@@ -70,13 +71,13 @@ function startDrag(event: PointerEvent) {
     "
     @pointerdown="startDrag"
   >
-    <div v-if="draft" class="fr__card-header">
+    <template v-if="draft">
       <input
         v-model="draft.name"
         :placeholder="expense.name"
         :aria-label="`Name of ${label()}`"
         type="text"
-        class="fr__input-box"
+        class="fr__entry-name"
       />
       <input
         v-model="draft.amount"
@@ -85,130 +86,159 @@ function startDrag(event: PointerEvent) {
         type="text"
         inputmode="decimal"
         :pattern="AMOUNT_PATTERN"
-        class="fr__input-box"
+        class="fr__entry-amount"
       />
-    </div>
-    <div v-else class="fr__card-header">
-      <h3 v-if="expense.name">{{ expense.name }}</h3>
-      <h3 v-else><span class="fr__visually-hidden">Unnamed expense</span></h3>
-      <h4>{{ fromCents(expense.amountCents) }}</h4>
-    </div>
-    <div
-      class="fr__card-body"
-      :class="{ 'fr__card-body--no-desc': !expense.description }"
-    >
-      <p v-if="expense.description && !draft">
-        {{ expense.description }}
-      </p>
       <input
-        v-if="draft"
         v-model="draft.description"
         :placeholder="expense.description"
         :aria-label="`Description of ${label()}`"
         type="text"
-        class="fr__input-box"
+        class="fr__entry-description"
       />
-      <ul class="fr__card-options">
-        <li>
-          <button
-            v-if="!draft"
-            type="button"
-            class="fr__icon-button"
-            :aria-label="`Complete ${label()}`"
-            @click="budget.completeExpense(expense.id)"
-          >
-            <AppIcon :src="CheckIcon" />
-          </button>
-        </li>
-        <li v-if="!draft">
-          <button
-            type="button"
-            class="fr__icon-button"
-            :aria-label="`Edit ${label()}`"
-            @click="startEditing"
-          >
-            <AppIcon :src="EditIcon" />
-          </button>
-        </li>
-        <li v-if="draft">
-          <button
-            type="button"
-            class="fr__icon-button"
-            :aria-label="`Save ${label()}`"
-            @click="saveEdit"
-          >
-            <AppIcon :src="SaveIcon" />
-          </button>
-        </li>
-        <li>
-          <select
-            :value="expense.category ?? ''"
-            :aria-label="`Category of ${label()}`"
-            @change="selectCategory"
-          >
-            <option value=""></option>
-            <option v-for="name in budget.categories" :key="name" :value="name">
-              {{ name }}
-            </option>
-          </select>
-        </li>
-      </ul>
+    </template>
+    <template v-else>
+      <h3
+        class="fr__entry-name"
+        :class="{ 'fr__entry-name--unnamed': !expense.name }"
+      >
+        {{ expense.name || 'Unnamed expense' }}
+      </h3>
+      <span class="fr__entry-amount fr__amount">
+        {{ formatAmount(expense.amountCents) }}
+      </span>
+      <p v-if="expense.description" class="fr__entry-description">
+        {{ expense.description }}
+      </p>
+    </template>
+    <div class="fr__entry-actions">
+      <select
+        v-if="budget.categories.length"
+        :value="expense.category ?? ''"
+        :aria-label="`Category of ${label()}`"
+        @change="selectCategory"
+      >
+        <option value="">No category</option>
+        <option v-for="name in budget.categories" :key="name" :value="name">
+          {{ name }}
+        </option>
+      </select>
+      <button
+        v-if="draft"
+        type="button"
+        class="fr__icon-button"
+        :aria-label="`Save ${label()}`"
+        @click="saveEdit"
+      >
+        <AppIcon :src="SaveIcon" />
+      </button>
+      <template v-else>
+        <button
+          type="button"
+          class="fr__icon-button"
+          :aria-label="`Edit ${label()}`"
+          @click="startEditing"
+        >
+          <AppIcon :src="EditIcon" />
+        </button>
+        <button
+          type="button"
+          class="fr__icon-button"
+          :aria-label="`Complete ${label()}`"
+          @click="budget.completeExpense(expense.id)"
+        >
+          <AppIcon :src="CheckIcon" />
+        </button>
+      </template>
     </div>
-  </div>
+  </li>
 </template>
 
 <style>
-.fr__card {
+/* The name spans over the actions' column, so wide actions never squeeze it. */
+.fr__entry {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas:
+    'name name amount'
+    'description actions actions';
+  align-items: center;
+  gap: 0 0.75rem;
+  padding: 0.75rem 1rem 0.5rem;
   background: var(--surface);
-  border-radius: var(--radius-container);
-  border: 1px solid var(--divider);
-  padding: 0 1rem;
-  margin: 1rem;
 
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 
-  &.fr__card--edit-mode {
+  & + & {
+    border-top: 1px solid var(--divider);
+  }
+
+  &.fr__entry--edit-mode {
+    gap: 0.5rem 0.75rem;
     background: var(--accent-soft);
     -webkit-user-select: auto;
     user-select: auto;
   }
 
-  &.fr__card--dragging {
+  &.fr__entry--dragging {
     position: relative;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.85;
+    opacity: 0.9;
+    border-radius: var(--radius-container);
     box-shadow: var(--shadow-float);
   }
 }
 
-.fr__card-options {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
+.fr__entry-name {
+  grid-area: name;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  min-width: 0;
+  overflow-wrap: anywhere;
 
-.fr__card-header {
-  & > h3,
-  & > h4 {
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-
-  & > input {
-    margin: 5px;
+  &.fr__entry-name--unnamed {
+    color: var(--text-muted);
+    font-style: italic;
+    font-weight: 400;
   }
 }
 
-.fr__card-header,
-.fr__card-body {
+.fr__entry-amount {
+  grid-area: amount;
+  justify-self: end;
+  font-weight: 600;
+}
+
+input.fr__entry-amount {
+  width: 6.5rem;
+  text-align: right;
+}
+
+.fr__entry-description {
+  grid-area: description;
+  margin: 0;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.fr__entry-actions {
+  grid-area: actions;
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.fr__card-body--no-desc {
+  align-items: center;
   justify-content: flex-end;
+  gap: 0.125rem;
+
+  & select {
+    max-width: 8.5rem;
+    min-height: 2.25rem;
+    padding-block: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
 }
 </style>

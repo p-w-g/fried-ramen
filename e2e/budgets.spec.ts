@@ -108,7 +108,9 @@ test('reopening the app lands on the budget used last', async ({ page }) => {
 test('/budgets works as a direct link', async ({ page }) => {
   await page.goto('/budgets');
 
-  await expect(page.getByRole('heading', { name: '🍱 Budgets' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Budgets', level: 1 }),
+  ).toBeVisible();
 });
 
 test('deleting asks in the app, and cancel or Esc keeps the budget', async ({
