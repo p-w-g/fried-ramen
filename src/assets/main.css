@@ -50,9 +50,6 @@ body {
   color: var(--text);
   background-color: var(--bg);
   margin: 0;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  height: 100%;
 }
 
 #app {

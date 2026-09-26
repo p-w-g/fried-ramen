@@ -139,3 +139,17 @@ test('a total in the tens of millions still fits a phone screen', async ({
     page.viewportSize()!.width,
   );
 });
+
+test('one over-wide field never widens the whole page', async ({ page }) => {
+  const fr = app(page);
+  // Safari sizes inputs wider than Chromium; a grid on <body> once grew
+  // to fit them and pushed the top bar and navbar off an iPhone screen.
+  await page.addStyleTag({ content: '#expense { min-width: 30rem; }' });
+  await fr.openForm();
+
+  const toggle = await fr.themeToggle().boundingBox();
+  const nav = await page.getByRole('navigation').boundingBox();
+  const screenWidth = page.viewportSize()!.width;
+  expect(toggle!.x + toggle!.width).toBeLessThanOrEqual(screenWidth);
+  expect(nav!.width).toBeLessThanOrEqual(screenWidth);
+});
