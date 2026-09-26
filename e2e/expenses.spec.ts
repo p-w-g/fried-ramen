@@ -125,3 +125,17 @@ test('clearing everything removes all expenses and categories', async ({
   await expect(fr.card('Coffee')).toHaveCount(0);
   await expect(fr.categoryHeading('food')).toHaveCount(0);
 });
+
+test('a total in the tens of millions still fits a phone screen', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.addExpense('Everything', 99_999_999.99);
+
+  await fr.expectTotal(99_999_999.99);
+  // Phones widen the layout to fit overflow, so compare with the device.
+  const total = await page.locator('.fr__total .fr__amount').boundingBox();
+  expect(total!.x + total!.width).toBeLessThanOrEqual(
+    page.viewportSize()!.width,
+  );
+});

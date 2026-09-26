@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRegisterSW } from 'virtual:pwa-register/vue';
+import BaseNotice from './BaseNotice.vue';
 
 const { needRefresh, updateServiceWorker } = useRegisterSW();
 
@@ -19,19 +20,10 @@ async function update() {
 </script>
 
 <template>
-  <div v-if="needRefresh" class="fr__update-prompt" role="status">
+  <BaseNotice v-if="needRefresh" role="status">
     New noodles are ready.
-    <button @click="update">Reload</button>
-  </div>
+    <template #action>
+      <button @click="update">Reload</button>
+    </template>
+  </BaseNotice>
 </template>
-
-<style scoped>
-.fr__update-prompt {
-  position: fixed;
-  inset: auto 1rem 1rem;
-  padding-left: 1rem;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: var(--glass-shadow);
-}
-</style>

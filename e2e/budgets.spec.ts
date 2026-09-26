@@ -40,7 +40,7 @@ test('names that would share a URL are refused', async ({ page }) => {
   );
 
   await fr.renameBudget('Current', 'ALL MY DEBT');
-  await expect(fr.problem()).toHaveText(
+  await expect(fr.renameProblem('Current')).toHaveText(
     'A budget called “All my debt” already exists.',
   );
   await page.getByRole('button', { name: 'Cancel' }).click();
@@ -108,5 +108,71 @@ test('reopening the app lands on the budget used last', async ({ page }) => {
 test('/budgets works as a direct link', async ({ page }) => {
   await page.goto('/budgets');
 
-  await expect(page.getByRole('heading', { name: '🍱 Budgets' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Budgets', level: 1 }),
+  ).toBeVisible();
+});
+
+test('deleting asks in the app, and cancel or Esc keeps the budget', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.createBudget('Japan');
+  await fr.goToBudgets();
+  const deleteJapan = () => fr.budgetAction('Japan', 'Delete');
+  const dialog = page.getByRole('dialog');
+
+  await deleteJapan();
+  await expect(dialog).toContainText('Delete “Japan” and everything in it?');
+  await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeFocused();
+  await fr.answerDialog('Cancel');
+  await expect(fr.budgetRow('Japan')).toHaveCount(1);
+
+  await deleteJapan();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(fr.budgetRow('Japan')).toHaveCount(1);
+});
+
+test('the budgets page shows each total, compact once it gets long', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', 4.5);
+  await fr.createBudget('Japan');
+  await fr.addExpense('March', 180000);
+
+  await fr.goToBudgets();
+
+  await expect(fr.budgetTotal('Current')).toHaveText('4.50');
+  await expect(fr.budgetTotal('Japan')).toHaveText('180K');
+  await expect(fr.budgetRow('Japan')).toContainText('Total 180,000.00');
+});
+
+test('a tap anywhere on a budget row opens it, except on its menu', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.createBudget('Japan');
+  await fr.goToBudgets();
+
+  const row = await fr.budgetRow('Japan').boundingBox();
+  await page.mouse.click(row!.x + row!.width * 0.6, row!.y + row!.height / 2);
+  await expect(page).toHaveURL(/\?budget=japan$/);
+
+  await fr.goToBudgets();
+  const more = page.getByRole('button', { name: 'More for Japan' });
+  // Near the corner: the icon itself stacks above the row link anyway.
+  await more.click({ position: { x: 4, y: 4 } });
+  const rename = fr.budgetRow('Japan').getByRole('button', { name: 'Rename' });
+  await expect(rename).toBeVisible();
+  await expect(page).toHaveURL(/\/budgets$/);
+  await page.keyboard.press('Escape');
+  await expect(rename).toBeHidden();
+});
+
+test('the ramen in the top bar goes home to the budgets', async ({ page }) => {
+  await app(page).homeLink().click();
+
+  await expect(page).toHaveURL(/\/budgets$/);
 });

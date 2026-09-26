@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef } from 'vue';
 import { InvalidBackupError } from '@/backup';
+import { confirmAction } from '@/confirm';
 import { useBackupStore } from '@/stores/backup';
 
 const backup = useBackupStore();
@@ -31,7 +32,11 @@ async function importFrom(event: Event) {
   input.value = '';
   if (!file) return;
 
-  if (!confirm('Replace everything in Fried Ramen with this backup?')) return;
+  const confirmed = await confirmAction(
+    'Replace everything in Fried Ramen with this backup?',
+    'Replace',
+  );
+  if (!confirmed) return;
   try {
     problem.value = '';
     await backup.importAll(await file.text());
@@ -43,23 +48,36 @@ async function importFrom(event: Event) {
 </script>
 
 <template>
-  <form class="fr__form" @submit.prevent>
-    <fieldset class="fr__label-wrapper">
-      <p>Last backup: {{ lastExportLabel }}</p>
-      <p v-if="!backup.isStoragePersistent">
-        This browser may clear your data. Keep a backup.
-      </p>
-      <p v-if="problem" role="alert">{{ problem }}</p>
+  <section class="fr__backup">
+    <h2 class="fr__subheading">Backup</h2>
+    <p>Last backup: {{ lastExportLabel }}</p>
+    <p v-if="!backup.isStoragePersistent" class="fr__hint">
+      This browser may clear your data. Keep a backup.
+    </p>
+    <p v-if="problem" role="alert" class="fr__problem">{{ problem }}</p>
+    <div class="fr__actions">
       <button type="button" @click="exportNow">Export backup</button>
       <button type="button" @click="fileInput?.click()">Import backup</button>
-      <input
-        ref="file-input"
-        type="file"
-        accept="application/json,.json"
-        hidden
-        aria-label="Backup file"
-        @change="importFrom"
-      />
-    </fieldset>
-  </form>
+    </div>
+    <input
+      ref="file-input"
+      type="file"
+      accept="application/json,.json"
+      hidden
+      aria-label="Backup file"
+      @change="importFrom"
+    />
+  </section>
 </template>
+
+<style>
+.fr__backup {
+  & p {
+    margin: 0.25rem 0;
+  }
+
+  & .fr__actions {
+    margin-top: 0.75rem;
+  }
+}
+</style>

@@ -47,5 +47,26 @@ export const toCents = (amount: number) => Math.round(amount * 100);
 
 export const fromCents = (cents: number) => cents / 100;
 
+const ledger = new Intl.NumberFormat(undefined, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** Always two decimals, so amounts line up in a column. */
+export const formatAmount = (cents: number) => ledger.format(fromCents(cents));
+
+const compact = new Intl.NumberFormat(undefined, {
+  notation: 'compact',
+  maximumSignificantDigits: 3,
+});
+
+/** Exact while it fits a glance; 132K or 8.24M once it would not. */
+export function formatCompactAmount(cents: number) {
+  const amount = fromCents(cents);
+  return Math.abs(amount) < 10_000
+    ? formatAmount(cents)
+    : compact.format(amount);
+}
+
 export const sumCents = (expenses: Expense[]) =>
   expenses.reduce((total, expense) => total + expense.amountCents, 0);

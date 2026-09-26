@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { db } from '@/db';
 import { BudgetNameError, useBudgetsStore } from './budgets';
 
@@ -100,5 +100,29 @@ describe('budgets', () => {
     await budgets.remove(only.id);
 
     expect(await db.budgets.count()).toBe(0);
+  });
+
+  it('sums each budget on its own, and an empty one to 0', async () => {
+    const budgets = useBudgetsStore();
+    const japan = await budgets.create('Japan');
+    const debt = await budgets.create('Debt');
+    const empty = await budgets.create('Empty');
+    const add = (budgetId: number, amountCents: number) =>
+      db.expenses.add({
+        budgetId,
+        name: '',
+        amountCents,
+        description: '',
+        category: null,
+      });
+    await add(japan.id, 18_000_000);
+    await add(japan.id, 50);
+    await add(debt.id, 999);
+
+    budgets.watchAll();
+
+    await vi.waitFor(() => expect(budgets.totalOf(japan.id)).toBe(18_000_050));
+    expect(budgets.totalOf(debt.id)).toBe(999);
+    expect(budgets.totalOf(empty.id)).toBe(0);
   });
 });

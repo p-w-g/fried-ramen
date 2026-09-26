@@ -18,22 +18,23 @@ const budget = useBudgetStore();
 
 <style>
 .fr__navbar {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.5rem;
   position: sticky;
   bottom: 0;
-  margin-top: 1em;
-  padding-bottom: env(safe-area-inset-bottom);
-  border-radius: var(--radius) var(--radius) 0 0;
-  background-color: white;
-  box-shadow: var(--glass-shadow);
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom));
+  background-color: var(--surface);
+  border-top: 1px solid var(--divider);
 
   & > a {
-    flex: 1 1 0;
-    margin: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius);
-    background: var(--glass-green);
-    color: var(--text);
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-control);
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
     text-decoration: none;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -41,7 +42,8 @@ const budget = useBudgetStore();
   }
 
   & > a.router-link-exact-active {
-    background: var(--glass-steel);
+    color: var(--text);
+    background: var(--accent-soft);
   }
 }
 </style>

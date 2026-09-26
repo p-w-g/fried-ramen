@@ -68,8 +68,8 @@ test('toggles say whether they are open and work from the keyboard', async ({
   page,
 }) => {
   const fr = app(page);
-  const formToggle = page.getByRole('button', { name: 'Expense form' });
-  const foodToggle = page.getByRole('button', { name: 'food: 5' });
+  const formToggle = fr.formToggle;
+  const foodToggle = page.getByRole('button', { name: 'food 5.00' });
   await expect(formToggle).toHaveAttribute('aria-expanded', 'true');
   await expect(foodToggle).toHaveAttribute('aria-expanded', 'true');
 
@@ -87,4 +87,35 @@ test('an expense without a name is announced as unnamed', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Unnamed expense' }),
   ).toBeAttached();
+});
+
+test('the confirm dialog has no axe violations', async ({ page }) => {
+  const fr = app(page);
+  await fr.goToBudgets();
+  await fr.budgetAction('Current', 'Delete');
+  await expect(page.getByRole('dialog')).toBeVisible();
+
+  expect(await violations(page)).toEqual([]);
+});
+
+test('a budget menu has no axe violations', async ({ page }) => {
+  await app(page).goToBudgets();
+  await page.getByRole('button', { name: 'More for Current' }).click();
+  await expect(page.getByRole('button', { name: 'Rename' })).toBeVisible();
+
+  expect(await violations(page)).toEqual([]);
+});
+
+test.describe('dark theme', () => {
+  test.use({ colorScheme: 'dark' });
+
+  test('the budget page has no axe violations', async ({ page }) => {
+    expect(await violations(page)).toEqual([]);
+  });
+
+  test('the budgets page has no axe violations', async ({ page }) => {
+    await app(page).goToBudgets();
+
+    expect(await violations(page)).toEqual([]);
+  });
 });

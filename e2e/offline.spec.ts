@@ -19,6 +19,11 @@ test('keeps working offline once the service worker is installed', async ({
   await page.reload();
 
   await fr.expectTotal(5);
+  const ramenLoaded = await fr
+    .homeLink()
+    .locator('img')
+    .evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  expect(ramenLoaded).toBe(true);
   await fr.addExpense('Tea', 3);
   await fr.expectTotal(8);
 

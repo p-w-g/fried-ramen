@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseAmount } from './domain';
+import { formatAmount, formatCompactAmount, parseAmount } from './domain';
 
 describe('parseAmount', () => {
   it.each([
@@ -20,4 +20,28 @@ describe('parseAmount', () => {
       expect(parseAmount(typed)).toBeNull();
     },
   );
+});
+
+describe('formatAmount', () => {
+  it.each([
+    [500, '5.00'],
+    [30, '0.30'],
+    [123450, '1,234.50'],
+    [-325, '-3.25'],
+  ])('shows %d cents as %s', (cents, shown) => {
+    expect(formatAmount(cents)).toBe(shown);
+  });
+});
+
+describe('formatCompactAmount', () => {
+  it.each([
+    [999_999, '9,999.99'],
+    [1_000_000, '10K'],
+    [13_240_000, '132K'],
+    [18_000_000, '180K'],
+    [824_000_000, '8.24M'],
+    [-1_234_500, '-12.3K'],
+  ])('shows %d cents as %s', (cents, shown) => {
+    expect(formatCompactAmount(cents)).toBe(shown);
+  });
 });

@@ -52,7 +52,7 @@ export default defineConfig({
         // Without it, a page opened before the worker first installed is
         // never controlled, so accepting an update there would not reload.
         clientsClaim: true,
-        globPatterns: ['**/*.{js,css,html,ttf}', 'manifest.json'],
+        globPatterns: ['**/*.{js,css,html}', 'manifest.json'],
       },
     }),
   ],

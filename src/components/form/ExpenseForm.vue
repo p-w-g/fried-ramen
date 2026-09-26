@@ -51,69 +51,51 @@ async function deleteCategory(event: Event) {
 </script>
 
 <template>
-  <div>
-    <form id="expenses-form" class="fr__form" @submit.prevent="saveExpense">
-      <fieldset class="fr__label-wrapper">
-        <div class="fr__label-wrapper">
-          <label for="expense">Expense</label>
-          <input
-            id="expense"
-            v-model="name"
-            type="text"
-            class="fr__input-box"
-          />
-        </div>
-        <div class="fr__label-wrapper">
-          <label for="amount">Amount</label>
-          <input
-            id="amount"
-            v-model="amount"
-            type="text"
-            inputmode="decimal"
-            :pattern="AMOUNT_PATTERN"
-            class="fr__input-box"
-          />
-        </div>
-        <div class="fr__label-wrapper">
-          <label for="description">Description</label>
-          <input
-            id="description"
-            v-model="description"
-            type="text"
-            class="fr__input-box"
-          />
-        </div>
-        <button form="expenses-form">Save Expense</button>
-      </fieldset>
-    </form>
-    <form id="labels-form" class="fr__form" @submit.prevent="saveCategory">
-      <fieldset class="fr__label-wrapper">
-        <div class="fr__label-wrapper">
-          <label for="label">Category</label>
-          <input
-            id="label"
-            v-model="category"
-            type="text"
-            class="fr__input-box"
-          />
-        </div>
-        <button form="labels-form">Save Category</button>
-      </fieldset>
-    </form>
-    <form v-if="budget.categories.length" class="fr__form" @submit.prevent>
-      <div class="fr__label-wrapper fr__label-wrapper--lean">
-        <label for="removal-menu">Delete empty category </label>
-        <select id="removal-menu" @change="deleteCategory">
-          <option value="" disabled selected>Select to delete</option>
-          <option
-            v-for="existing in budget.categories"
-            :key="existing"
-            :value="existing"
-          >
-            {{ existing }}
-          </option>
-        </select>
+  <form id="expenses-form" class="fr__stack" @submit.prevent="saveExpense">
+    <div class="fr__field-row">
+      <div class="fr__field">
+        <label for="expense">Expense</label>
+        <input id="expense" v-model="name" type="text" />
       </div>
-    </form>
+      <div class="fr__field fr__field--amount">
+        <label for="amount">Amount</label>
+        <input
+          id="amount"
+          v-model="amount"
+          type="text"
+          inputmode="decimal"
+          :pattern="AMOUNT_PATTERN"
+        />
+      </div>
+    </div>
+    <div class="fr__field">
+      <label for="description">Description</label>
+      <input id="description" v-model="description" type="text" />
+    </div>
+    <button form="expenses-form" class="fr__button--primary">
+      Save expense
+    </button>
+  </form>
+
+  <h2 class="fr__subheading">Categories</h2>
+  <form id="labels-form" class="fr__field-row" @submit.prevent="saveCategory">
+    <div class="fr__field">
+      <label for="label">New category</label>
+      <input id="label" v-model="category" type="text" />
+    </div>
+    <button form="labels-form">Add</button>
+  </form>
+  <div v-if="budget.categories.length" class="fr__field">
+    <label for="removal-menu">Delete an empty category</label>
+    <select id="removal-menu" @change="deleteCategory">
+      <option value="" disabled selected>Choose one</option>
+      <option
+        v-for="existing in budget.categories"
+        :key="existing"
+        :value="existing"
+      >
+        {{ existing }}
+      </option>
+    </select>
   </div>
 </template>
