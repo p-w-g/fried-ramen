@@ -88,3 +88,26 @@ test('an expense without a name is announced as unnamed', async ({ page }) => {
     page.getByRole('heading', { name: 'Unnamed expense' }),
   ).toBeAttached();
 });
+
+test('the confirm dialog has no axe violations', async ({ page }) => {
+  const fr = app(page);
+  await fr.goToBudgets();
+  await fr.budgetRow('Current').getByRole('button', { name: 'Delete' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+
+  expect(await violations(page)).toEqual([]);
+});
+
+test.describe('dark theme', () => {
+  test.use({ colorScheme: 'dark' });
+
+  test('the budget page has no axe violations', async ({ page }) => {
+    expect(await violations(page)).toEqual([]);
+  });
+
+  test('the budgets page has no axe violations', async ({ page }) => {
+    await app(page).goToBudgets();
+
+    expect(await violations(page)).toEqual([]);
+  });
+});

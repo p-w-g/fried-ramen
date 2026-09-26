@@ -57,3 +57,36 @@ test('unknown budget', async ({ page }) => {
 
   await expect(page).toHaveScreenshot('unknown-budget.png', { fullPage: true });
 });
+
+test.describe('dark theme', () => {
+  test.use({ colorScheme: 'dark' });
+
+  test('form open with categorised and unassigned expenses', async ({
+    page,
+  }) => {
+    const fr = app(page);
+    await fr.addExpense('Coffee', 5, 'flat white');
+    await fr.addExpense('', 25);
+    await fr.addCategory('food');
+    await fr.assignCategory('Coffee', 'food');
+
+    await expect(page).toHaveScreenshot('populated-dark.png', {
+      fullPage: true,
+    });
+  });
+
+  test('the delete dialog', async ({ page }) => {
+    const fr = app(page);
+    await fr.createBudget('April Tour of Japan');
+    await fr.goToBudgets();
+    await fr
+      .budgetRow('Current')
+      .getByRole('button', { name: 'Delete' })
+      .click();
+
+    // The backdrop blends the page nondeterministically; the dialog is the point.
+    await expect(page.getByRole('dialog')).toHaveScreenshot(
+      'delete-dialog-dark.png',
+    );
+  });
+});
