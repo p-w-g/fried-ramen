@@ -154,6 +154,9 @@ export function app(page: Page) {
 
     goToBudgets,
 
+    homeLink: () =>
+      page.getByRole('link', { name: 'Fried Ramen: all budgets' }),
+
     answerDialog,
 
     themeToggle: () =>

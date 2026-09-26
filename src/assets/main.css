@@ -247,13 +247,22 @@ button.fr__icon-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.25rem 0.5rem 0 1rem;
+  padding: 0.25rem 0.5rem 0;
 }
 
-.fr__wordmark {
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
+/* Pixel art: shown at its own 32px and scaled by whole device pixels. */
+.fr__home {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-control);
+
+  & img {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+  }
 }
 
 .fr__page {

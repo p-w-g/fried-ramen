@@ -170,3 +170,9 @@ test('a tap anywhere on a budget row opens it, except on its menu', async ({
   await page.keyboard.press('Escape');
   await expect(rename).toBeHidden();
 });
+
+test('the ramen in the top bar goes home to the budgets', async ({ page }) => {
+  await app(page).homeLink().click();
+
+  await expect(page).toHaveURL(/\/budgets$/);
+});
