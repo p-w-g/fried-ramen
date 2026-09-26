@@ -25,10 +25,10 @@ const { tone = 'info' } = defineProps<{ tone?: 'info' | 'danger' }>();
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: white;
-  border: 1px solid var(--pressed);
-  border-radius: var(--radius);
-  box-shadow: var(--glass-shadow);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-container);
+  box-shadow: var(--shadow-float);
 
   & p {
     margin: 0;

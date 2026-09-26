@@ -9,6 +9,7 @@ import {
 } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 import { useDragToCategory } from './dragAndDrop';
+import AppIcon from '@/components/shared/AppIcon.vue';
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
 import EditIcon from '@/assets/icons/edit_square.svg';
 import SaveIcon from '@/assets/icons/save_as.svg';
@@ -116,7 +117,7 @@ function startDrag(event: PointerEvent) {
             :aria-label="`Complete ${label()}`"
             @click="budget.completeExpense(expense.id)"
           >
-            <img :src="CheckIcon" alt="" class="fr__button" />
+            <AppIcon :src="CheckIcon" />
           </button>
         </li>
         <li v-if="!draft">
@@ -126,7 +127,7 @@ function startDrag(event: PointerEvent) {
             :aria-label="`Edit ${label()}`"
             @click="startEditing"
           >
-            <img :src="EditIcon" alt="" class="fr__button" />
+            <AppIcon :src="EditIcon" />
           </button>
         </li>
         <li v-if="draft">
@@ -136,7 +137,7 @@ function startDrag(event: PointerEvent) {
             :aria-label="`Save ${label()}`"
             @click="saveEdit"
           >
-            <img :src="SaveIcon" alt="" class="fr__button" />
+            <AppIcon :src="SaveIcon" />
           </button>
         </li>
         <li>
@@ -158,13 +159,9 @@ function startDrag(event: PointerEvent) {
 
 <style>
 .fr__card {
-  /* From https://css.glass */
-  background: rgba(210, 221, 239, 0.3);
-  border-radius: var(--radius);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: var(--glass-border);
+  background: var(--surface);
+  border-radius: var(--radius-container);
+  border: 1px solid var(--divider);
   padding: 0 1rem;
   margin: 1rem;
 
@@ -173,7 +170,7 @@ function startDrag(event: PointerEvent) {
   -webkit-touch-callout: none;
 
   &.fr__card--edit-mode {
-    background: var(--glass-steel);
+    background: var(--accent-soft);
     -webkit-user-select: auto;
     user-select: auto;
   }
@@ -183,7 +180,7 @@ function startDrag(event: PointerEvent) {
     z-index: 1;
     pointer-events: none;
     opacity: 0.85;
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--shadow-float);
   }
 }
 

@@ -42,12 +42,14 @@ watch(
 .fr__dialog {
   max-width: min(24rem, calc(100vw - 2rem));
   padding: 1rem 1.25rem;
+  color: var(--text);
+  background: var(--surface);
   border: 0;
-  border-radius: var(--radius);
-  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-container);
+  box-shadow: var(--shadow-float);
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--backdrop);
   }
 }
 

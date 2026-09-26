@@ -5,6 +5,7 @@ import { useBudgetStore } from '@/stores/budget';
 import { hoveredDropZone } from './dragAndDrop';
 import ExpensesWrapper from './ExpensesWrapper.vue';
 import ExpenseCard from './ExpenseCard.vue';
+import AppIcon from '@/components/shared/AppIcon.vue';
 import FlameIcon from '@/assets/icons/whatshot-24px.svg';
 
 const budget = useBudgetStore();
@@ -45,7 +46,7 @@ async function clearBudget() {
       :aria-label="`Clear ${budget.budget?.name ?? 'this budget'}`"
       @click="clearBudget"
     >
-      <img :src="FlameIcon" alt="" class="fr__button" />
+      <AppIcon :src="FlameIcon" />
     </button>
   </div>
 </template>

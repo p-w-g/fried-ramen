@@ -23,16 +23,14 @@ const budget = useBudgetStore();
   bottom: 0;
   margin-top: 1em;
   padding-bottom: env(safe-area-inset-bottom);
-  border-radius: var(--radius) var(--radius) 0 0;
-  background-color: white;
-  box-shadow: var(--glass-shadow);
+  background-color: var(--surface);
+  border-top: 1px solid var(--divider);
 
   & > a {
     flex: 1 1 0;
     margin: 0.5rem;
     padding: 0.5rem 1rem;
-    border-radius: var(--radius);
-    background: var(--glass-green);
+    border-radius: var(--radius-control);
     color: var(--text);
     text-decoration: none;
     overflow: hidden;
@@ -41,7 +39,7 @@ const budget = useBudgetStore();
   }
 
   & > a.router-link-exact-active {
-    background: var(--glass-steel);
+    background: var(--accent-soft);
   }
 }
 </style>
