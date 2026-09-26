@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef } from 'vue';
 import { InvalidBackupError } from '@/backup';
+import { confirmAction } from '@/confirm';
 import { useBackupStore } from '@/stores/backup';
 
 const backup = useBackupStore();
@@ -31,7 +32,11 @@ async function importFrom(event: Event) {
   input.value = '';
   if (!file) return;
 
-  if (!confirm('Replace everything in Fried Ramen with this backup?')) return;
+  const confirmed = await confirmAction(
+    'Replace everything in Fried Ramen with this backup?',
+    'Replace',
+  );
+  if (!confirmed) return;
   try {
     problem.value = '';
     await backup.importAll(await file.text());

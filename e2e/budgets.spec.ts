@@ -110,3 +110,26 @@ test('/budgets works as a direct link', async ({ page }) => {
 
   await expect(page.getByRole('heading', { name: '🍱 Budgets' })).toBeVisible();
 });
+
+test('deleting asks in the app, and cancel or Esc keeps the budget', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.createBudget('Japan');
+  await fr.goToBudgets();
+  const deleteJapan = fr.budgetRow('Japan').getByRole('button', {
+    name: 'Delete',
+  });
+  const dialog = page.getByRole('dialog');
+
+  await deleteJapan.click();
+  await expect(dialog).toContainText('Delete “Japan” and everything in it?');
+  await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeFocused();
+  await fr.answerDialog('Cancel');
+  await expect(fr.budgetRow('Japan')).toHaveCount(1);
+
+  await deleteJapan.click();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(fr.budgetRow('Japan')).toHaveCount(1);
+});

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmDialog from './components/shared/ConfirmDialog.vue';
 import ErrorBanner from './components/shared/ErrorBanner.vue';
 import NavBar from './components/shared/NavBar.vue';
 import UpdatePrompt from './components/shared/UpdatePrompt.vue';
@@ -12,6 +13,9 @@ void useBackupStore().checkUp();
     <RouterView />
   </main>
   <NavBar />
-  <UpdatePrompt />
-  <ErrorBanner />
+  <div class="fr__notices">
+    <ErrorBanner />
+    <UpdatePrompt />
+  </div>
+  <ConfirmDialog />
 </template>

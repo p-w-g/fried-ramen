@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { confirmAction } from '@/confirm';
 import { fromCents } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
 import { hoveredDropZone } from './dragAndDrop';
@@ -10,7 +11,11 @@ const budget = useBudgetStore();
 
 async function clearBudget() {
   const name = budget.budget?.name ?? 'this budget';
-  if (confirm(`Clear every expense and category in “${name}”?`)) {
+  const confirmed = await confirmAction(
+    `Clear every expense and category in “${name}”?`,
+    'Clear',
+  );
+  if (confirmed) {
     await budget.clearBudget();
   }
 }

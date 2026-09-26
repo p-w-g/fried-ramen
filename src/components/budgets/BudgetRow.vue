@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { confirmAction } from '@/confirm';
 import type { Budget } from '@/domain';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
 
@@ -24,8 +25,9 @@ async function saveName() {
 }
 
 async function remove() {
-  const confirmed = confirm(
+  const confirmed = await confirmAction(
     `Delete “${budget.name}” and everything in it? This cannot be undone.`,
+    'Delete',
   );
   if (confirmed) await budgets.remove(budget.id);
 }

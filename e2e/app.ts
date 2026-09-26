@@ -45,6 +45,13 @@ export function app(page: Page) {
     return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   };
 
+  /** Answers the in-app confirm dialog by the label of its button. */
+  const answerDialog = async (label: string) => {
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('button', { name: label, exact: true }).click();
+    await expect(dialog).toBeHidden();
+  };
+
   const openForm = async () => {
     if (!(await page.locator('#expenses-form').isVisible())) {
       await page.locator('input.accordion').click();
@@ -122,6 +129,8 @@ export function app(page: Page) {
 
     goToBudgets,
 
+    answerDialog,
+
     budgetRow,
 
     /** The navbar tab naming the budget that is open. */
@@ -147,8 +156,8 @@ export function app(page: Page) {
 
     async deleteBudget(name: string) {
       await goToBudgets();
-      page.once('dialog', (dialog) => dialog.accept());
       await budgetRow(name).getByRole('button', { name: 'Delete' }).click();
+      await answerDialog('Delete');
     },
 
     problem: () => page.getByRole('alert'),
@@ -163,19 +172,19 @@ export function app(page: Page) {
 
     async importBackup(file: string | { name: string; buffer: Buffer }) {
       await goToBudgets();
-      page.once('dialog', (dialog) => dialog.accept());
       const files =
         typeof file === 'string'
           ? file
           : { ...file, mimeType: 'application/json' };
       await page.setInputFiles('input[type=file]', files);
+      await answerDialog('Replace');
     },
 
     lastBackup: () => page.getByText(/^Last backup:/),
 
     async clearEverything() {
-      page.once('dialog', (dialog) => dialog.accept());
       await page.getByRole('button', { name: /^Clear / }).click();
+      await answerDialog('Clear');
     },
 
     async expectTotal(total: number) {
