@@ -162,6 +162,12 @@ export function app(page: Page) {
 
     problem: () => page.getByRole('alert'),
 
+    /** Scoped, since the create form's problem can still be showing. */
+    renameProblem: (name: string) =>
+      page
+        .locator('form', { has: page.getByLabel(`New name for ${name}`) })
+        .getByRole('alert'),
+
     /** Returns the path of the downloaded backup file. */
     async exportBackup() {
       await goToBudgets();

@@ -40,7 +40,7 @@ test('names that would share a URL are refused', async ({ page }) => {
   );
 
   await fr.renameBudget('Current', 'ALL MY DEBT');
-  await expect(fr.problem()).toHaveText(
+  await expect(fr.renameProblem('Current')).toHaveText(
     'A budget called “All my debt” already exists.',
   );
   await page.getByRole('button', { name: 'Cancel' }).click();
