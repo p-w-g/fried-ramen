@@ -135,3 +135,18 @@ test('deleting asks in the app, and cancel or Esc keeps the budget', async ({
   await expect(dialog).toBeHidden();
   await expect(fr.budgetRow('Japan')).toHaveCount(1);
 });
+
+test('the budgets page shows each total, compact once it gets long', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', 4.5);
+  await fr.createBudget('Japan');
+  await fr.addExpense('March', 180000);
+
+  await fr.goToBudgets();
+
+  await expect(fr.budgetTotal('Current')).toHaveText('4.50');
+  await expect(fr.budgetTotal('Japan')).toHaveText('180K');
+  await expect(fr.budgetRow('Japan')).toContainText('Total 180,000.00');
+});

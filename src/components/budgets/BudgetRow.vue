@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { confirmAction } from '@/confirm';
-import type { Budget } from '@/domain';
+import { formatAmount, formatCompactAmount, type Budget } from '@/domain';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
 
 const { budget } = defineProps<{ budget: Budget }>();
@@ -60,6 +60,14 @@ async function remove() {
           {{ budget.name }}
         </RouterLink>
       </h3>
+      <p class="fr__budget-total fr__amount">
+        <span aria-hidden="true">
+          {{ formatCompactAmount(budgets.totalOf(budget.id)) }}
+        </span>
+        <span class="fr__visually-hidden">
+          Total {{ formatAmount(budgets.totalOf(budget.id)) }}
+        </span>
+      </p>
       <button
         type="button"
         class="fr__button--quiet"
@@ -97,6 +105,11 @@ async function remove() {
     font-weight: 500;
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  & .fr__budget-total {
+    margin: 0 0.25rem 0 0;
+    font-weight: 600;
   }
 
   & h3 a {

@@ -153,6 +153,10 @@ export function app(page: Page) {
 
     budgetRow,
 
+    /** What the budgets page shows, e.g. "180K"; screen readers get it exact. */
+    budgetTotal: (name: string) =>
+      budgetRow(name).locator('.fr__budget-total [aria-hidden="true"]'),
+
     /** The navbar tab naming the budget that is open. */
     openBudgetTab: () => nav.getByRole('link').first(),
 

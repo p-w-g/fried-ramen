@@ -45,7 +45,9 @@ test('collapsed category', async ({ page }) => {
 
 test('budgets page', async ({ page }) => {
   const fr = app(page);
+  await fr.addExpense('Coffee', 4.5);
   await fr.createBudget('April Tour of Japan');
+  await fr.addExpense('Everything', 8_240_000);
   await fr.goToBudgets();
 
   await expect(page).toHaveScreenshot('budgets.png', { fullPage: true });

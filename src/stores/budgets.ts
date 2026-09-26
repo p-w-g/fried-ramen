@@ -24,17 +24,26 @@ async function checkName(name: string, renamingId?: number) {
 
 export const useBudgetsStore = defineStore('budgets', () => {
   const budgets = shallowRef<Budget[]>([]);
+  /** Cents per budget id; budgets without expenses are missing. */
+  const totals = shallowRef(new Map<number, number>());
   const isLoaded = ref(false);
   let subscription: Subscription | undefined;
 
   function watchAll() {
-    subscription ??= liveQuery(() => db.budgets.toArray()).subscribe(
-      (stored) => {
-        budgets.value = stored;
-        isLoaded.value = true;
-      },
-    );
+    subscription ??= liveQuery(() =>
+      Promise.all([db.budgets.toArray(), db.expenses.toArray()]),
+    ).subscribe(([storedBudgets, storedExpenses]) => {
+      const sums = new Map<number, number>();
+      for (const { budgetId, amountCents } of storedExpenses) {
+        sums.set(budgetId, (sums.get(budgetId) ?? 0) + amountCents);
+      }
+      budgets.value = storedBudgets;
+      totals.value = sums;
+      isLoaded.value = true;
+    });
   }
+
+  const totalOf = (id: number) => totals.value.get(id) ?? 0;
 
   const create = (name: string) =>
     db.transaction('rw', db.budgets, async (): Promise<Budget> => {
@@ -55,5 +64,5 @@ export const useBudgetsStore = defineStore('budgets', () => {
       await db.budgets.delete(id);
     });
 
-  return { budgets, isLoaded, watchAll, create, rename, remove };
+  return { budgets, isLoaded, watchAll, totalOf, create, rename, remove };
 });
