@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
 
 const css = readFileSync(join(import.meta.dirname, 'assets/main.css'), 'utf8');
+const html = readFileSync(join(import.meta.dirname, '../index.html'), 'utf8');
 
 /** Reads `--name: light-dark(#light, #dark)` straight from main.css. */
 function token(name: string, theme: 'light' | 'dark') {
@@ -51,3 +52,15 @@ describe.each(['light', 'dark'] as const)('%s theme', (theme) => {
     expect(ratio).toBeGreaterThanOrEqual(floor);
   });
 });
+
+/** Browser bars paint before any CSS or script, from these static tags. */
+test.each(['light', 'dark'] as const)(
+  'the %s theme-color in index.html matches --bg',
+  (theme) => {
+    const meta = new RegExp(
+      `content="(#[0-9a-f]{6})"\\s+media="\\(prefers-color-scheme: ${theme}\\)"`,
+      'i',
+    ).exec(html);
+    expect(meta?.[1]).toBe(token('bg', theme));
+  },
+);

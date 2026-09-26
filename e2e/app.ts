@@ -131,6 +131,9 @@ export function app(page: Page) {
 
     answerDialog,
 
+    themeToggle: () =>
+      page.getByRole('button', { name: /^Switch to (light|dark) theme$/ }),
+
     budgetRow,
 
     /** The navbar tab naming the budget that is open. */

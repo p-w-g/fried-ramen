@@ -17,7 +17,27 @@
       href="/img/icons/favicon-16x16.png"
     />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#f5f5f1" />
+    <meta
+      name="theme-color"
+      content="#f5f5f1"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#111513"
+      media="(prefers-color-scheme: dark)"
+    />
+    <script>
+      // Before first paint, so a chosen theme never flashes the system one.
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme;
+        }
+      } catch {
+        // Storage is blocked: follow the system theme.
+      }
+    </script>
     <meta name="apple-mobile-web-app-title" content="Fried Ramen" />
     <link
       rel="apple-touch-icon"
