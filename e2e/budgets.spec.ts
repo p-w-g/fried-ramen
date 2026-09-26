@@ -119,18 +119,16 @@ test('deleting asks in the app, and cancel or Esc keeps the budget', async ({
   const fr = app(page);
   await fr.createBudget('Japan');
   await fr.goToBudgets();
-  const deleteJapan = fr.budgetRow('Japan').getByRole('button', {
-    name: 'Delete',
-  });
+  const deleteJapan = () => fr.budgetAction('Japan', 'Delete');
   const dialog = page.getByRole('dialog');
 
-  await deleteJapan.click();
+  await deleteJapan();
   await expect(dialog).toContainText('Delete “Japan” and everything in it?');
   await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeFocused();
   await fr.answerDialog('Cancel');
   await expect(fr.budgetRow('Japan')).toHaveCount(1);
 
-  await deleteJapan.click();
+  await deleteJapan();
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   await expect(fr.budgetRow('Japan')).toHaveCount(1);
@@ -149,4 +147,26 @@ test('the budgets page shows each total, compact once it gets long', async ({
   await expect(fr.budgetTotal('Current')).toHaveText('4.50');
   await expect(fr.budgetTotal('Japan')).toHaveText('180K');
   await expect(fr.budgetRow('Japan')).toContainText('Total 180,000.00');
+});
+
+test('a tap anywhere on a budget row opens it, except on its menu', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.createBudget('Japan');
+  await fr.goToBudgets();
+
+  const row = await fr.budgetRow('Japan').boundingBox();
+  await page.mouse.click(row!.x + row!.width * 0.6, row!.y + row!.height / 2);
+  await expect(page).toHaveURL(/\?budget=japan$/);
+
+  await fr.goToBudgets();
+  const more = page.getByRole('button', { name: 'More for Japan' });
+  // Near the corner: the icon itself stacks above the row link anyway.
+  await more.click({ position: { x: 4, y: 4 } });
+  const rename = fr.budgetRow('Japan').getByRole('button', { name: 'Rename' });
+  await expect(rename).toBeVisible();
+  await expect(page).toHaveURL(/\/budgets$/);
+  await page.keyboard.press('Escape');
+  await expect(rename).toBeHidden();
 });

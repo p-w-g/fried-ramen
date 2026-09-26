@@ -47,6 +47,14 @@ export function app(page: Page) {
   const group = (category: string | null) =>
     page.locator(`[data-drop-category=${JSON.stringify(category ?? '')}]`);
 
+  /** Rename and Delete live behind each row's "⋯" menu. */
+  const budgetAction = async (name: string, action: 'Rename' | 'Delete') => {
+    await page.getByRole('button', { name: `More for ${name}` }).click();
+    await budgetRow(name)
+      .getByRole('button', { name: action, exact: true })
+      .click();
+  };
+
   const categoryHeading = (category: string) => group(category).locator('h2');
 
   const formToggle = page.getByRole('button', { name: 'Add expense' });
@@ -153,6 +161,8 @@ export function app(page: Page) {
 
     budgetRow,
 
+    budgetAction,
+
     /** What the budgets page shows, e.g. "180K"; screen readers get it exact. */
     budgetTotal: (name: string) =>
       budgetRow(name).locator('.fr__budget-total [aria-hidden="true"]'),
@@ -173,14 +183,14 @@ export function app(page: Page) {
 
     async renameBudget(name: string, newName: string) {
       await goToBudgets();
-      await budgetRow(name).getByRole('button', { name: 'Rename' }).click();
+      await budgetAction(name, 'Rename');
       await page.getByLabel(`New name for ${name}`).fill(newName);
       await page.getByRole('button', { name: 'Save name' }).click();
     },
 
     async deleteBudget(name: string) {
       await goToBudgets();
-      await budgetRow(name).getByRole('button', { name: 'Delete' }).click();
+      await budgetAction(name, 'Delete');
       await answerDialog('Delete');
     },
 

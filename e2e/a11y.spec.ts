@@ -92,8 +92,16 @@ test('an expense without a name is announced as unnamed', async ({ page }) => {
 test('the confirm dialog has no axe violations', async ({ page }) => {
   const fr = app(page);
   await fr.goToBudgets();
-  await fr.budgetRow('Current').getByRole('button', { name: 'Delete' }).click();
+  await fr.budgetAction('Current', 'Delete');
   await expect(page.getByRole('dialog')).toBeVisible();
+
+  expect(await violations(page)).toEqual([]);
+});
+
+test('a budget menu has no axe violations', async ({ page }) => {
+  await app(page).goToBudgets();
+  await page.getByRole('button', { name: 'More for Current' }).click();
+  await expect(page.getByRole('button', { name: 'Rename' })).toBeVisible();
 
   expect(await violations(page)).toEqual([]);
 });

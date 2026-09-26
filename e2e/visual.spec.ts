@@ -77,14 +77,20 @@ test.describe('dark theme', () => {
     });
   });
 
+  test('budgets page with a row menu open', async ({ page }) => {
+    const fr = app(page);
+    await fr.createBudget('April Tour of Japan');
+    await fr.goToBudgets();
+    await page.getByRole('button', { name: 'More for Current' }).click();
+
+    await expect(page).toHaveScreenshot('budgets-menu-dark.png');
+  });
+
   test('the delete dialog', async ({ page }) => {
     const fr = app(page);
     await fr.createBudget('April Tour of Japan');
     await fr.goToBudgets();
-    await fr
-      .budgetRow('Current')
-      .getByRole('button', { name: 'Delete' })
-      .click();
+    await fr.budgetAction('Current', 'Delete');
 
     // The backdrop blends the page nondeterministically; the dialog is the point.
     await expect(page.getByRole('dialog')).toHaveScreenshot(
