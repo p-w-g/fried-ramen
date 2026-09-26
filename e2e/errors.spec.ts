@@ -49,3 +49,16 @@ test('a failure outside storage is reported, e.g. a blocked download', async ({
 
   await expect(fr.errorAlert()).toContainText('Downloads are blocked');
 });
+
+test('an error notice pushes the page down instead of covering it', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.breakStorageWrites();
+  await fr.addExpense('Coffee', 5);
+  await expect(fr.errorAlert()).toBeVisible();
+
+  const notice = await fr.errorAlert().boundingBox();
+  const heading = await page.locator('h1').boundingBox();
+  expect(notice!.y + notice!.height).toBeLessThanOrEqual(heading!.y);
+});

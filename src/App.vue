@@ -9,13 +9,13 @@ void useBackupStore().checkUp();
 </script>
 
 <template>
-  <main class="content">
-    <RouterView />
-  </main>
-  <NavBar />
   <div class="fr__notices">
     <ErrorBanner />
     <UpdatePrompt />
   </div>
+  <main class="content">
+    <RouterView />
+  </main>
+  <NavBar />
   <ConfirmDialog />
 </template>

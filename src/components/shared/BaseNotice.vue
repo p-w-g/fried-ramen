@@ -11,10 +11,16 @@ const { tone = 'info' } = defineProps<{ tone?: 'info' | 'danger' }>();
 </template>
 
 <style>
+/* In the flow and sticky, so a notice pushes content down, never covers it. */
 .fr__notices {
-  position: fixed;
-  inset: 1rem 1rem auto;
+  position: sticky;
+  top: 0;
   z-index: 2;
+  padding: 0.5rem 1rem 0;
+
+  &:empty {
+    display: none;
+  }
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
