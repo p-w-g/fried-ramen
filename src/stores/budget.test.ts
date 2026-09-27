@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Collection } from 'dexie';
 import { db } from '@/db';
 import type { Budget } from '@/domain';
@@ -125,6 +125,124 @@ describe('categories', () => {
     await budget.clearBudget();
 
     expect(names(await db.expenses.toArray())).toEqual(['ramen']);
+  });
+});
+
+describe('postings', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** Fakes only Date, so Dexie's own timers keep running. */
+  function today(day: string) {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(`${day}T12:00`));
+  }
+
+  const postings = async () =>
+    (await db.postings.toArray()).map(({ day, category, deltaCents }) => ({
+      day,
+      category,
+      deltaCents,
+    }));
+
+  it('posts a new expense on the day it was added', async () => {
+    const budget = await openBudget();
+    today('2026-09-20');
+    await budget.addExpense(draft('coffee', 5));
+
+    expect(await postings()).toEqual([
+      { day: '2026-09-20', category: null, deltaCents: 500 },
+    ]);
+  });
+
+  it('posts a corrected amount as the difference, on the day of the edit', async () => {
+    const budget = await openBudget();
+    today('2026-09-20');
+    await budget.addExpense(draft('coffee', 5));
+    const [coffee] = await db.expenses.toArray();
+    await budget.assignCategory(coffee!.id, 'food');
+    today('2026-09-27');
+
+    await budget.updateExpense(coffee!.id, draft('coffee', 50));
+
+    expect((await postings()).at(-1)).toEqual({
+      day: '2026-09-27',
+      category: 'food',
+      deltaCents: 4500,
+    });
+  });
+
+  it('posts nothing when an edit leaves the amount alone', async () => {
+    const budget = await openBudget();
+    await budget.addExpense(draft('coffee', 5));
+    const [coffee] = await db.expenses.toArray();
+
+    await budget.updateExpense(coffee!.id, draft('flat white', 5));
+
+    expect(await db.postings.count()).toBe(1);
+  });
+
+  it('moves the amount between categories without changing the total', async () => {
+    const budget = await openBudget();
+    today('2026-09-20');
+    await budget.addExpense(draft('coffee', 5));
+    const [coffee] = await db.expenses.toArray();
+
+    await budget.assignCategory(coffee!.id, 'food');
+    await budget.assignCategory(coffee!.id, 'food');
+
+    expect(await postings()).toEqual([
+      { day: '2026-09-20', category: null, deltaCents: 500 },
+      { day: '2026-09-20', category: null, deltaCents: -500 },
+      { day: '2026-09-20', category: 'food', deltaCents: 500 },
+    ]);
+  });
+
+  it('moves an expense on one day, even when the move runs past midnight', async () => {
+    const budget = await openBudget();
+    today('2026-09-20');
+    await budget.addExpense(draft('coffee', 5));
+    const [coffee] = await db.expenses.toArray();
+    vi.setSystemTime(new Date('2026-09-20T23:59:59.999'));
+    const realGet = db.expenses.get.bind(db.expenses);
+    vi.spyOn(db.expenses, 'get').mockImplementation((async (id: number) => {
+      vi.setSystemTime(new Date('2026-09-21T00:00:00.001'));
+      return realGet(id);
+    }) as typeof db.expenses.get);
+
+    await budget.assignCategory(coffee!.id, 'food');
+
+    expect((await postings()).slice(1).map((posting) => posting.day)).toEqual([
+      '2026-09-20',
+      '2026-09-20',
+    ]);
+  });
+
+  it('keeps the postings of a completed expense: completing is not undoing', async () => {
+    const budget = await openBudget();
+    await budget.addExpense(draft('coffee', 5));
+    const [coffee] = await db.expenses.toArray();
+
+    await budget.completeExpense(coffee!.id);
+
+    expect(await db.postings.count()).toBe(1);
+  });
+
+  it('clearing a budget forgets its postings and no others', async () => {
+    const budget = await openBudget();
+    const otherId = await db.budgets.add({ name: 'Japan', slug: 'japan' });
+    await db.postings.add({
+      budgetId: otherId,
+      day: '2026-09-20',
+      category: null,
+      deltaCents: 900,
+    });
+    await budget.addExpense(draft('coffee', 5));
+
+    await budget.clearBudget();
+
+    expect(await db.postings.toArray()).toMatchObject([{ budgetId: otherId }]);
   });
 });
 

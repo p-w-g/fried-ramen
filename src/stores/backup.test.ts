@@ -15,12 +15,19 @@ async function seed() {
     description: '',
     category: 'food',
   });
+  await db.postings.add({
+    budgetId,
+    day: '2026-09-20',
+    category: null,
+    deltaCents: 450,
+  });
 }
 
 const snapshot = async () => ({
   budgets: await db.budgets.toArray(),
   categories: await db.categories.toArray(),
   expenses: await db.expenses.toArray(),
+  postings: await db.postings.toArray(),
 });
 
 describe('backup', () => {
@@ -54,6 +61,41 @@ describe('backup', () => {
       budgets: [],
       categories: [],
       expenses: [],
+      postings: [],
+    });
+  });
+
+  it('restores a version 1 backup, from before postings, opening its history on the day of the restore', async () => {
+    await seed();
+    const v1 = JSON.stringify({
+      app: 'fried-ramen',
+      version: 1,
+      budgets: [{ id: 7, name: 'Old', slug: 'old' }],
+      categories: [],
+      expenses: [
+        {
+          id: 1,
+          budgetId: 7,
+          name: 'Tea',
+          amountCents: 300,
+          description: '',
+          category: null,
+        },
+      ],
+    });
+
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-01T09:00'));
+
+    await useBackupStore().importAll(v1);
+    vi.useRealTimers();
+
+    expect(await snapshot()).toMatchObject({
+      budgets: [{ name: 'Old' }],
+      expenses: [{ name: 'Tea' }],
+      postings: [
+        { budgetId: 7, day: '2026-10-01', category: null, deltaCents: 300 },
+      ],
     });
   });
 
@@ -93,8 +135,8 @@ describe('backup', () => {
     ['another app', '{"app":"other"}', 'This is not a Fried Ramen backup.'],
     [
       'a newer version',
-      '{"app":"fried-ramen","version":2}',
-      'Backup version 2 is not supported.',
+      '{"app":"fried-ramen","version":3}',
+      'Backup version 3 is not supported.',
     ],
     [
       'budgets that are not a list',
@@ -138,6 +180,57 @@ describe('backup', () => {
             category: null,
           },
         ],
+      }),
+      'This backup is damaged.',
+    ],
+    [
+      'a posting of an unknown budget',
+      JSON.stringify({
+        app: 'fried-ramen',
+        version: 2,
+        budgets: [{ id: 1, name: 'a', slug: 'a' }],
+        categories: [],
+        expenses: [],
+        postings: [
+          {
+            id: 1,
+            budgetId: 2,
+            day: '2026-09-20',
+            category: null,
+            deltaCents: 1,
+          },
+        ],
+      }),
+      'This backup is damaged.',
+    ],
+    [
+      'a posting without a calendar day',
+      JSON.stringify({
+        app: 'fried-ramen',
+        version: 2,
+        budgets: [{ id: 1, name: 'a', slug: 'a' }],
+        categories: [],
+        expenses: [],
+        postings: [
+          {
+            id: 1,
+            budgetId: 1,
+            day: 'yesterday',
+            category: null,
+            deltaCents: 1,
+          },
+        ],
+      }),
+      'This backup is damaged.',
+    ],
+    [
+      'a version 2 backup missing its postings',
+      JSON.stringify({
+        app: 'fried-ramen',
+        version: 2,
+        budgets: [],
+        categories: [],
+        expenses: [],
       }),
       'This backup is damaged.',
     ],

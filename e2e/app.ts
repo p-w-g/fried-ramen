@@ -31,10 +31,26 @@ export function app(page: Page) {
 
   const startEditing = (name: string) => expenseButton('Edit', name).click();
 
-  const nav = page.getByRole('navigation');
+  /**
+   * Waits until a save has landed (the form clears), failed (an alert) or
+   * never started (the browser flagged the amount). The form cannot yet
+   * tell a new amount from an equal one still saving, and clears both;
+   * people never type that fast, but a test does. A bandaid until the form
+   * tracks edits instead of comparing values.
+   */
+  const saveSettled = () =>
+    page.waitForFunction(() => {
+      const amount = document.querySelector<HTMLInputElement>('#amount')!;
+      return (
+        amount.value === '' ||
+        !amount.validity.valid ||
+        document.querySelector('[role="alert"]') !== null
+      );
+    });
 
+  /** The top bar's icon: unlike the bottom bar, it is on every page. */
   const goToBudgets = async () => {
-    await nav.getByRole('link', { name: 'Budgets', exact: true }).click();
+    await page.getByRole('link', { name: 'Fried Ramen: all budgets' }).click();
     await expect(page).toHaveURL(/\/budgets$/);
   };
 
@@ -106,6 +122,7 @@ export function app(page: Page) {
       await page.fill('#amount', String(amount));
       await page.fill('#description', description);
       await page.press('#amount', 'Enter');
+      await saveSettled();
     },
 
     async addCategory(name: string) {
@@ -170,8 +187,25 @@ export function app(page: Page) {
     budgetTotal: (name: string) =>
       budgetRow(name).locator('.fr__budget-total [aria-hidden="true"]'),
 
-    /** The navbar tab naming the budget that is open. */
-    openBudgetTab: () => nav.getByRole('link').first(),
+    /** The bottom bar's mini donut, while it leads to the charts. */
+    chartsToggle: () => page.getByRole('link', { name: 'Charts' }),
+
+    /** The same donut on a charts page, where it leads back. */
+    expensesToggle: () => page.getByRole('link', { name: 'Back to expenses' }),
+
+    async openTrends() {
+      await page.getByRole('link', { name: 'Charts' }).click();
+      await page.getByRole('link', { name: 'Trends' }).click();
+    },
+
+    /** The amount and period the trend line shows, e.g. "50.00 27 Sep". */
+    trendReadout: () => page.locator('.fr__trend-readout'),
+
+    /** A donut legend row as text, e.g. "food 5.00 20%". */
+    legendRows: () => page.locator('.fr__legend li'),
+
+    /** The budget's name in the top bar, or the page's own title. */
+    pageTitle: () => page.getByRole('heading', { level: 1 }),
 
     async createBudget(name: string) {
       await goToBudgets();

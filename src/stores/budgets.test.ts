@@ -93,6 +93,24 @@ describe('budgets', () => {
     expect(await db.expenses.where({ budgetId: debt.id }).count()).toBe(1);
   });
 
+  it('deleting a budget forgets its postings and no others', async () => {
+    const budgets = useBudgetsStore();
+    const japan = await budgets.create('Japan');
+    const debt = await budgets.create('Debt');
+    for (const budgetId of [japan.id, debt.id]) {
+      await db.postings.add({
+        budgetId,
+        day: '2026-09-20',
+        category: null,
+        deltaCents: 100,
+      });
+    }
+
+    await budgets.remove(japan.id);
+
+    expect(await db.postings.toArray()).toMatchObject([{ budgetId: debt.id }]);
+  });
+
   it('can delete every budget', async () => {
     const budgets = useBudgetsStore();
     const only = await budgets.create('Only');

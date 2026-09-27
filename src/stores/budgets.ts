@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
 import { ref, shallowRef } from 'vue';
 import { db } from '@/db';
+import { forgetBudget } from '@/postings';
 import { toSlug, type Budget } from '@/domain';
 
 /** A name the person has to change; the message says why. */
@@ -58,11 +59,19 @@ export const useBudgetsStore = defineStore('budgets', () => {
     });
 
   const remove = (id: number) =>
-    db.transaction('rw', db.budgets, db.categories, db.expenses, async () => {
-      await db.expenses.where({ budgetId: id }).delete();
-      await db.categories.where({ budgetId: id }).delete();
-      await db.budgets.delete(id);
-    });
+    db.transaction(
+      'rw',
+      db.budgets,
+      db.categories,
+      db.expenses,
+      db.postings,
+      async () => {
+        await db.expenses.where({ budgetId: id }).delete();
+        await db.categories.where({ budgetId: id }).delete();
+        await forgetBudget(id);
+        await db.budgets.delete(id);
+      },
+    );
 
   return { budgets, isLoaded, watchAll, totalOf, create, rename, remove };
 });

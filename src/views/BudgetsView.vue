@@ -17,7 +17,7 @@ async function create() {
     const created = await budgets.create(newName.value);
     newName.value = '';
     problem.value = '';
-    await router.push({ name: 'budget', query: { budget: created.slug } });
+    await router.push({ name: 'budget', params: { slug: created.slug } });
   } catch (error) {
     if (!(error instanceof BudgetNameError)) throw error;
     problem.value = error.message;

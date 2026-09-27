@@ -2,18 +2,21 @@ import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
 import { computed, ref, shallowRef } from 'vue';
 import { db } from '@/db';
+import { forgetBudget, post, today } from '@/postings';
 import {
   sumCents,
   toCents,
   type Budget,
   type Expense,
   type ExpenseDraft,
+  type Posting,
 } from '@/domain';
 
 export const useBudgetStore = defineStore('budget', () => {
   const budget = shallowRef<Budget | null>(null);
   const expenses = shallowRef<Expense[]>([]);
   const categories = shallowRef<string[]>([]);
+  const postings = shallowRef<Posting[]>([]);
   const status = ref<'loading' | 'open' | 'missing'>('loading');
   let requestedSlug = '';
   let subscription: Subscription | undefined;
@@ -59,6 +62,7 @@ export const useBudgetStore = defineStore('budget', () => {
     budget.value = null;
     expenses.value = [];
     categories.value = [];
+    postings.value = [];
     status.value = 'missing';
   }
 
@@ -68,41 +72,72 @@ export const useBudgetStore = defineStore('budget', () => {
         db.budgets.get(budgetId),
         db.expenses.where({ budgetId }).toArray(),
         db.categories.where({ budgetId }).toArray(),
+        db.postings.where({ budgetId }).toArray(),
       ]),
-    ).subscribe(([storedBudget, storedExpenses, storedCategories]) => {
-      if (!storedBudget) {
-        showMissing();
-        return;
-      }
-      budget.value = storedBudget;
-      expenses.value = storedExpenses;
-      categories.value = storedCategories.map((category) => category.name);
-      status.value = 'open';
-    });
+    ).subscribe(
+      ([storedBudget, storedExpenses, storedCategories, storedPostings]) => {
+        if (!storedBudget) {
+          showMissing();
+          return;
+        }
+        budget.value = storedBudget;
+        expenses.value = storedExpenses;
+        categories.value = storedCategories.map((category) => category.name);
+        postings.value = storedPostings;
+        status.value = 'open';
+      },
+    );
   }
 
   async function addExpense(draft: ExpenseDraft) {
-    await db.expenses.add({
-      budgetId: openedBudgetId(),
-      name: draft.name,
-      amountCents: toCents(draft.amount),
-      description: draft.description,
-      category: null,
+    const day = today();
+    const budgetId = openedBudgetId();
+    const amountCents = toCents(draft.amount);
+    await db.transaction('rw', db.expenses, db.postings, async () => {
+      await db.expenses.add({
+        budgetId,
+        name: draft.name,
+        amountCents,
+        description: draft.description,
+        category: null,
+      });
+      await post(day, budgetId, null, amountCents);
     });
   }
 
+  /** A changed amount is posted today as the difference, never backdated. */
   async function updateExpense(id: number, draft: ExpenseDraft) {
-    await db.expenses.update(id, {
-      name: draft.name,
-      amountCents: toCents(draft.amount),
-      description: draft.description,
+    const day = today();
+    const amountCents = toCents(draft.amount);
+    await db.transaction('rw', db.expenses, db.postings, async () => {
+      const before = await db.expenses.get(id);
+      if (!before) return;
+      await db.expenses.update(id, {
+        name: draft.name,
+        amountCents,
+        description: draft.description,
+      });
+      await post(
+        day,
+        before.budgetId,
+        before.category,
+        amountCents - before.amountCents,
+      );
     });
   }
 
   async function assignCategory(id: number, category: string | null) {
-    await db.expenses.update(id, { category });
+    const day = today();
+    await db.transaction('rw', db.expenses, db.postings, async () => {
+      const before = await db.expenses.get(id);
+      if (!before || before.category === category) return;
+      await db.expenses.update(id, { category });
+      await post(day, before.budgetId, before.category, -before.amountCents);
+      await post(day, before.budgetId, category, before.amountCents);
+    });
   }
 
+  /** Completing takes an expense off the list, not out of the past. */
   async function completeExpense(id: number) {
     await db.expenses.delete(id);
   }
@@ -125,16 +160,24 @@ export const useBudgetStore = defineStore('budget', () => {
 
   async function clearBudget() {
     const budgetId = openedBudgetId();
-    await db.transaction('rw', db.categories, db.expenses, async () => {
-      await db.expenses.where({ budgetId }).delete();
-      await db.categories.where({ budgetId }).delete();
-    });
+    await db.transaction(
+      'rw',
+      db.categories,
+      db.expenses,
+      db.postings,
+      async () => {
+        await db.expenses.where({ budgetId }).delete();
+        await db.categories.where({ budgetId }).delete();
+        await forgetBudget(budgetId);
+      },
+    );
   }
 
   return {
     budget,
     expenses,
     categories,
+    postings,
     status,
     totalCents,
     unassigned,

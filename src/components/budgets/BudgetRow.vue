@@ -60,7 +60,7 @@ async function remove() {
     <template v-else>
       <h3>
         <RouterLink
-          :to="{ name: 'budget', query: { budget: budget.slug } }"
+          :to="{ name: 'budget', params: { slug: budget.slug } }"
           :aria-label="`Open ${budget.name}`"
           class="fr__budget-link"
         >
