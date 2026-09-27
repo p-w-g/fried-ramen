@@ -199,6 +199,26 @@ describe('postings', () => {
     ]);
   });
 
+  it('moves an expense on one day, even when the move runs past midnight', async () => {
+    const budget = await openBudget();
+    today('2026-09-20');
+    await budget.addExpense(draft('coffee', 5));
+    const [coffee] = await db.expenses.toArray();
+    vi.setSystemTime(new Date('2026-09-20T23:59:59.999'));
+    const realGet = db.expenses.get.bind(db.expenses);
+    vi.spyOn(db.expenses, 'get').mockImplementation((async (id: number) => {
+      vi.setSystemTime(new Date('2026-09-21T00:00:00.001'));
+      return realGet(id);
+    }) as typeof db.expenses.get);
+
+    await budget.assignCategory(coffee!.id, 'food');
+
+    expect((await postings()).slice(1).map((posting) => posting.day)).toEqual([
+      '2026-09-20',
+      '2026-09-20',
+    ]);
+  });
+
   it('keeps the postings of a completed expense: the money was spent', async () => {
     const budget = await openBudget();
     await budget.addExpense(draft('coffee', 5));

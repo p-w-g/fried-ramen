@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
 import { computed, ref, shallowRef } from 'vue';
 import { db } from '@/db';
-import { forgetBudget, post } from '@/postings';
+import { forgetBudget, post, today } from '@/postings';
 import {
   sumCents,
   toCents,
@@ -83,6 +83,7 @@ export const useBudgetStore = defineStore('budget', () => {
   }
 
   async function addExpense(draft: ExpenseDraft) {
+    const day = today();
     const budgetId = openedBudgetId();
     const amountCents = toCents(draft.amount);
     await db.transaction('rw', db.expenses, db.postings, async () => {
@@ -93,12 +94,13 @@ export const useBudgetStore = defineStore('budget', () => {
         description: draft.description,
         category: null,
       });
-      await post(budgetId, null, amountCents);
+      await post(day, budgetId, null, amountCents);
     });
   }
 
   /** A changed amount is posted today as the difference, never backdated. */
   async function updateExpense(id: number, draft: ExpenseDraft) {
+    const day = today();
     const amountCents = toCents(draft.amount);
     await db.transaction('rw', db.expenses, db.postings, async () => {
       const before = await db.expenses.get(id);
@@ -109,6 +111,7 @@ export const useBudgetStore = defineStore('budget', () => {
         description: draft.description,
       });
       await post(
+        day,
         before.budgetId,
         before.category,
         amountCents - before.amountCents,
@@ -117,12 +120,13 @@ export const useBudgetStore = defineStore('budget', () => {
   }
 
   async function assignCategory(id: number, category: string | null) {
+    const day = today();
     await db.transaction('rw', db.expenses, db.postings, async () => {
       const before = await db.expenses.get(id);
       if (!before || before.category === category) return;
       await db.expenses.update(id, { category });
-      await post(before.budgetId, before.category, -before.amountCents);
-      await post(before.budgetId, category, before.amountCents);
+      await post(day, before.budgetId, before.category, -before.amountCents);
+      await post(day, before.budgetId, category, before.amountCents);
     });
   }
 

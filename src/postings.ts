@@ -7,19 +7,21 @@ import { toDay } from './domain';
  * or deleting its budget removes one.
  */
 
+/**
+ * Read once when an action starts, so every posting it makes shares a day
+ * even when the action runs across midnight.
+ */
+export const today = () => toDay(new Date());
+
 /** Call inside a transaction that includes db.postings. */
 export async function post(
+  day: string,
   budgetId: number,
   category: string | null,
   deltaCents: number,
 ) {
   if (deltaCents === 0) return;
-  await db.postings.add({
-    budgetId,
-    day: toDay(new Date()),
-    category,
-    deltaCents,
-  });
+  await db.postings.add({ budgetId, day, category, deltaCents });
 }
 
 /** Call inside a transaction that includes db.postings. */
