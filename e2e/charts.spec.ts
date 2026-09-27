@@ -63,7 +63,7 @@ test('/charts on its own opens the overview', async ({ page }) => {
 });
 
 test.describe('trends', () => {
-  test('the past stays fixed: a correction is posted today, and completing keeps the spend', async ({
+  test('the past stays fixed: a correction is posted today, and completing keeps the amount', async ({
     page,
   }) => {
     const fr = app(page);

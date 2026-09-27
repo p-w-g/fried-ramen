@@ -88,7 +88,7 @@ function scrub(event: PointerEvent) {
     <div class="fr__visually-hidden">
       <table>
         <caption>
-          Spent so far, by
+          Total over time, by
           {{
             by
           }}

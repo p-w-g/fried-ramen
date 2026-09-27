@@ -8,7 +8,8 @@ export const UNCATEGORISED = 'Uncategorised';
 const MAX_CATEGORIES = 5;
 
 /**
- * Where the money went, biggest first. A donut cannot draw below zero, so
+ * How a budget's total divides by category, biggest first, whether the
+ * money is planned or already gone. A donut cannot draw below zero, so
  * negative amounts (refunds, savings) are left out and flagged instead.
  */
 export function categoryShares(expenses: Expense[]) {
@@ -90,8 +91,9 @@ function periodsUntil(today: Date, by: Period) {
 }
 
 /**
- * What the budget had spent by the end of each period. Completed expenses
- * still count, since the money was spent; everything posted before the
+ * The budget's total at the end of each period. Completed expenses still
+ * count: completing takes one off the list, not out of the past. Everything
+ * posted before the
  * window is the line's starting height. Empty while nothing was posted.
  */
 export function runningTotal(

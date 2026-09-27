@@ -21,7 +21,7 @@ export type Expense = {
 };
 
 /**
- * One change in what a budget spent, dated the day it was made. Never
+ * One change to a budget's total, dated the day it was made. Never
  * edited afterwards: a mistake is owned by a correcting posting, as in
  * bookkeeping, so past days and months keep the totals they had.
  */
@@ -87,6 +87,6 @@ export const sumCents = (expenses: Expense[]) =>
 
 const twoDigits = (value: number) => String(value).padStart(2, '0');
 
-/** The local calendar day, the one people remember spending on. */
+/** The local calendar day, the one people remember a change by. */
 export const toDay = (date: Date) =>
   `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;

@@ -12,7 +12,7 @@ const points = computed(() => runningTotal(budget.postings, by.value));
 
 <template>
   <section class="fr__chart-page">
-    <h2 class="fr__subheading">Spent so far</h2>
+    <h2 class="fr__subheading">Total over time</h2>
     <div class="fr__segmented" role="group" aria-label="Show by">
       <button type="button" :aria-pressed="by === 'day'" @click="by = 'day'">
         Daily

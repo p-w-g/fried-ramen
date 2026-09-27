@@ -137,7 +137,7 @@ export const useBudgetStore = defineStore('budget', () => {
     });
   }
 
-  /** The money was still spent, so its postings stay. */
+  /** Completing takes an expense off the list, not out of the past. */
   async function completeExpense(id: number) {
     await db.expenses.delete(id);
   }

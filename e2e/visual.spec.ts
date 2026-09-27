@@ -54,9 +54,9 @@ test('budgets page', async ({ page }) => {
 });
 
 /** Seven categories: every slice colour, and the two smallest as Other. */
-async function spendAcrossEveryColour(page: Page) {
+async function amountsInEveryColour(page: Page) {
   const fr = app(page);
-  const spending: [string, number][] = [
+  const amounts: [string, number][] = [
     ['broth', 30],
     ['noodles', 24],
     ['scallions', 18],
@@ -65,7 +65,7 @@ async function spendAcrossEveryColour(page: Page) {
     ['egg', 5],
     ['sesame', 2],
   ];
-  for (const [category, amount] of spending) {
+  for (const [category, amount] of amounts) {
     await fr.addExpense(category, amount);
     await fr.addCategory(category);
     await fr.assignCategory(category, category);
@@ -74,8 +74,8 @@ async function spendAcrossEveryColour(page: Page) {
   await page.locator('.fr__legend').waitFor();
 }
 
-/** A month of spending, with a correction that dips the line. */
-async function spendOverAMonth(page: Page) {
+/** A month of changes, with a correction that dips the line. */
+async function aMonthOfChanges(page: Page) {
   const fr = app(page);
   const history: [day: string, name: string, amount: number][] = [
     ['2026-09-01', 'Rent share', 40],
@@ -95,14 +95,14 @@ async function spendOverAMonth(page: Page) {
 }
 
 test('trends, a month of days', async ({ page }) => {
-  await spendOverAMonth(page);
+  await aMonthOfChanges(page);
 
   await expect(page).toHaveScreenshot('trends.png', { fullPage: true });
 });
 
 test('charts overview, with a negative amount left out', async ({ page }) => {
   await app(page).addExpense('Refund', -8);
-  await spendAcrossEveryColour(page);
+  await amountsInEveryColour(page);
 
   await expect(page).toHaveScreenshot('overview.png', { fullPage: true });
 });
@@ -132,7 +132,7 @@ test.describe('dark theme', () => {
   });
 
   test('trends, by month', async ({ page }) => {
-    await spendOverAMonth(page);
+    await aMonthOfChanges(page);
     await page.getByRole('button', { name: 'Monthly' }).click();
 
     await expect(page).toHaveScreenshot('trends-monthly-dark.png', {
@@ -141,7 +141,7 @@ test.describe('dark theme', () => {
   });
 
   test('charts overview', async ({ page }) => {
-    await spendAcrossEveryColour(page);
+    await amountsInEveryColour(page);
 
     await expect(page).toHaveScreenshot('overview-dark.png', {
       fullPage: true,

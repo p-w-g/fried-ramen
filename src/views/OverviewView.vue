@@ -19,9 +19,9 @@ const percentages = computed(() => wholePercentages(shares.value.slices));
 
 <template>
   <section class="fr__chart-page">
-    <h2 class="fr__subheading">Where the money went</h2>
+    <h2 class="fr__subheading">By category</h2>
     <p v-if="shares.slices.length === 0" class="fr__empty">
-      Nothing spent yet.
+      Nothing to show yet.
     </p>
     <figure v-else class="fr__overview">
       <div class="fr__overview-donut">

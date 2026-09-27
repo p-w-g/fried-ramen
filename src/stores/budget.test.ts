@@ -219,7 +219,7 @@ describe('postings', () => {
     ]);
   });
 
-  it('keeps the postings of a completed expense: the money was spent', async () => {
+  it('keeps the postings of a completed expense: completing is not undoing', async () => {
     const budget = await openBudget();
     await budget.addExpense(draft('coffee', 5));
     const [coffee] = await db.expenses.toArray();

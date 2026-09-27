@@ -62,7 +62,7 @@ describe('categoryShares', () => {
     expect(hasNegatives).toBe(true);
   });
 
-  it('has nothing to show for no spending, and no zero-width slices', () => {
+  it('has nothing to show while every amount is zero, and no zero-width slices', () => {
     expect(categoryShares([expense('food', 0)])).toEqual({
       slices: [],
       hasNegatives: false,
