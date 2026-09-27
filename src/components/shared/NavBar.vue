@@ -1,17 +1,5 @@
-<script setup lang="ts">
-import { useBudgetStore } from '@/stores/budget';
-
-const budget = useBudgetStore();
-</script>
-
 <template>
   <nav class="fr__navbar">
-    <RouterLink
-      v-if="budget.budget"
-      :to="{ name: 'budget', query: { budget: budget.budget.slug } }"
-    >
-      {{ budget.budget.name }}
-    </RouterLink>
     <RouterLink :to="{ name: 'budgets' }">Budgets</RouterLink>
   </nav>
 </template>

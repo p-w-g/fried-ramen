@@ -22,7 +22,6 @@ watch(
 <template>
   <div v-if="budget.status === 'open'" class="fr__page">
     <header class="fr__summary">
-      <h1>{{ budget.budget?.name }}</h1>
       <p class="fr__total">
         <span class="fr__total-label">Total</span>
         <span class="fr__amount">{{ formatAmount(budget.totalCents) }}</span>

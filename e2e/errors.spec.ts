@@ -59,6 +59,6 @@ test('an error notice pushes the page down instead of covering it', async ({
   await expect(fr.errorAlert()).toBeVisible();
 
   const notice = await fr.errorAlert().boundingBox();
-  const heading = await page.locator('h1').boundingBox();
-  expect(notice!.y + notice!.height).toBeLessThanOrEqual(heading!.y);
+  const content = await page.getByRole('main').boundingBox();
+  expect(notice!.y + notice!.height).toBeLessThanOrEqual(content!.y);
 });

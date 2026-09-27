@@ -31,10 +31,9 @@ export function app(page: Page) {
 
   const startEditing = (name: string) => expenseButton('Edit', name).click();
 
-  const nav = page.getByRole('navigation');
-
+  /** The top bar's icon: unlike the bottom bar, it is on every page. */
   const goToBudgets = async () => {
-    await nav.getByRole('link', { name: 'Budgets', exact: true }).click();
+    await page.getByRole('link', { name: 'Fried Ramen: all budgets' }).click();
     await expect(page).toHaveURL(/\/budgets$/);
   };
 
@@ -170,8 +169,8 @@ export function app(page: Page) {
     budgetTotal: (name: string) =>
       budgetRow(name).locator('.fr__budget-total [aria-hidden="true"]'),
 
-    /** The navbar tab naming the budget that is open. */
-    openBudgetTab: () => nav.getByRole('link').first(),
+    /** The budget's name in the top bar, or the page's own title. */
+    pageTitle: () => page.getByRole('heading', { level: 1 }),
 
     async createBudget(name: string) {
       await goToBudgets();

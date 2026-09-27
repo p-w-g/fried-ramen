@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test('the app opens the "Current" budget by its slug', async ({ page }) => {
   await expect(page).toHaveURL(/\/\?budget=current$/);
-  await expect(app(page).openBudgetTab()).toHaveText('Current');
+  await expect(app(page).pageTitle()).toHaveText('Current');
 });
 
 test('a new budget opens empty and keeps its own expenses', async ({
@@ -20,7 +20,7 @@ test('a new budget opens empty and keeps its own expenses', async ({
   await fr.createBudget('April Tour of Japan');
 
   await expect(page).toHaveURL(/\?budget=april_tour_of_japan$/);
-  await expect(fr.openBudgetTab()).toHaveText('April Tour of Japan');
+  await expect(fr.pageTitle()).toHaveText('April Tour of Japan');
   await fr.expectTotal(0);
   await fr.addExpense('Ramen', 9);
   await fr.expectTotal(9);
@@ -87,7 +87,7 @@ test('deleting every budget leaves a clean slate to start from', async ({
   await fr.deleteBudget('Current');
 
   await expect(page.getByText('No budgets yet.')).toBeVisible();
-  await expect(fr.openBudgetTab()).toHaveText('Budgets');
+  await expect(fr.pageTitle()).toHaveText('Budgets');
   await page.goto('/');
   await expect(page).toHaveURL(/\/budgets$/);
 
@@ -175,4 +175,35 @@ test('the ramen in the top bar goes home to the budgets', async ({ page }) => {
   await app(page).homeLink().click();
 
   await expect(page).toHaveURL(/\/budgets$/);
+});
+
+test('only a budget has the bottom bar, and it leads back to budgets', async ({
+  page,
+}) => {
+  const nav = page.getByRole('navigation');
+
+  await nav.getByRole('link', { name: 'Budgets' }).click();
+
+  await expect(page).toHaveURL(/\/budgets$/);
+  await expect(nav).toHaveCount(0);
+});
+
+test('backups sit at the bottom of a short list and follow a long one', async ({
+  page,
+}) => {
+  const fr = app(page);
+  const backup = page.getByRole('heading', { name: 'Backup' });
+  const screenHeight = page.viewportSize()!.height;
+  await fr.goToBudgets();
+
+  const short = await backup.boundingBox();
+  expect(short!.y).toBeGreaterThan(screenHeight / 2);
+
+  for (const name of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) {
+    await fr.createBudget(name);
+  }
+  await fr.goToBudgets();
+
+  const long = await backup.boundingBox();
+  expect(long!.y).toBeGreaterThan(screenHeight);
 });
