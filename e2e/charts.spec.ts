@@ -10,6 +10,15 @@ test.beforeEach(async ({ page }) => {
   await fr.assignCategory('Coffee', 'food');
 });
 
+test('the mini donut sits first in the bottom bar, where the budget tab was', async ({
+  page,
+}) => {
+  const tabs = page.getByRole('navigation').getByRole('link');
+
+  await expect(tabs).toHaveCount(2);
+  await expect(tabs.first()).toHaveAccessibleName('Charts');
+});
+
 test('the mini donut opens the overview, and taps back to the list', async ({
   page,
 }) => {

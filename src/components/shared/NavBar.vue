@@ -16,7 +16,6 @@ const slug = computed(() => String(route.params.slug));
 
 <template>
   <nav class="fr__navbar">
-    <RouterLink :to="{ name: 'budgets' }">Budgets</RouterLink>
     <RouterLink
       v-if="isOnCharts"
       :to="{ name: 'budget', params: { slug } }"
@@ -33,6 +32,7 @@ const slug = computed(() => String(route.params.slug));
     >
       <DonutChart :slices="slices" />
     </RouterLink>
+    <RouterLink :to="{ name: 'budgets' }">Budgets</RouterLink>
   </nav>
 </template>
 
