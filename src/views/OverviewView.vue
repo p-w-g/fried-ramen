@@ -18,7 +18,7 @@ const percentages = computed(() => wholePercentages(shares.value.slices));
 </script>
 
 <template>
-  <div class="fr__page">
+  <section class="fr__chart-page">
     <h2 class="fr__subheading">Where the money went</h2>
     <p v-if="shares.slices.length === 0" class="fr__empty">
       Nothing spent yet.
@@ -49,7 +49,7 @@ const percentages = computed(() => wholePercentages(shares.value.slices));
         * negative amounts are not shown
       </figcaption>
     </figure>
-  </div>
+  </section>
 </template>
 
 <style>

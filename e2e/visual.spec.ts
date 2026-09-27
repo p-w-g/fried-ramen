@@ -74,6 +74,32 @@ async function spendAcrossEveryColour(page: Page) {
   await page.locator('.fr__legend').waitFor();
 }
 
+/** A month of spending, with a correction that dips the line. */
+async function spendOverAMonth(page: Page) {
+  const fr = app(page);
+  const history: [day: string, name: string, amount: number][] = [
+    ['2026-09-01', 'Rent share', 40],
+    ['2026-09-06', 'Groceries', 18],
+    ['2026-09-12', 'Train', 12],
+    ['2026-09-19', 'Refund', -9],
+    ['2026-09-24', 'Dinner', 22],
+  ];
+  for (const [day, name, amount] of history) {
+    await page.clock.setFixedTime(new Date(`${day}T12:00`));
+    await fr.addExpense(name, amount);
+    await expect(fr.card(name)).toBeVisible();
+  }
+  await page.clock.setFixedTime(new Date('2026-09-27T12:00'));
+  await fr.openTrends();
+  await page.locator('.fr__trend-plot').waitFor();
+}
+
+test('trends, a month of days', async ({ page }) => {
+  await spendOverAMonth(page);
+
+  await expect(page).toHaveScreenshot('trends.png', { fullPage: true });
+});
+
 test('charts overview, with a negative amount left out', async ({ page }) => {
   await app(page).addExpense('Refund', -8);
   await spendAcrossEveryColour(page);
@@ -101,6 +127,15 @@ test.describe('dark theme', () => {
     await fr.assignCategory('Coffee', 'food');
 
     await expect(page).toHaveScreenshot('populated-dark.png', {
+      fullPage: true,
+    });
+  });
+
+  test('trends, by month', async ({ page }) => {
+    await spendOverAMonth(page);
+    await page.getByRole('button', { name: 'Monthly' }).click();
+
+    await expect(page).toHaveScreenshot('trends-monthly-dark.png', {
       fullPage: true,
     });
   });

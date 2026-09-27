@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import BudgetLayout from './views/BudgetLayout.vue';
 import BudgetView from './views/BudgetView.vue';
 import BudgetsView from './views/BudgetsView.vue';
+import ChartsLayout from './views/ChartsLayout.vue';
 import OverviewView from './views/OverviewView.vue';
+import TrendsView from './views/TrendsView.vue';
 import { useBudgetStore } from './stores/budget';
 import { runFirstStart } from './stores/firstStart';
 
@@ -21,9 +23,16 @@ export const router = createRouter({
         { path: '', name: 'budget', component: BudgetView },
         {
           path: 'charts',
-          redirect: (to) => ({ name: 'overview', params: to.params }),
+          component: ChartsLayout,
+          children: [
+            {
+              path: '',
+              redirect: (to) => ({ name: 'overview', params: to.params }),
+            },
+            { path: 'overview', name: 'overview', component: OverviewView },
+            { path: 'trends', name: 'trends', component: TrendsView },
+          ],
         },
-        { path: 'charts/overview', name: 'overview', component: OverviewView },
       ],
     },
     { path: '/:unknown(.*)*', redirect: '/' },

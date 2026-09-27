@@ -175,6 +175,14 @@ export function app(page: Page) {
     /** The same donut on a charts page, where it leads back. */
     expensesToggle: () => page.getByRole('link', { name: 'Back to expenses' }),
 
+    async openTrends() {
+      await page.getByRole('link', { name: 'Charts' }).click();
+      await page.getByRole('link', { name: 'Trends' }).click();
+    },
+
+    /** The amount and period the trend line shows, e.g. "50.00 27 Sep". */
+    trendReadout: () => page.locator('.fr__trend-readout'),
+
     /** A donut legend row as text, e.g. "food 5.00 20%". */
     legendRows: () => page.locator('.fr__legend li'),
 

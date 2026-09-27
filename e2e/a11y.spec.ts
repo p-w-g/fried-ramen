@@ -47,6 +47,13 @@ test('the charts overview has no axe violations', async ({ page }) => {
   expect(await violations(page)).toEqual([]);
 });
 
+test('the trends page has no axe violations', async ({ page }) => {
+  await app(page).openTrends();
+  await page.locator('.fr__trend-plot').waitFor();
+
+  expect(await violations(page)).toEqual([]);
+});
+
 test('the unknown budget page has no axe violations', async ({ page }) => {
   await page.goto('/budgets/nope');
   await page.getByText('There is no budget called “nope”.').waitFor();

@@ -9,12 +9,14 @@ import {
   type Budget,
   type Expense,
   type ExpenseDraft,
+  type Posting,
 } from '@/domain';
 
 export const useBudgetStore = defineStore('budget', () => {
   const budget = shallowRef<Budget | null>(null);
   const expenses = shallowRef<Expense[]>([]);
   const categories = shallowRef<string[]>([]);
+  const postings = shallowRef<Posting[]>([]);
   const status = ref<'loading' | 'open' | 'missing'>('loading');
   let requestedSlug = '';
   let subscription: Subscription | undefined;
@@ -60,6 +62,7 @@ export const useBudgetStore = defineStore('budget', () => {
     budget.value = null;
     expenses.value = [];
     categories.value = [];
+    postings.value = [];
     status.value = 'missing';
   }
 
@@ -69,17 +72,21 @@ export const useBudgetStore = defineStore('budget', () => {
         db.budgets.get(budgetId),
         db.expenses.where({ budgetId }).toArray(),
         db.categories.where({ budgetId }).toArray(),
+        db.postings.where({ budgetId }).toArray(),
       ]),
-    ).subscribe(([storedBudget, storedExpenses, storedCategories]) => {
-      if (!storedBudget) {
-        showMissing();
-        return;
-      }
-      budget.value = storedBudget;
-      expenses.value = storedExpenses;
-      categories.value = storedCategories.map((category) => category.name);
-      status.value = 'open';
-    });
+    ).subscribe(
+      ([storedBudget, storedExpenses, storedCategories, storedPostings]) => {
+        if (!storedBudget) {
+          showMissing();
+          return;
+        }
+        budget.value = storedBudget;
+        expenses.value = storedExpenses;
+        categories.value = storedCategories.map((category) => category.name);
+        postings.value = storedPostings;
+        status.value = 'open';
+      },
+    );
   }
 
   async function addExpense(draft: ExpenseDraft) {
@@ -170,6 +177,7 @@ export const useBudgetStore = defineStore('budget', () => {
     budget,
     expenses,
     categories,
+    postings,
     status,
     totalCents,
     unassigned,

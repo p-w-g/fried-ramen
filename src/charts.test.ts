@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { categoryShares, wholePercentages } from './charts';
-import type { Expense } from './domain';
+import { categoryShares, runningTotal, wholePercentages } from './charts';
+import type { Expense, Posting } from './domain';
 
 let nextId = 1;
 const expense = (category: string | null, amountCents: number): Expense => ({
@@ -81,5 +81,79 @@ describe('wholePercentages', () => {
 
   it('adds up to 100 where rounding each would give 99', () => {
     expect(wholePercentages(slices(1, 1, 1))).toEqual([34, 33, 33]);
+  });
+});
+
+describe('runningTotal', () => {
+  const posting = (day: string, deltaCents: number): Posting => ({
+    id: 0,
+    budgetId: 1,
+    day,
+    category: null,
+    deltaCents,
+  });
+  const today = new Date(2026, 8, 27, 12);
+
+  it('climbs day by day, carrying the total over quiet days', () => {
+    const points = runningTotal(
+      [
+        posting('2026-09-25', 500),
+        posting('2026-09-27', 4500),
+        posting('2026-09-25', 300),
+      ],
+      'day',
+      today,
+    );
+
+    expect(points).toHaveLength(30);
+    expect(points.slice(-3)).toEqual([
+      { period: '2026-09-25', cents: 800 },
+      { period: '2026-09-26', cents: 800 },
+      { period: '2026-09-27', cents: 5300 },
+    ]);
+  });
+
+  it('starts from everything posted before the window', () => {
+    const points = runningTotal(
+      [posting('2026-01-10', 1000), posting('2026-09-27', 200)],
+      'day',
+      today,
+    );
+
+    expect(points[0]).toEqual({ period: '2026-08-29', cents: 1000 });
+    expect(points.at(-1)!.cents).toBe(1200);
+  });
+
+  it('dips on a correction, and sums a month into one point', () => {
+    const points = runningTotal(
+      [
+        posting('2026-08-03', 5000),
+        posting('2026-09-02', 2000),
+        posting('2026-09-20', -800),
+      ],
+      'month',
+      today,
+    );
+
+    expect(points).toHaveLength(12);
+    expect(points[0]!.period).toBe('2025-10');
+    expect(points.slice(-2)).toEqual([
+      { period: '2026-08', cents: 5000 },
+      { period: '2026-09', cents: 6200 },
+    ]);
+  });
+
+  it('crosses a year boundary in months without skipping one', () => {
+    const periods = runningTotal(
+      [posting('2026-01-01', 1)],
+      'month',
+      new Date(2026, 1, 15),
+    ).map((point) => point.period);
+
+    expect(periods.slice(-3)).toEqual(['2025-12', '2026-01', '2026-02']);
+  });
+
+  it('has no line before anything was posted', () => {
+    expect(runningTotal([], 'day', today)).toEqual([]);
   });
 });

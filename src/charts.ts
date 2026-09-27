@@ -1,4 +1,4 @@
-import type { Expense } from './domain';
+import { toDay, type Expense, type Posting } from './domain';
 
 export type Slice = { label: string; cents: number; isOther?: true };
 
@@ -61,4 +61,58 @@ export function wholePercentages(slices: Slice[]) {
     percentages[index]! += 1;
   }
   return percentages;
+}
+
+export type Period = 'day' | 'month';
+export type Point = { period: string; cents: number };
+
+/** How far back each view looks: a month of days, a year of months. */
+const WINDOW: Record<Period, number> = { day: 30, month: 12 };
+
+const periodOf = (day: string, by: Period) =>
+  by === 'day' ? day : day.slice(0, 7);
+
+/** The periods in the window, oldest first, ending with today's. */
+function periodsUntil(today: Date, by: Period) {
+  const [year, month, date] = [
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  ];
+  return Array.from({ length: WINDOW[by] }, (_, index) => {
+    const back = WINDOW[by] - 1 - index;
+    const day =
+      by === 'day'
+        ? new Date(year, month, date - back)
+        : new Date(year, month - back, 1);
+    return periodOf(toDay(day), by);
+  });
+}
+
+/**
+ * What the budget had spent by the end of each period. Completed expenses
+ * still count, since the money was spent; everything posted before the
+ * window is the line's starting height. Empty while nothing was posted.
+ */
+export function runningTotal(
+  postings: Posting[],
+  by: Period,
+  today = new Date(),
+): Point[] {
+  if (postings.length === 0) return [];
+  const periods = periodsUntil(today, by);
+  const firstPeriod = periods[0]!;
+
+  const changes = new Map<string, number>();
+  let total = 0;
+  for (const posting of postings) {
+    const period = periodOf(posting.day, by);
+    if (period < firstPeriod) total += posting.deltaCents;
+    else changes.set(period, (changes.get(period) ?? 0) + posting.deltaCents);
+  }
+
+  return periods.map((period) => {
+    total += changes.get(period) ?? 0;
+    return { period, cents: total };
+  });
 }

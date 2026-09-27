@@ -10,7 +10,9 @@ const budget = useBudgetStore();
 
 const slices = computed(() => categoryShares(budget.expenses).slices);
 /** The donut toggles: charts from the list, and back to the list from charts. */
-const isOnCharts = computed(() => route.name === 'overview');
+const isOnCharts = computed(
+  () => route.name === 'overview' || route.name === 'trends',
+);
 const slug = computed(() => String(route.params.slug));
 </script>
 
