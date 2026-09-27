@@ -321,8 +321,14 @@ button.fr__icon-button {
       margin-top: 1.5rem;
     }
   }
+}
 
-  /* The form stays in reach while the list scrolls past. */
+/*
+ * The form stays in reach while the list scrolls past, but only where all
+ * of it fits: on a short wide screen like the Galaxy Z Fold 8, a pinned
+ * form would hide its lower part under the bottom bar, so it scrolls.
+ */
+@media (min-width: 44rem) and (min-height: 44rem) {
   .fr__pane--pinned {
     position: sticky;
     top: 0;
