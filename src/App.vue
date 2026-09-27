@@ -15,7 +15,7 @@ void useBackupStore().checkUp();
 
 const route = useRoute();
 const budget = useBudgetStore();
-const isInBudget = computed(() => route.name === 'budget');
+const isInBudget = computed(() => typeof route.params.slug === 'string');
 </script>
 
 <template>

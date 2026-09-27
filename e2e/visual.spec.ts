@@ -53,6 +53,22 @@ test('budgets page', async ({ page }) => {
   await expect(page).toHaveScreenshot('budgets.png', { fullPage: true });
 });
 
+test('charts overview, with a negative amount left out', async ({ page }) => {
+  const fr = app(page);
+  await fr.addExpense('Coffee', 5);
+  await fr.addExpense('Shoes', 25);
+  await fr.addExpense('Train', 12);
+  await fr.addExpense('Refund', -8);
+  await fr.addCategory('food');
+  await fr.addCategory('travel');
+  await fr.assignCategory('Coffee', 'food');
+  await fr.assignCategory('Train', 'travel');
+  await fr.chartsToggle().click();
+  await page.locator('.fr__legend').waitFor();
+
+  await expect(page).toHaveScreenshot('overview.png', { fullPage: true });
+});
+
 test('unknown budget', async ({ page }) => {
   await page.goto('/budgets/nope');
   await page.getByText('There is no budget called “nope”.').waitFor();
@@ -73,6 +89,20 @@ test.describe('dark theme', () => {
     await fr.assignCategory('Coffee', 'food');
 
     await expect(page).toHaveScreenshot('populated-dark.png', {
+      fullPage: true,
+    });
+  });
+
+  test('charts overview', async ({ page }) => {
+    const fr = app(page);
+    await fr.addExpense('Coffee', 5);
+    await fr.addExpense('Shoes', 25);
+    await fr.addCategory('food');
+    await fr.assignCategory('Coffee', 'food');
+    await fr.chartsToggle().click();
+    await page.locator('.fr__legend').waitFor();
+
+    await expect(page).toHaveScreenshot('overview-dark.png', {
       fullPage: true,
     });
   });

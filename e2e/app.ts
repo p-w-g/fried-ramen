@@ -169,6 +169,15 @@ export function app(page: Page) {
     budgetTotal: (name: string) =>
       budgetRow(name).locator('.fr__budget-total [aria-hidden="true"]'),
 
+    /** The bottom bar's mini donut, while it leads to the charts. */
+    chartsToggle: () => page.getByRole('link', { name: 'Charts' }),
+
+    /** The same donut on a charts page, where it leads back. */
+    expensesToggle: () => page.getByRole('link', { name: 'Back to expenses' }),
+
+    /** A donut legend row as text, e.g. "food 5.00 20%". */
+    legendRows: () => page.locator('.fr__legend li'),
+
     /** The budget's name in the top bar, or the page's own title. */
     pageTitle: () => page.getByRole('heading', { level: 1 }),
 

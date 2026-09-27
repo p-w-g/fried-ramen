@@ -1,6 +1,38 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import DonutChart from '@/components/charts/DonutChart.vue';
+import { categoryShares } from '@/charts';
+import { useBudgetStore } from '@/stores/budget';
+
+const route = useRoute();
+const budget = useBudgetStore();
+
+const slices = computed(() => categoryShares(budget.expenses).slices);
+/** The donut toggles: charts from the list, and back to the list from charts. */
+const isOnCharts = computed(() => route.name === 'overview');
+const slug = computed(() => String(route.params.slug));
+</script>
+
 <template>
   <nav class="fr__navbar">
     <RouterLink :to="{ name: 'budgets' }">Budgets</RouterLink>
+    <RouterLink
+      v-if="isOnCharts"
+      :to="{ name: 'budget', params: { slug } }"
+      class="fr__chart-toggle fr__chart-toggle--on"
+      aria-label="Back to expenses"
+    >
+      <DonutChart :slices="slices" />
+    </RouterLink>
+    <RouterLink
+      v-else
+      :to="{ name: 'overview', params: { slug } }"
+      class="fr__chart-toggle"
+      aria-label="Charts"
+    >
+      <DonutChart :slices="slices" />
+    </RouterLink>
   </nav>
 </template>
 
@@ -18,6 +50,8 @@
   border-top: 1px solid var(--divider);
 
   & > a {
+    display: grid;
+    place-items: center;
     padding: 0.625rem 1rem;
     border-radius: var(--radius-control);
     color: var(--text-muted);
@@ -29,9 +63,17 @@
     white-space: nowrap;
   }
 
-  & > a.router-link-exact-active {
-    color: var(--text);
+  & > .fr__chart-toggle--on {
     background: var(--accent-soft);
+  }
+}
+
+.fr__chart-toggle .fr__donut {
+  width: 1.5rem;
+  height: 1.5rem;
+
+  & circle {
+    stroke-width: 20;
   }
 }
 </style>

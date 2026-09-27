@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import BudgetLayout from './views/BudgetLayout.vue';
 import BudgetView from './views/BudgetView.vue';
 import BudgetsView from './views/BudgetsView.vue';
+import OverviewView from './views/OverviewView.vue';
 import { useBudgetStore } from './stores/budget';
 import { runFirstStart } from './stores/firstStart';
 
@@ -12,7 +14,18 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: Redirecting },
     { path: '/budgets', name: 'budgets', component: BudgetsView },
-    { path: '/budgets/:slug', name: 'budget', component: BudgetView },
+    {
+      path: '/budgets/:slug',
+      component: BudgetLayout,
+      children: [
+        { path: '', name: 'budget', component: BudgetView },
+        {
+          path: 'charts',
+          redirect: (to) => ({ name: 'overview', params: to.params }),
+        },
+        { path: 'charts/overview', name: 'overview', component: OverviewView },
+      ],
+    },
     { path: '/:unknown(.*)*', redirect: '/' },
   ],
 });
