@@ -65,7 +65,7 @@ describe('backup', () => {
     });
   });
 
-  it('restores a version 1 backup, from before postings, with no history', async () => {
+  it('restores a version 1 backup, from before postings, opening its history on the day of the restore', async () => {
     await seed();
     const v1 = JSON.stringify({
       app: 'fried-ramen',
@@ -84,12 +84,18 @@ describe('backup', () => {
       ],
     });
 
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-01T09:00'));
+
     await useBackupStore().importAll(v1);
+    vi.useRealTimers();
 
     expect(await snapshot()).toMatchObject({
       budgets: [{ name: 'Old' }],
       expenses: [{ name: 'Tea' }],
-      postings: [],
+      postings: [
+        { budgetId: 7, day: '2026-10-01', category: null, deltaCents: 300 },
+      ],
     });
   });
 

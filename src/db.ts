@@ -1,5 +1,12 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { Budget, Category, Expense, Posting } from './domain';
+import {
+  openingBalance,
+  toDay,
+  type Budget,
+  type Category,
+  type Expense,
+  type Posting,
+} from './domain';
 
 export type Meta =
   | { key: 'lastExportedAt'; value: number }
@@ -21,7 +28,11 @@ db.version(1).stores({
   meta: 'key',
 });
 
-/** Expenses from before this version have no postings: their history is unknown. */
-db.version(2).stores({
-  postings: '++id, budgetId',
-});
+db.version(2)
+  .stores({ postings: '++id, budgetId' })
+  .upgrade(async (tx) => {
+    const expenses = await tx.table<Expense>('expenses').toArray();
+    await tx
+      .table('postings')
+      .bulkAdd(openingBalance(expenses, toDay(new Date())));
+  });

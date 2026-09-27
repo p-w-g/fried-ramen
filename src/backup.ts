@@ -1,5 +1,12 @@
 import { db } from './db';
-import type { Budget, Category, Expense, Posting } from './domain';
+import {
+  openingBalance,
+  toDay,
+  type Budget,
+  type Category,
+  type Expense,
+  type Posting,
+} from './domain';
 
 export type Backup = {
   app: 'fried-ramen';
@@ -90,7 +97,7 @@ const isPosting = (value: unknown): value is Posting =>
   (value.category === null || isString(value.category)) &&
   Number.isInteger(value.deltaCents);
 
-export function parseBackup(text: string): Backup {
+export function parseBackup(text: string, now = new Date()): Backup {
   let data: unknown;
   try {
     data = JSON.parse(text);
@@ -108,8 +115,8 @@ export function parseBackup(text: string): Backup {
   }
 
   const { budgets, categories, expenses } = data;
-  // Version 1 predates postings: that history is unknown, not empty by mistake.
-  const postings = data.version === 1 ? [] : data.postings;
+  const isFromBeforePostings = data.version === 1;
+  const postings = isFromBeforePostings ? [] : data.postings;
   const valid =
     Array.isArray(budgets) &&
     budgets.every(isBudget) &&
@@ -127,5 +134,11 @@ export function parseBackup(text: string): Backup {
   );
   if (orphaned) throw new InvalidBackupError('This backup is damaged.');
 
+  if (isFromBeforePostings) {
+    const opening = openingBalance(expenses, toDay(now)).map(
+      (posting, index) => ({ id: index + 1, ...posting }),
+    );
+    return { ...data, version: 2, postings: opening } as Backup;
+  }
   return { ...data, version: 2, postings } as Backup;
 }

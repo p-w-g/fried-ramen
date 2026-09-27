@@ -90,3 +90,21 @@ const twoDigits = (value: number) => String(value).padStart(2, '0');
 /** The local calendar day, the one people remember a change by. */
 export const toDay = (date: Date) =>
   `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;
+
+/**
+ * Expenses from before postings existed have no history. Like an opening
+ * balance in bookkeeping, each one is posted once on the day history
+ * starts, so charts begin at the real total instead of at zero.
+ */
+export const openingBalance = (
+  expenses: Expense[],
+  day: string,
+): Omit<Posting, 'id'>[] =>
+  expenses
+    .filter((expense) => expense.amountCents !== 0)
+    .map(({ budgetId, category, amountCents }) => ({
+      budgetId,
+      day,
+      category,
+      deltaCents: amountCents,
+    }));
