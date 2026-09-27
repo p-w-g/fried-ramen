@@ -70,6 +70,14 @@ const slug = computed(() => String(route.params.slug));
   }
 }
 
+/* Wide screens: the tabs cluster in the middle instead of splitting it. */
+@media (min-width: 44rem) and (min-height: 30rem) {
+  .fr__navbar {
+    grid-auto-columns: minmax(0, 14rem);
+    justify-content: center;
+  }
+}
+
 .fr__chart-toggle .fr__donut {
   width: 1.5rem;
   height: 1.5rem;

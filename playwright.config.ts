@@ -30,6 +30,30 @@ export default defineConfig({
       },
     },
     {
+      // Two panes side by side, as on a tablet on its side.
+      name: 'ipad-mini-landscape',
+      testMatch: /(visual|layout)\.spec\.ts/,
+      use: {
+        ...devices['iPad Mini landscape'],
+        // Its layout, not Safari's engine: the other projects run Chromium too.
+        defaultBrowserType: 'chromium',
+        baseURL: `http://localhost:${devPort}`,
+        serviceWorkers: 'block',
+      },
+    },
+    {
+      // An unfolded phone's inner screen, e.g. a Galaxy Z Fold, held
+      // upright. Estimated from the Fold 7: 1968x2184 pixels at 2.625.
+      name: 'fold-inner',
+      testMatch: /(visual|layout)\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
+        viewport: { width: 750, height: 832 },
+        baseURL: `http://localhost:${devPort}`,
+        serviceWorkers: 'block',
+      },
+    },
+    {
       // The production build: service worker on, and Vue's error handling
       // as shipped (dev builds rethrow errors that prod only logs).
       name: 'production',

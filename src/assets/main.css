@@ -304,6 +304,38 @@ button.fr__icon-button {
   }
 }
 
+/*
+ * Tablets and unfolded phones, like an iPad mini on its side: side by side
+ * instead of stacked. Too little height (a folded phone on its side) keeps
+ * one column, as two squashed panes would be worse.
+ */
+@media (min-width: 44rem) and (min-height: 30rem) {
+  .fr__page--split {
+    display: grid;
+    grid-template-columns: minmax(17rem, 2fr) 3fr;
+    align-items: start;
+    column-gap: 1.5rem;
+    max-width: 64rem;
+    /* The list starts level with the total, not below the page gap. */
+    & > .fr__groups {
+      margin-top: 1.5rem;
+    }
+  }
+
+  /* The form stays in reach while the list scrolls past. */
+  .fr__pane--pinned {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.fr__pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
 /* The one number that matters, first and largest. */
 /* Two or three equal choices side by side: chart tabs, Daily or Monthly. */
 .fr__segmented {

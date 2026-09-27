@@ -115,4 +115,20 @@ const percentages = computed(() => wholePercentages(shares.value.slices));
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+/* Wide screens: the donut beside its legend, the footnote under both. */
+@media (min-width: 44rem) and (min-height: 30rem) {
+  .fr__overview {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 22rem);
+    justify-content: center;
+    align-items: center;
+    column-gap: 2.5rem;
+
+    & > figcaption {
+      grid-column: 1 / -1;
+      justify-self: center;
+    }
+  }
+}
 </style>

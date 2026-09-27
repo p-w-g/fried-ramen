@@ -9,16 +9,18 @@ const budget = useBudgetStore();
 </script>
 
 <template>
-  <div class="fr__page">
-    <header class="fr__summary">
-      <p class="fr__total">
-        <span class="fr__total-label">Total</span>
-        <span class="fr__amount">{{ formatAmount(budget.totalCents) }}</span>
-      </p>
-    </header>
-    <BaseAccordion label="Add expense">
-      <ExpenseForm />
-    </BaseAccordion>
+  <div class="fr__page fr__page--split">
+    <div class="fr__pane fr__pane--pinned">
+      <header class="fr__summary">
+        <p class="fr__total">
+          <span class="fr__total-label">Total</span>
+          <span class="fr__amount">{{ formatAmount(budget.totalCents) }}</span>
+        </p>
+      </header>
+      <BaseAccordion label="Add expense">
+        <ExpenseForm />
+      </BaseAccordion>
+    </div>
     <ExpenseList />
   </div>
 </template>
