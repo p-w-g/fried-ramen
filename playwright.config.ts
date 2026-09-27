@@ -42,13 +42,14 @@ export default defineConfig({
       },
     },
     {
-      // An unfolded phone's inner screen, e.g. a Galaxy Z Fold, held
-      // upright. Estimated from the Fold 7: 1968x2184 pixels at 2.625.
-      name: 'fold-inner',
+      // Galaxy Z Fold 8 unfolded: a wide 4:3 inner screen, 2448x1848 pixels.
+      // Viewports assume Samsung's usual 2.625 pixel ratio, minus the
+      // browser's bars, as Playwright's Pixel 7 does.
+      name: 'fold-8-inner',
       testMatch: /(visual|layout)\.spec\.ts/,
       use: {
         ...devices['Pixel 7'],
-        viewport: { width: 750, height: 832 },
+        viewport: { width: 933, height: 628 },
         baseURL: `http://localhost:${devPort}`,
         serviceWorkers: 'block',
       },
