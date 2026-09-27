@@ -54,7 +54,7 @@ test('budgets page', async ({ page }) => {
 });
 
 test('unknown budget', async ({ page }) => {
-  await page.goto('/?budget=nope');
+  await page.goto('/budgets/nope');
   await page.getByText('There is no budget called “nope”.').waitFor();
 
   await expect(page).toHaveScreenshot('unknown-budget.png', { fullPage: true });

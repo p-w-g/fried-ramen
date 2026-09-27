@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('the app opens the "Current" budget by its slug', async ({ page }) => {
-  await expect(page).toHaveURL(/\/\?budget=current$/);
+  await expect(page).toHaveURL(/\/budgets\/current$/);
   await expect(app(page).pageTitle()).toHaveText('Current');
 });
 
@@ -19,7 +19,7 @@ test('a new budget opens empty and keeps its own expenses', async ({
 
   await fr.createBudget('April Tour of Japan');
 
-  await expect(page).toHaveURL(/\?budget=april_tour_of_japan$/);
+  await expect(page).toHaveURL(/\/budgets\/april_tour_of_japan$/);
   await expect(fr.pageTitle()).toHaveText('April Tour of Japan');
   await fr.expectTotal(0);
   await fr.addExpense('Ramen', 9);
@@ -53,9 +53,9 @@ test('renaming moves the URL; the old one says the budget is gone', async ({
   const fr = app(page);
   await fr.renameBudget('Current', 'Everyday');
   await fr.openBudget('Everyday');
-  await expect(page).toHaveURL(/\?budget=everyday$/);
+  await expect(page).toHaveURL(/\/budgets\/everyday$/);
 
-  await page.goto('/?budget=current');
+  await page.goto('/budgets/current');
 
   await expect(
     page.getByText('There is no budget called “current”.'),
@@ -67,9 +67,9 @@ test('renaming moves the URL; the old one says the budget is gone', async ({
 test('an unknown budget in the URL stays put and offers the way back', async ({
   page,
 }) => {
-  await page.goto('/?budget=nope');
+  await page.goto('/budgets/nope');
 
-  await expect(page).toHaveURL(/\?budget=nope$/);
+  await expect(page).toHaveURL(/\/budgets\/nope$/);
   await expect(
     page.getByText('There is no budget called “nope”.'),
   ).toBeVisible();
@@ -98,11 +98,11 @@ test('deleting every budget leaves a clean slate to start from', async ({
 test('reopening the app lands on the budget used last', async ({ page }) => {
   const fr = app(page);
   await fr.createBudget('Japan');
-  await expect(page).toHaveURL(/\?budget=japan$/);
+  await expect(page).toHaveURL(/\/budgets\/japan$/);
 
   await page.goto('/');
 
-  await expect(page).toHaveURL(/\?budget=japan$/);
+  await expect(page).toHaveURL(/\/budgets\/japan$/);
 });
 
 test('/budgets works as a direct link', async ({ page }) => {
@@ -158,7 +158,7 @@ test('a tap anywhere on a budget row opens it, except on its menu', async ({
 
   const row = await fr.budgetRow('Japan').boundingBox();
   await page.mouse.click(row!.x + row!.width * 0.6, row!.y + row!.height / 2);
-  await expect(page).toHaveURL(/\?budget=japan$/);
+  await expect(page).toHaveURL(/\/budgets\/japan$/);
 
   await fr.goToBudgets();
   const more = page.getByRole('button', { name: 'More for Japan' });
@@ -206,4 +206,28 @@ test('backups sit at the bottom of a short list and follow a long one', async ({
 
   const long = await backup.boundingBox();
   expect(long!.y).toBeGreaterThan(screenHeight);
+});
+
+test('a link from before budgets had paths still opens the budget', async ({
+  page,
+}) => {
+  await app(page).createBudget('Japan');
+  await expect(page).toHaveURL(/\/budgets\/japan$/);
+
+  await page.goto('/?budget=japan');
+
+  await expect(page).toHaveURL(/\/budgets\/japan$/);
+  await expect(app(page).pageTitle()).toHaveText('Japan');
+});
+
+test('a name with URL characters still gets one working link', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.createBudget('AC/DC? #1');
+  await expect(fr.pageTitle()).toHaveText('AC/DC? #1');
+
+  await page.reload();
+
+  await expect(fr.pageTitle()).toHaveText('AC/DC? #1');
 });

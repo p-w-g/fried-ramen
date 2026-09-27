@@ -41,7 +41,7 @@ test('the budgets page has no axe violations', async ({ page }) => {
 });
 
 test('the unknown budget page has no axe violations', async ({ page }) => {
-  await page.goto('/?budget=nope');
+  await page.goto('/budgets/nope');
   await page.getByText('There is no budget called “nope”.').waitFor();
 
   expect(await violations(page)).toEqual([]);

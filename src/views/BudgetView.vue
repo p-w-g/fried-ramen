@@ -11,7 +11,7 @@ const route = useRoute();
 const budget = useBudgetStore();
 
 watch(
-  () => route.query.budget,
+  () => route.params.slug,
   (slug) => {
     if (typeof slug === 'string') void budget.open(slug);
   },
@@ -34,7 +34,7 @@ watch(
   </div>
   <div v-else-if="budget.status === 'missing'" class="fr__page">
     <h1>No such budget</h1>
-    <p>There is no budget called “{{ route.query.budget }}”.</p>
+    <p>There is no budget called “{{ route.params.slug }}”.</p>
     <RouterLink :to="{ name: 'budgets' }" class="fr__link-button">
       Go to budgets
     </RouterLink>
