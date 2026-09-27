@@ -153,3 +153,14 @@ test('one over-wide field never widens the whole page', async ({ page }) => {
   expect(toggle!.x + toggle!.width).toBeLessThanOrEqual(screenWidth);
   expect(nav!.width).toBeLessThanOrEqual(screenWidth);
 });
+
+test('expenses entered back to back keep their amounts, even equal ones', async ({
+  page,
+}) => {
+  const fr = app(page);
+  for (const name of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) {
+    await fr.addExpense(name, 1);
+  }
+
+  await fr.expectTotal(10);
+});

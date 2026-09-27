@@ -31,6 +31,23 @@ export function app(page: Page) {
 
   const startEditing = (name: string) => expenseButton('Edit', name).click();
 
+  /**
+   * Waits until a save has landed (the form clears), failed (an alert) or
+   * never started (the browser flagged the amount). The form cannot yet
+   * tell a new amount from an equal one still saving, and clears both;
+   * people never type that fast, but a test does. A bandaid until the form
+   * tracks edits instead of comparing values.
+   */
+  const saveSettled = () =>
+    page.waitForFunction(() => {
+      const amount = document.querySelector<HTMLInputElement>('#amount')!;
+      return (
+        amount.value === '' ||
+        !amount.validity.valid ||
+        document.querySelector('[role="alert"]') !== null
+      );
+    });
+
   /** The top bar's icon: unlike the bottom bar, it is on every page. */
   const goToBudgets = async () => {
     await page.getByRole('link', { name: 'Fried Ramen: all budgets' }).click();
@@ -105,6 +122,7 @@ export function app(page: Page) {
       await page.fill('#amount', String(amount));
       await page.fill('#description', description);
       await page.press('#amount', 'Enter');
+      await saveSettled();
     },
 
     async addCategory(name: string) {
