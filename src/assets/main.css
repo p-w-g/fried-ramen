@@ -21,15 +21,17 @@
   --on-danger: light-dark(#ffffff, #2a0b08);
   --backdrop: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
   /*
-   * Chart slices, in this order only: checked for colour-blind separation
-   * between neighbours on bg in both themes. Other is gray on purpose.
+   * Chart slices, taken from the ramen: broth, narutomaki, scallion, nori
+   * blue, chashu. In this order only: neighbours, including Other and the
+   * seam where the ring closes, are checked for colour-blind separation on
+   * bg in both themes. Other is gray on purpose.
    */
-  --series-1: light-dark(#2a78d6, #3987e5);
-  --series-2: light-dark(#eb6834, #d95926);
-  --series-3: light-dark(#1baf7a, #199e70);
-  --series-4: light-dark(#eda100, #c98500);
-  --series-5: light-dark(#e87ba4, #d55181);
-  --series-other: light-dark(#6b716d, #a3aaa5);
+  --series-1: light-dark(#d99a2b, #bb8526);
+  --series-2: light-dark(#b95b8a, #c86c9b);
+  --series-3: light-dark(#17734b, #2a8a60);
+  --series-4: light-dark(#3f6fb0, #5f8fd6);
+  --series-5: light-dark(#c0583a, #d0694b);
+  --series-other: light-dark(#8c928e, #5e6460);
 
   --shadow-float: 0 8px 24px light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.5));
 

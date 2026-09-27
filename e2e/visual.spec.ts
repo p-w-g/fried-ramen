@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { app } from './app';
 
 test.beforeEach(async ({ page }) => {
@@ -53,18 +53,30 @@ test('budgets page', async ({ page }) => {
   await expect(page).toHaveScreenshot('budgets.png', { fullPage: true });
 });
 
-test('charts overview, with a negative amount left out', async ({ page }) => {
+/** Seven categories: every slice colour, and the two smallest as Other. */
+async function spendAcrossEveryColour(page: Page) {
   const fr = app(page);
-  await fr.addExpense('Coffee', 5);
-  await fr.addExpense('Shoes', 25);
-  await fr.addExpense('Train', 12);
-  await fr.addExpense('Refund', -8);
-  await fr.addCategory('food');
-  await fr.addCategory('travel');
-  await fr.assignCategory('Coffee', 'food');
-  await fr.assignCategory('Train', 'travel');
+  const spending: [string, number][] = [
+    ['broth', 30],
+    ['noodles', 24],
+    ['scallions', 18],
+    ['nori', 12],
+    ['chashu', 9],
+    ['egg', 5],
+    ['sesame', 2],
+  ];
+  for (const [category, amount] of spending) {
+    await fr.addExpense(category, amount);
+    await fr.addCategory(category);
+    await fr.assignCategory(category, category);
+  }
   await fr.chartsToggle().click();
   await page.locator('.fr__legend').waitFor();
+}
+
+test('charts overview, with a negative amount left out', async ({ page }) => {
+  await app(page).addExpense('Refund', -8);
+  await spendAcrossEveryColour(page);
 
   await expect(page).toHaveScreenshot('overview.png', { fullPage: true });
 });
@@ -94,13 +106,7 @@ test.describe('dark theme', () => {
   });
 
   test('charts overview', async ({ page }) => {
-    const fr = app(page);
-    await fr.addExpense('Coffee', 5);
-    await fr.addExpense('Shoes', 25);
-    await fr.addCategory('food');
-    await fr.assignCategory('Coffee', 'food');
-    await fr.chartsToggle().click();
-    await page.locator('.fr__legend').waitFor();
+    await spendAcrossEveryColour(page);
 
     await expect(page).toHaveScreenshot('overview-dark.png', {
       fullPage: true,
