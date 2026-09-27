@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
 import { computed, ref, shallowRef } from 'vue';
 import { db } from '@/db';
+import { forgetBudget, post } from '@/postings';
 import {
   sumCents,
   toCents,
@@ -82,27 +83,50 @@ export const useBudgetStore = defineStore('budget', () => {
   }
 
   async function addExpense(draft: ExpenseDraft) {
-    await db.expenses.add({
-      budgetId: openedBudgetId(),
-      name: draft.name,
-      amountCents: toCents(draft.amount),
-      description: draft.description,
-      category: null,
+    const budgetId = openedBudgetId();
+    const amountCents = toCents(draft.amount);
+    await db.transaction('rw', db.expenses, db.postings, async () => {
+      await db.expenses.add({
+        budgetId,
+        name: draft.name,
+        amountCents,
+        description: draft.description,
+        category: null,
+      });
+      await post(budgetId, null, amountCents);
     });
   }
 
+  /** A changed amount is posted today as the difference, never backdated. */
   async function updateExpense(id: number, draft: ExpenseDraft) {
-    await db.expenses.update(id, {
-      name: draft.name,
-      amountCents: toCents(draft.amount),
-      description: draft.description,
+    const amountCents = toCents(draft.amount);
+    await db.transaction('rw', db.expenses, db.postings, async () => {
+      const before = await db.expenses.get(id);
+      if (!before) return;
+      await db.expenses.update(id, {
+        name: draft.name,
+        amountCents,
+        description: draft.description,
+      });
+      await post(
+        before.budgetId,
+        before.category,
+        amountCents - before.amountCents,
+      );
     });
   }
 
   async function assignCategory(id: number, category: string | null) {
-    await db.expenses.update(id, { category });
+    await db.transaction('rw', db.expenses, db.postings, async () => {
+      const before = await db.expenses.get(id);
+      if (!before || before.category === category) return;
+      await db.expenses.update(id, { category });
+      await post(before.budgetId, before.category, -before.amountCents);
+      await post(before.budgetId, category, before.amountCents);
+    });
   }
 
+  /** The money was still spent, so its postings stay. */
   async function completeExpense(id: number) {
     await db.expenses.delete(id);
   }
@@ -125,10 +149,17 @@ export const useBudgetStore = defineStore('budget', () => {
 
   async function clearBudget() {
     const budgetId = openedBudgetId();
-    await db.transaction('rw', db.categories, db.expenses, async () => {
-      await db.expenses.where({ budgetId }).delete();
-      await db.categories.where({ budgetId }).delete();
-    });
+    await db.transaction(
+      'rw',
+      db.categories,
+      db.expenses,
+      db.postings,
+      async () => {
+        await db.expenses.where({ budgetId }).delete();
+        await db.categories.where({ budgetId }).delete();
+        await forgetBudget(budgetId);
+      },
+    );
   }
 
   return {

@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { Budget, Category, Expense } from './domain';
+import type { Budget, Category, Expense, Posting } from './domain';
 
 export type Meta =
   | { key: 'lastExportedAt'; value: number }
@@ -10,6 +10,7 @@ export const db = new Dexie('fried-ramen') as Dexie & {
   budgets: EntityTable<Budget, 'id'>;
   categories: EntityTable<Category, 'id'>;
   expenses: EntityTable<Expense, 'id'>;
+  postings: EntityTable<Posting, 'id'>;
   meta: EntityTable<Meta, 'key'>;
 };
 
@@ -18,4 +19,9 @@ db.version(1).stores({
   categories: '++id, budgetId, &[budgetId+name]',
   expenses: '++id, budgetId',
   meta: 'key',
+});
+
+/** Expenses from before this version have no postings: their history is unknown. */
+db.version(2).stores({
+  postings: '++id, budgetId',
 });

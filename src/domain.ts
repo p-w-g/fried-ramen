@@ -20,6 +20,20 @@ export type Expense = {
   category: string | null;
 };
 
+/**
+ * One change in what a budget spent, dated the day it was made. Never
+ * edited afterwards: a mistake is owned by a correcting posting, as in
+ * bookkeeping, so past days and months keep the totals they had.
+ */
+export type Posting = {
+  id: number;
+  budgetId: number;
+  /** Local calendar day, e.g. 2026-09-27. */
+  day: string;
+  category: string | null;
+  deltaCents: number;
+};
+
 /** What a person types: amount in whole currency units, e.g. 4.5. */
 export type ExpenseDraft = {
   name: string;
@@ -70,3 +84,9 @@ export function formatCompactAmount(cents: number) {
 
 export const sumCents = (expenses: Expense[]) =>
   expenses.reduce((total, expense) => total + expense.amountCents, 0);
+
+const twoDigits = (value: number) => String(value).padStart(2, '0');
+
+/** The local calendar day, the one people remember spending on. */
+export const toDay = (date: Date) =>
+  `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())}`;
