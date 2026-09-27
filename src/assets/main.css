@@ -22,9 +22,9 @@
   --backdrop: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
   /*
    * Chart slices, taken from the ramen: broth, narutomaki, scallion, nori
-   * blue, chashu. In this order only: neighbours, including Other and the
-   * seam where the ring closes, are checked for colour-blind separation on
-   * bg in both themes. Other is gray on purpose.
+   * blue, chashu. In this order only: tokens.test.ts fails when neighbours,
+   * including Other and the seam where the ring closes, get too alike for
+   * colour-blind readers. Other is gray on purpose.
    */
   --series-1: light-dark(#d99a2b, #bb8526);
   --series-2: light-dark(#b95b8a, #c86c9b);
