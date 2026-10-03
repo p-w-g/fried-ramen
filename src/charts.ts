@@ -93,8 +93,8 @@ function periodsUntil(today: Date, by: Period) {
 /**
  * The budget's total at the end of each period. Completed expenses still
  * count: completing takes one off the list, not out of the past. Everything
- * posted before the
- * window is the line's starting height. Empty while nothing was posted.
+ * posted before the window is the line's starting height. Empty while
+ * nothing was posted.
  */
 export function runningTotal(
   postings: Posting[],

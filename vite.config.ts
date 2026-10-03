@@ -9,8 +9,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 /**
  * e2e only, and only in `vite preview`: every POST /__e2e/release makes
  * the preview server serve a service worker with new bytes, as a deploy
- * would; a counter keeps parallel tests from sharing one release. Browsers fetch the worker script outside Playwright's routing,
- * so the server is the only place to fake a release.
+ * would; a counter keeps parallel tests from sharing one release. Browsers
+ * fetch the worker script outside Playwright's routing, so the server is
+ * the only place to fake a release.
  */
 function simulatedRelease(): Plugin {
   let releases = 0;
@@ -43,8 +44,8 @@ export default defineConfig({
     vue(),
     simulatedRelease(),
     VitePWA({
-      // Installed copies poll this exact path; renaming it would strand them
-      // on the legacy build forever.
+      // Installed copies, including ones from the Vue CLI days, poll this
+      // exact path; renaming it would strand them on the build they have.
       filename: 'service-worker.js',
       registerType: 'prompt',
       manifest: false,
