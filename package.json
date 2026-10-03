@@ -45,7 +45,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sltPrz/fried-ramen.git"
+    "url": "git+https://github.com/p-w-g/fried-ramen.git"
   },
   "type": "module",
   "engines": {
