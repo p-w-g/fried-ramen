@@ -12,7 +12,14 @@ import {
 export type Meta =
   | { key: 'lastExportedAt'; value: number }
   | { key: 'lastBudgetId'; value: number }
-  | { key: 'firstStartDone'; value: number };
+  | { key: 'firstStartDone'; value: number }
+  | { key: 'currencyMode'; value: boolean };
+
+/** Reads one setting with the type its key promises. */
+export async function getMeta<K extends Meta['key']>(key: K) {
+  const row = await db.meta.get(key);
+  return row?.value as Extract<Meta, { key: K }>['value'] | undefined;
+}
 
 export const db = new Dexie('fried-ramen') as Dexie & {
   budgets: EntityTable<Budget, 'id'>;

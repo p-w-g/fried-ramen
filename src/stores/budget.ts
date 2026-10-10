@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
 import { computed, ref, shallowRef } from 'vue';
-import { db } from '@/db';
+import { db, getMeta } from '@/db';
 import { forgetBudget, post, today } from '@/postings';
 import {
   sumCents,
@@ -35,8 +35,8 @@ export const useBudgetStore = defineStore('budget', () => {
 
   /** The budget to show when the URL names none; null when none exist. */
   async function defaultSlug() {
-    const last = await db.meta.get('lastBudgetId');
-    const lastOpened = last && (await db.budgets.get(last.value));
+    const lastId = await getMeta('lastBudgetId');
+    const lastOpened = lastId && (await db.budgets.get(lastId));
     const fallback = lastOpened || (await db.budgets.orderBy('id').first());
     return fallback?.slug ?? null;
   }

@@ -114,6 +114,12 @@ test('unknown budget', async ({ page }) => {
   await expect(page).toHaveScreenshot('unknown-budget.png', { fullPage: true });
 });
 
+test('settings', async ({ page }) => {
+  await app(page).goToSettings();
+
+  await expect(page).toHaveScreenshot('settings.png', { fullPage: true });
+});
+
 test.describe('dark theme', () => {
   test.use({ colorScheme: 'dark' });
 

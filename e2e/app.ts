@@ -171,6 +171,38 @@ export function app(page: Page) {
 
     goToBudgets,
 
+    async goToSettings() {
+      await page.getByRole('link', { name: 'Settings' }).click();
+      await expect(page).toHaveURL(/\/settings$/);
+    },
+
+    currencyModeSwitch: () =>
+      page.getByRole('switch', { name: 'Currency mode' }),
+
+    /** Waits until it is saved, so a reload right after keeps it. */
+    async setCurrencyMode(on: boolean) {
+      await page.getByRole('link', { name: 'Settings' }).click();
+      await page.getByRole('switch', { name: 'Currency mode' }).setChecked(on);
+      await page.waitForFunction(
+        (expected) =>
+          new Promise<boolean>((resolve) => {
+            const opening = indexedDB.open('fried-ramen');
+            opening.onsuccess = () => {
+              const database = opening.result;
+              const reading = database
+                .transaction('meta')
+                .objectStore('meta')
+                .get('currencyMode');
+              reading.onsuccess = () => {
+                database.close();
+                resolve(reading.result?.value === expected);
+              };
+            };
+          }),
+        on,
+      );
+    },
+
     homeLink: () =>
       page.getByRole('link', { name: 'Fried Ramen: all budgets' }),
 

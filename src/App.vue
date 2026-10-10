@@ -6,10 +6,12 @@ import ErrorBanner from './components/shared/ErrorBanner.vue';
 import NavBar from './components/shared/NavBar.vue';
 import ThemeToggle from './components/shared/ThemeToggle.vue';
 import UpdatePrompt from './components/shared/UpdatePrompt.vue';
+import AppIcon from './components/shared/AppIcon.vue';
 import { useBackupStore } from './stores/backup';
 import { useBudgetStore } from './stores/budget';
 // Small enough for Vite to inline, so it shows offline without precaching.
 import RamenIcon from './assets/ramen.png';
+import SettingsIcon from './assets/icons/settings.svg';
 
 void useBackupStore().checkUp();
 
@@ -26,7 +28,16 @@ const isInBudget = computed(() => typeof route.params.slug === 'string');
     <h1 v-if="isInBudget && budget.budget" class="fr__title">
       {{ budget.budget.name }}
     </h1>
-    <ThemeToggle />
+    <div class="fr__topbar-actions">
+      <ThemeToggle />
+      <RouterLink
+        :to="{ name: 'settings' }"
+        class="fr__icon-button"
+        aria-label="Settings"
+      >
+        <AppIcon :src="SettingsIcon" />
+      </RouterLink>
+    </div>
   </header>
   <div class="fr__notices">
     <ErrorBanner />

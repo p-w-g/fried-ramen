@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { db } from '@/db';
+import { db, getMeta } from '@/db';
 import { createBackup, parseBackup, restoreBackup } from '@/backup';
 import { useBudgetStore } from './budget';
 
@@ -12,8 +12,7 @@ export const useBackupStore = defineStore('backup', () => {
   const isStoragePersistent = ref(false);
 
   async function checkUp() {
-    const meta = await db.meta.get('lastExportedAt');
-    lastExportedAt.value = meta?.value ?? null;
+    lastExportedAt.value = (await getMeta('lastExportedAt')) ?? null;
     isStoragePersistent.value = (await navigator.storage?.persist?.()) ?? false;
   }
 
