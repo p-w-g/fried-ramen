@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import BackupPanel from '@/components/form/BackupPanel.vue';
 import BudgetRow from '@/components/budgets/BudgetRow.vue';
 import CurrencySelect from '@/components/shared/CurrencySelect.vue';
 import type { Currency } from '@/domain';
@@ -77,8 +76,6 @@ async function create() {
     >
       Currency converter
     </RouterLink>
-
-    <BackupPanel />
   </div>
 </template>
 

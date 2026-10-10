@@ -41,3 +41,20 @@ test('with currency mode off, nothing ever asks the rates API', async ({
 
   expect(asked).toEqual([]);
 });
+
+test('backups are made and restored from settings', async ({ page }) => {
+  const fr = app(page);
+  await fr.goToBudgets();
+  await expect(page.getByRole('button', { name: 'Export backup' })).toHaveCount(
+    0,
+  );
+
+  await fr.goToSettings();
+
+  await expect(
+    page.getByRole('button', { name: 'Export backup' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Import backup' }),
+  ).toBeVisible();
+});

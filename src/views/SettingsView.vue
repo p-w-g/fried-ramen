@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackupPanel from '@/components/form/BackupPanel.vue';
 import { useSettingsStore } from '@/stores/settings';
 
 const settings = useSettingsStore();
@@ -8,6 +9,7 @@ const settings = useSettingsStore();
   <div class="fr__page">
     <h1>Settings</h1>
     <section class="fr__setting">
+      <h2 class="fr__subheading">Currency</h2>
       <label class="fr__switch">
         <input
           type="checkbox"
@@ -28,6 +30,7 @@ const settings = useSettingsStore();
         while this is on.
       </p>
     </section>
+    <BackupPanel />
   </div>
 </template>
 

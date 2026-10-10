@@ -72,8 +72,6 @@ async function importFrom(event: Event) {
 
 <style>
 .fr__backup {
-  /* Sits at the bottom of a short page, and simply follows a long list. */
-  margin-top: auto;
   padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 
   & p {

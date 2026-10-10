@@ -322,14 +322,14 @@ export function app(page: Page) {
 
     /** Returns the path of the downloaded backup file. */
     async exportBackup() {
-      await goToBudgets();
+      await page.getByRole('link', { name: 'Settings' }).click();
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: 'Export backup' }).click();
       return (await download).path();
     },
 
     async importBackup(file: string | { name: string; buffer: Buffer }) {
-      await goToBudgets();
+      await page.getByRole('link', { name: 'Settings' }).click();
       const files =
         typeof file === 'string'
           ? file

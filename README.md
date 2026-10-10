@@ -25,7 +25,7 @@ Stop buying random stuff, start buying useful stuff. A budget can be money alrea
 
 ### where the data lives
 
-Only in the browser, in IndexedDB. There's no account and no server, so clearing site data or losing the phone loses the budgets. The budgets page has **Export backup** / **Import backup** (JSON). It shows when the last backup was made and warns when the browser hasn't promised to keep the data.
+Only in the browser, in IndexedDB. There's no account and no server, so clearing site data or losing the phone loses the budgets. Settings has **Export backup** / **Import backup** (JSON). It shows when the last backup was made and warns when the browser hasn't promised to keep the data.
 
 Totals over time come from **postings**: every change to a budget's total is recorded as a dated entry and never edited afterwards. Corrections become new postings, like in bookkeeping, so past days keep the totals they had. Only `src/postings.ts` and `src/backup.ts` may write postings, and lint enforces that.
 
