@@ -4,10 +4,12 @@ import { useRouter } from 'vue-router';
 import BackupPanel from '@/components/form/BackupPanel.vue';
 import BudgetRow from '@/components/budgets/BudgetRow.vue';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
+import { useSettingsStore } from '@/stores/settings';
 
 const budgets = useBudgetsStore();
 budgets.watchAll();
 const router = useRouter();
+const settings = useSettingsStore();
 
 const newName = ref('');
 const problem = ref('');
@@ -57,6 +59,14 @@ async function create() {
         />
       </ul>
     </section>
+
+    <RouterLink
+      v-if="settings.currencyMode"
+      :to="{ name: 'convert' }"
+      class="fr__link-button"
+    >
+      Currency converter
+    </RouterLink>
 
     <BackupPanel />
   </div>

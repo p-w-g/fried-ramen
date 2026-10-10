@@ -203,6 +203,51 @@ export function app(page: Page) {
       );
     },
 
+    /**
+     * Stands in for the rates API, so no test depends on the real one.
+     * Answers pairs like "SEK/JPY" from `rates`, refuses the rest, and
+     * returns the pairs asked for, in order. Pass null to fail every
+     * request, as when the API is unreachable.
+     */
+    async mockRates(rates: Record<string, number> | null) {
+      const asked: string[] = [];
+      await page
+        .context()
+        .route('https://api.frankfurter.dev/**', async (route) => {
+          const [base, quote] = new URL(route.request().url()).pathname
+            .split('/')
+            .slice(-2);
+          asked.push(`${base}/${quote}`);
+          if (rates === null) return route.abort('internetdisconnected');
+          const rate = rates[`${base}/${quote}`];
+          await route.fulfill({
+            status: rate === undefined ? 422 : 200,
+            headers: { 'access-control-allow-origin': '*' },
+            json: { date: '2026-10-09', base, quote, rate },
+          });
+        });
+      return asked;
+    },
+
+    converterLink: () => page.getByRole('link', { name: 'Currency converter' }),
+
+    async convert(amount: string, from: string, to: string) {
+      await goToBudgets();
+      await page.getByRole('link', { name: 'Currency converter' }).click();
+      await page.getByLabel('Amount', { exact: true }).fill(amount);
+      await page.getByLabel('From', { exact: true }).selectOption(from);
+      await page.getByLabel('To', { exact: true }).selectOption(to);
+    },
+
+    swapCurrencies: () =>
+      page.getByRole('button', { name: 'Swap currencies' }).click(),
+
+    /** The converted amount, e.g. "¥1,585". */
+    conversion: () => page.locator('.fr__conversion-result'),
+
+    /** e.g. "1 SEK = 15.8511 JPY, rate from 2026-10-09". */
+    rateLine: () => page.locator('.fr__conversion .fr__hint'),
+
     homeLink: () =>
       page.getByRole('link', { name: 'Fried Ramen: all budgets' }),
 

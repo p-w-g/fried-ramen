@@ -3,6 +3,7 @@ import {
   convertCents,
   formatAmount,
   formatCompactAmount,
+  formatMoney,
   parseAmount,
   type Rate,
 } from './domain';
@@ -36,6 +37,16 @@ describe('formatAmount', () => {
     [-325, '-3.25'],
   ])('shows %d cents as %s', (cents, shown) => {
     expect(formatAmount(cents)).toBe(shown);
+  });
+});
+
+describe('formatMoney', () => {
+  it.each([
+    [158_511, 'JPY', '¥1,585'],
+    [10_000, 'SEK', 'SEK\u00a0100.00'],
+    [-325, 'EUR', '-€3.25'],
+  ] as const)('shows %d hundredths of %s as %s', (cents, currency, shown) => {
+    expect(formatMoney(cents, currency)).toBe(shown);
   });
 });
 

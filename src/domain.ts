@@ -100,6 +100,12 @@ const ledger = new Intl.NumberFormat(undefined, {
 /** Always two decimals, so amounts line up in a column. */
 export const formatAmount = (cents: number) => ledger.format(fromCents(cents));
 
+/** With the currency's own sign and decimals: yen have none, so ¥1,585. */
+export const formatMoney = (cents: number, currency: Currency) =>
+  new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(
+    fromCents(cents),
+  );
+
 const compact = new Intl.NumberFormat(undefined, {
   notation: 'compact',
   maximumSignificantDigits: 3,

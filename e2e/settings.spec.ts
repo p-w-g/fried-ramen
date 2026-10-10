@@ -26,3 +26,18 @@ test('currency mode starts off and stays on once turned on', async ({
 
   await expect(fr.currencyModeSwitch()).toBeChecked();
 });
+
+test('with currency mode off, nothing ever asks the rates API', async ({
+  page,
+}) => {
+  const fr = app(page);
+  const asked = await fr.mockRates({ 'SEK/EUR': 0.0893 });
+
+  await fr.addExpense('Coffee', 5);
+  await fr.openTrends();
+  await fr.goToBudgets();
+  await page.goto('/convert');
+  await fr.goToSettings();
+
+  expect(asked).toEqual([]);
+});

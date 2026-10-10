@@ -120,6 +120,16 @@ test('settings', async ({ page }) => {
   await expect(page).toHaveScreenshot('settings.png', { fullPage: true });
 });
 
+test('converter', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({ 'SEK/JPY': 15.8511 });
+  await fr.setCurrencyMode(true);
+  await fr.convert('100', 'SEK', 'JPY');
+  await expect(fr.conversion()).toHaveText('¥1,585');
+
+  await expect(page).toHaveScreenshot('converter.png', { fullPage: true });
+});
+
 test.describe('dark theme', () => {
   test.use({ colorScheme: 'dark' });
 
