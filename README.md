@@ -18,6 +18,7 @@ Stop buying random stuff, start buying useful stuff. A budget can be money alrea
 - **Charts**: _Overview_ is a donut of the total by category. _Trends_ draws the total over time, daily for the last 30 days or monthly for the last 12.
 - **Settings** (the gear in the top bar), where **currency mode** is switched on. It is off by default, and while off the app never talks to anything but itself.
 - **Converter**, in currency mode, linked from the budgets page: an amount from one currency to another, with the rate and the day it was published. Rates come from [Frankfurter](https://frankfurter.dev), at most once a day per pair, and the last one keeps working offline.
+- **Budget currencies**, in currency mode: a budget can be in SEK, yen, złoty… picked when it's created or later on its page. That only labels its amounts, it never converts them, and with currency mode off every budget reads as plain numbers again.
 - **Light and dark theme**: follows the system until you pick one.
 - **Installable and offline**: it's a PWA. When a new version is deployed, it asks before reloading.
 

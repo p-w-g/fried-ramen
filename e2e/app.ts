@@ -284,9 +284,13 @@ export function app(page: Page) {
     /** The budget's name in the top bar, or the page's own title. */
     pageTitle: () => page.getByRole('heading', { level: 1 }),
 
-    async createBudget(name: string) {
+    /** A currency can only be picked in currency mode. */
+    async createBudget(name: string, currency?: string) {
       await goToBudgets();
       await page.fill('#budget-name', name);
+      if (currency) {
+        await page.getByLabel('Currency').selectOption(currency);
+      }
       await page.getByRole('button', { name: 'Create budget' }).click();
     },
 
@@ -340,6 +344,15 @@ export function app(page: Page) {
       await page.getByRole('button', { name: /^Clear / }).click();
       await answerDialog('Clear');
     },
+
+    /** The open budget's total as shown, e.g. "¥1,500" or "SEK 4.50". */
+    shownTotal: () => page.locator('.fr__total .fr__amount'),
+
+    /** One expense's amount as shown. */
+    shownAmount: (name: string) => card(name).locator('.fr__entry-amount'),
+
+    /** The open budget's own currency, on its page. */
+    budgetCurrency: () => page.getByLabel('Currency', { exact: true }),
 
     async expectTotal(total: number) {
       await expect(page.locator('.fr__total .fr__amount')).toHaveText(

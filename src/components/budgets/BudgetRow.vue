@@ -1,14 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { confirmAction } from '@/confirm';
 import AppIcon from '@/components/shared/AppIcon.vue';
 import { formatAmount, formatCompactAmount, type Budget } from '@/domain';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
+import { useSettingsStore } from '@/stores/settings';
 import MoreIcon from '@/assets/icons/more_horiz.svg';
 
 const { budget } = defineProps<{ budget: Budget }>();
 
 const budgets = useBudgetsStore();
+const settings = useSettingsStore();
+
+/** Shown beside the total in currency mode, for budgets that have one. */
+const currency = computed(() =>
+  settings.currencyMode ? (budget.currency ?? null) : null,
+);
 
 /** Ties this row's menu to its own button; ids are unique per budget. */
 const menuId = `budget-menu-${budget.id}`;
@@ -70,9 +77,12 @@ async function remove() {
       <p class="fr__budget-total fr__amount">
         <span aria-hidden="true">
           {{ formatCompactAmount(budgets.totalOf(budget.id)) }}
+          <span v-if="currency" class="fr__budget-currency">{{
+            currency
+          }}</span>
         </span>
         <span class="fr__visually-hidden">
-          Total {{ formatAmount(budgets.totalOf(budget.id)) }}
+          Total {{ formatAmount(budgets.totalOf(budget.id)) }} {{ currency }}
         </span>
       </p>
       <button
@@ -135,6 +145,12 @@ async function remove() {
   & .fr__budget-total {
     margin: 0 0.25rem 0 0;
     font-weight: 600;
+  }
+
+  & .fr__budget-currency {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 
   & .fr__budget-link {

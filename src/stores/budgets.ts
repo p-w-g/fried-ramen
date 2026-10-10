@@ -3,7 +3,7 @@ import { liveQuery, type Subscription } from 'dexie';
 import { ref, shallowRef } from 'vue';
 import { db } from '@/db';
 import { forgetBudget } from '@/postings';
-import { toSlug, type Budget } from '@/domain';
+import { toSlug, type Budget, type Currency } from '@/domain';
 
 /** A name the person has to change; the message says why. */
 export class BudgetNameError extends Error {}
@@ -46,12 +46,16 @@ export const useBudgetsStore = defineStore('budgets', () => {
 
   const totalOf = (id: number) => totals.value.get(id) ?? 0;
 
-  const create = (name: string) =>
+  const create = (name: string, currency?: Currency) =>
     db.transaction('rw', db.budgets, async (): Promise<Budget> => {
-      const fields = await checkName(name);
+      const fields = { ...(await checkName(name)), currency };
       const id = await db.budgets.add(fields);
       return { id, ...fields };
     });
+
+  /** Relabels the amounts; it never converts them. */
+  const setCurrency = (id: number, currency: Currency | undefined) =>
+    db.budgets.update(id, { currency });
 
   const rename = (id: number, name: string) =>
     db.transaction('rw', db.budgets, async () => {
@@ -73,5 +77,14 @@ export const useBudgetsStore = defineStore('budgets', () => {
       },
     );
 
-  return { budgets, isLoaded, watchAll, totalOf, create, rename, remove };
+  return {
+    budgets,
+    isLoaded,
+    watchAll,
+    totalOf,
+    create,
+    rename,
+    setCurrency,
+    remove,
+  };
 });

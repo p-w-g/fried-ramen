@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { confirmAction } from '@/confirm';
-import { formatAmount, sumCents } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
+import { useMoneyStore } from '@/stores/money';
 import { hoveredDropZone } from './dragAndDrop';
 import ExpensesWrapper from './ExpensesWrapper.vue';
 import ExpenseCard from './ExpenseCard.vue';
 
 const budget = useBudgetStore();
+const money = useMoneyStore();
 
 async function clearBudget() {
   const name = budget.budget?.name ?? 'this budget';
@@ -29,9 +30,7 @@ async function clearBudget() {
     >
       <h2 v-if="budget.categories.length" class="fr__group-heading">
         <span class="fr__group-name">Uncategorised</span>
-        <span class="fr__amount">{{
-          formatAmount(sumCents(budget.unassigned))
-        }}</span>
+        <span class="fr__amount">{{ money.total(budget.unassigned) }}</span>
       </h2>
       <p v-if="budget.expenses.length === 0" class="fr__empty">
         Nothing here yet. Add an expense above.

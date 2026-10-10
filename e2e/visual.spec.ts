@@ -130,6 +130,32 @@ test('converter', async ({ page }) => {
   await expect(page).toHaveScreenshot('converter.png', { fullPage: true });
 });
 
+test('budgets page in currency mode', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({});
+  await fr.setCurrencyMode(true);
+  await fr.createBudget('Japan', 'JPY');
+  await fr.addExpense('Ramen', 1500);
+  await fr.goToBudgets();
+
+  await expect(page).toHaveScreenshot('budgets-currency.png', {
+    fullPage: true,
+  });
+});
+
+test('budget in currency mode', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({});
+  await fr.setCurrencyMode(true);
+  await fr.createBudget('Japan', 'JPY');
+  await fr.addExpense('Ramen', 1500);
+  await fr.openForm();
+
+  await expect(page).toHaveScreenshot('budget-currency.png', {
+    fullPage: true,
+  });
+});
+
 test.describe('dark theme', () => {
   test.use({ colorScheme: 'dark' });
 

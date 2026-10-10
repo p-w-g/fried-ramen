@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BackupPanel from '@/components/form/BackupPanel.vue';
 import BudgetRow from '@/components/budgets/BudgetRow.vue';
+import CurrencySelect from '@/components/shared/CurrencySelect.vue';
+import type { Currency } from '@/domain';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -12,12 +14,14 @@ const router = useRouter();
 const settings = useSettingsStore();
 
 const newName = ref('');
+const newCurrency = ref<Currency>();
 const problem = ref('');
 
 async function create() {
   try {
-    const created = await budgets.create(newName.value);
+    const created = await budgets.create(newName.value, newCurrency.value);
     newName.value = '';
+    newCurrency.value = undefined;
     problem.value = '';
     await router.push({ name: 'budget', params: { slug: created.slug } });
   } catch (error) {
@@ -31,11 +35,17 @@ async function create() {
   <div class="fr__page">
     <h1>Budgets</h1>
     <form id="budget-form" class="fr__stack" @submit.prevent="create">
-      <div class="fr__field-row">
+      <div class="fr__field-row fr__new-budget">
         <div class="fr__field">
           <label for="budget-name">New budget</label>
           <input id="budget-name" v-model="newName" type="text" />
         </div>
+        <CurrencySelect
+          v-if="settings.currencyMode"
+          id="new-budget-currency"
+          v-model="newCurrency"
+          label="Currency"
+        />
         <button form="budget-form" class="fr__button--primary">
           Create budget
         </button>
@@ -71,3 +81,18 @@ async function create() {
     <BackupPanel />
   </div>
 </template>
+
+<style>
+/* With a currency picker the button moves below, so the name keeps room. */
+.fr__new-budget {
+  flex-wrap: wrap;
+
+  & > .fr__field:first-child {
+    flex-basis: 10rem;
+  }
+
+  & > button {
+    margin-left: auto;
+  }
+}
+</style>

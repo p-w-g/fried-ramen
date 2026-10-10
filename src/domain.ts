@@ -2,6 +2,8 @@ export type Budget = {
   id: number;
   name: string;
   slug: string;
+  /** What its amounts are in; budgets from before currency mode have none. */
+  currency?: Currency;
 };
 
 export type Category = {

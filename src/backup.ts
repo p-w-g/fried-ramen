@@ -1,5 +1,6 @@
 import { db } from './db';
 import {
+  CURRENCIES,
   openingBalance,
   toDay,
   type Budget,
@@ -67,11 +68,15 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isId = (value: unknown) => Number.isInteger(value);
 const isString = (value: unknown) => typeof value === 'string';
 
+const isCurrency = (value: unknown) =>
+  CURRENCIES.some((currency) => currency === value);
+
 const isBudget = (value: unknown): value is Budget =>
   isRecord(value) &&
   isId(value.id) &&
   isString(value.name) &&
-  isString(value.slug);
+  isString(value.slug) &&
+  (value.currency === undefined || isCurrency(value.currency));
 
 const isCategory = (value: unknown): value is Category =>
   isRecord(value) &&

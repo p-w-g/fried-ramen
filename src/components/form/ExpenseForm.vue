@@ -2,8 +2,10 @@
 import { ref, type Ref } from 'vue';
 import { AMOUNT_PATTERN, parseAmount } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
+import { useMoneyStore } from '@/stores/money';
 
 const budget = useBudgetStore();
+const money = useMoneyStore();
 
 const name = ref('');
 const amount = ref('');
@@ -58,7 +60,11 @@ async function deleteCategory(event: Event) {
         <input id="expense" v-model="name" type="text" />
       </div>
       <div class="fr__field fr__field--amount">
-        <label for="amount">Amount</label>
+        <label for="amount">
+          Amount<template v-if="money.currency">
+            ({{ money.currency }})</template
+          >
+        </label>
         <input
           id="amount"
           v-model="amount"

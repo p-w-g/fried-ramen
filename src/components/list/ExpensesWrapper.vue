@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { formatAmount, sumCents } from '@/domain';
 import AppIcon from '@/components/shared/AppIcon.vue';
 import Chevron from '@/assets/icons/chevron_right.svg';
 import { useBudgetStore } from '@/stores/budget';
+import { useMoneyStore } from '@/stores/money';
 import { hoveredDropZone } from './dragAndDrop';
 import ExpenseCard from './ExpenseCard.vue';
 
 const { category } = defineProps<{ category: string }>();
 
 const budget = useBudgetStore();
+const money = useMoneyStore();
 const isOpen = ref(true);
 
 const expenses = computed(() => budget.expensesIn(category));
-const total = computed(() => formatAmount(sumCents(expenses.value)));
+const total = computed(() => money.total(expenses.value));
 </script>
 
 <template>

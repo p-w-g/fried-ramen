@@ -7,6 +7,7 @@ import { useBudgetStore } from './budget';
 
 async function seed() {
   const budgetId = await db.budgets.add({ name: 'Current', slug: 'current' });
+  await db.budgets.add({ name: 'Japan', slug: 'japan', currency: 'JPY' });
   await db.categories.add({ budgetId, name: 'food' });
   await db.expenses.add({
     budgetId,
@@ -180,6 +181,18 @@ describe('backup', () => {
             category: null,
           },
         ],
+      }),
+      'This backup is damaged.',
+    ],
+    [
+      'a currency the app does not offer',
+      JSON.stringify({
+        app: 'fried-ramen',
+        version: 2,
+        budgets: [{ id: 1, name: 'a', slug: 'a', currency: 'XXX' }],
+        categories: [],
+        expenses: [],
+        postings: [],
       }),
       'This backup is damaged.',
     ],
