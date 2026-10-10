@@ -36,4 +36,8 @@ Totals over time come from **postings**: every change to a budget's total is rec
 
 Stack: Vue 3 + Pinia + Vue Router, Dexie over IndexedDB, Vite with `vite-plugin-pwa`. Hosted on Netlify (`public/_redirects` sends every path to the SPA).
 
+### epic branches
+
+Work that spans several features lands on one `epic/<name>` branch, merged into `master` as a single PR. Each feature still gets its own small commits, tagged by feature rather than by kind: `[feat-rates]`, `[feat-settings]` and so on, so `git log --grep` pulls one feature out of the epic.
+
 Node 24 (`.nvmrc`). TypeScript stays on 6.0 until `vue-tsc` and `typescript-eslint` support TypeScript 7 (tsgo): TS 7 only exposes an unstable API, and both crash on it.
