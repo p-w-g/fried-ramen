@@ -4,6 +4,7 @@ import {
   toDay,
   type Budget,
   type Category,
+  type Currency,
   type Expense,
   type Posting,
   type Rate,
@@ -13,7 +14,8 @@ export type Meta =
   | { key: 'lastExportedAt'; value: number }
   | { key: 'lastBudgetId'; value: number }
   | { key: 'firstStartDone'; value: number }
-  | { key: 'currencyMode'; value: boolean };
+  | { key: 'currencyMode'; value: boolean }
+  | { key: 'displayCurrency'; value: Currency };
 
 /** Reads one setting with the type its key promises. */
 export async function getMeta<K extends Meta['key']>(key: K) {

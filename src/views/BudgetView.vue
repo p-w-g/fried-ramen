@@ -34,7 +34,24 @@ function setCurrency(currency: Currency | undefined) {
             :model-value="budget.budget?.currency"
             @update:model-value="setCurrency"
           />
+          <CurrencySelect
+            v-if="money.currency"
+            id="display-currency"
+            label="Show in"
+            none-label="Its own"
+            :model-value="settings.displayCurrency"
+            @update:model-value="settings.setDisplayCurrency"
+          />
         </div>
+        <p v-if="money.rate" class="fr__hint fr__rate-note">
+          Converted at 1 {{ money.rate.base }} = {{ money.rate.rate }}
+          {{ money.rate.quote }}, rate from {{ money.rate.date }}. Amounts are
+          typed in {{ money.rate.base }}.
+        </p>
+        <p v-else-if="money.isRateMissing" role="alert" class="fr__problem">
+          No exchange rate yet, so this shows {{ money.currency }}. Connect to
+          the internet once to get one.
+        </p>
       </header>
       <BaseAccordion label="Add expense">
         <ExpenseForm />
@@ -47,5 +64,10 @@ function setCurrency(currency: Currency | undefined) {
 <style>
 .fr__currencies {
   margin-top: 1rem;
+}
+
+.fr__summary > p:not(.fr__total) {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
 }
 </style>

@@ -143,12 +143,14 @@ test('budgets page in currency mode', async ({ page }) => {
   });
 });
 
-test('budget in currency mode', async ({ page }) => {
+test('budget in currency mode, shown in another currency', async ({ page }) => {
   const fr = app(page);
-  await fr.mockRates({});
+  await fr.mockRates({ 'JPY/SEK': 0.0631 });
   await fr.setCurrencyMode(true);
   await fr.createBudget('Japan', 'JPY');
   await fr.addExpense('Ramen', 1500);
+  await fr.showIn('SEK');
+  await expect(fr.shownTotal()).toHaveText('SEK 94.65');
   await fr.openForm();
 
   await expect(page).toHaveScreenshot('budget-currency.png', {

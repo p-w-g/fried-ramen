@@ -351,6 +351,13 @@ export function app(page: Page) {
     /** One expense's amount as shown. */
     shownAmount: (name: string) => card(name).locator('.fr__entry-amount'),
 
+    /** Picks what the open budget is shown in; "" shows its own. */
+    showIn: (currency: string) =>
+      page.getByLabel('Show in').selectOption(currency),
+
+    /** e.g. "Converted at 1 SEK = 15.8511 JPY, rate from 2026-10-09. …" */
+    rateNote: () => page.locator('.fr__rate-note'),
+
     /** The open budget's own currency, on its page. */
     budgetCurrency: () => page.getByLabel('Currency', { exact: true }),
 
