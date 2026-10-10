@@ -34,6 +34,37 @@ export type Posting = {
   deltaCents: number;
 };
 
+/** The currencies on offer: the common ones, so a dropdown stays short. */
+export const CURRENCIES = [
+  'SEK',
+  'EUR',
+  'USD',
+  'GBP',
+  'JPY',
+  'NOK',
+  'DKK',
+  'PLN',
+  'CHF',
+  'CNY',
+] as const;
+
+export type Currency = (typeof CURRENCIES)[number];
+
+/** How many of `quote` one `base` buys, as published on `date`. */
+export type Rate = {
+  base: Currency;
+  quote: Currency;
+  rate: number;
+  /** The publishing day; on weekends that is the last working day. */
+  date: string;
+  /** The local day it was fetched, which decides when to fetch again. */
+  fetchedOn: string;
+};
+
+/** Hundredths stay hundredths whatever the currency, so this only scales. */
+export const convertCents = (cents: number, rate: Rate) =>
+  Math.round(cents * rate.rate);
+
 /** What a person types: amount in whole currency units, e.g. 4.5. */
 export type ExpenseDraft = {
   name: string;

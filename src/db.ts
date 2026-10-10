@@ -1,4 +1,4 @@
-import Dexie, { type EntityTable } from 'dexie';
+import Dexie, { type EntityTable, type Table } from 'dexie';
 import {
   openingBalance,
   toDay,
@@ -6,6 +6,7 @@ import {
   type Category,
   type Expense,
   type Posting,
+  type Rate,
 } from './domain';
 
 export type Meta =
@@ -19,6 +20,7 @@ export const db = new Dexie('fried-ramen') as Dexie & {
   expenses: EntityTable<Expense, 'id'>;
   postings: EntityTable<Posting, 'id'>;
   meta: EntityTable<Meta, 'key'>;
+  rates: Table<Rate, [string, string]>;
 };
 
 db.version(1).stores({
@@ -36,3 +38,5 @@ db.version(2)
       .table('postings')
       .bulkAdd(openingBalance(expenses, toDay(new Date())));
   });
+
+db.version(3).stores({ rates: '[base+quote]' });

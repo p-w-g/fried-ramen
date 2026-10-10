@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatAmount, formatCompactAmount, parseAmount } from './domain';
+import {
+  convertCents,
+  formatAmount,
+  formatCompactAmount,
+  parseAmount,
+  type Rate,
+} from './domain';
 
 describe('parseAmount', () => {
   it.each([
@@ -43,5 +49,23 @@ describe('formatCompactAmount', () => {
     [-1_234_500, '-12.3K'],
   ])('shows %d cents as %s', (cents, shown) => {
     expect(formatCompactAmount(cents)).toBe(shown);
+  });
+});
+
+describe('convertCents', () => {
+  const rate = (value: number): Rate => ({
+    base: 'SEK',
+    quote: 'JPY',
+    rate: value,
+    date: '2026-10-09',
+    fetchedOn: '2026-10-10',
+  });
+
+  it.each([
+    [10_000, 15.8511, 158_511],
+    [333, 15.8511, 5_278],
+    [-500, 0.0631, -32],
+  ])('turns %d hundredths at %d into %d', (cents, value, converted) => {
+    expect(convertCents(cents, rate(value))).toBe(converted);
   });
 });
