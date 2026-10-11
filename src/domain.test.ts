@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  caretAfterTyped,
   convertCents,
   formatAmount,
   formatCompactAmount,
   formatBareMoney,
   formatMoney,
-  groupThousands,
   parseAmount,
   type Rate,
 } from './domain';
@@ -92,40 +90,5 @@ describe('convertCents', () => {
     [-500, 0.0631, -32],
   ])('turns %d hundredths at %d into %d', (cents, value, converted) => {
     expect(convertCents(cents, rate(value))).toBe(converted);
-  });
-});
-
-describe('groupThousands', () => {
-  it.each([
-    ['300000', '300 000'],
-    ['1234567,5', '1 234 567,5'],
-    ['1234.56', '1 234.56'],
-    ['-12345', '-12 345'],
-    ['300 0000', '3 000 000'],
-    ['999', '999'],
-    ['', ''],
-    ['abc', 'abc'],
-  ])('groups %j as %j', (typed, grouped) => {
-    expect(groupThousands(typed)).toBe(grouped);
-  });
-
-  it('keeps the amount the same, only easier to read', () => {
-    expect(parseAmount(groupThousands('1234567,5').replaceAll(' ', ''))).toBe(
-      1234567.5,
-    );
-  });
-});
-
-describe('caretAfterTyped', () => {
-  it.each([
-    // "30000|0" typed one more 0 at the end: after all six digits.
-    ['300 000', 6, 7],
-    // "1|2345" became "12 345": still after the first digit.
-    ['12 345', 1, 1],
-    // After "123" of "1 234 567", the caret skips no space it should not.
-    ['1 234 567', 3, 4],
-    ['', 0, 0],
-  ])('in %j after %d typed characters sits at %d', (grouped, typed, at) => {
-    expect(caretAfterTyped(grouped, typed)).toBe(at);
   });
 });

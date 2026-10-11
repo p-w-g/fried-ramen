@@ -258,9 +258,6 @@ export function app(page: Page) {
       await page.getByLabel('To', { exact: true }).selectOption(to);
     },
 
-    /** The converter's amount field, for typing key by key. */
-    convertAmount: () => page.getByLabel('Amount', { exact: true }),
-
     swapCurrencies: () =>
       page.getByRole('button', { name: 'Swap currencies' }).click(),
 

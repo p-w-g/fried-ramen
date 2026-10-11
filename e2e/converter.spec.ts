@@ -35,27 +35,6 @@ test('converts both ways, with the rate and its date', async ({ page }) => {
   await expect(fr.conversion()).toHaveText('6.31');
 });
 
-test('long amounts group by thousands as they are typed', async ({ page }) => {
-  const fr = app(page);
-  await fr.mockRates({ 'SEK/JPY': 15.8511 });
-  await fr.setSwitch('Converter', true);
-  await fr.convert('', 'SEK', 'JPY');
-  const amount = fr.convertAmount();
-
-  await amount.pressSequentially('300000');
-  await expect(amount).toHaveValue('300 000');
-
-  await amount.press('Home');
-  await amount.press('ArrowRight');
-  await amount.pressSequentially('12');
-  await expect(amount).toHaveValue('31 200 000');
-
-  await amount.press('End');
-  await amount.pressSequentially(',5');
-  await expect(amount).toHaveValue('31 200 000,5');
-  await expect(fr.conversion()).toHaveText('494 554 328');
-});
-
 test('asks for a pair once a day, however often it is opened', async ({
   page,
 }) => {

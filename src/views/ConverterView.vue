@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef, watch } from 'vue';
 import {
+  AMOUNT_PATTERN,
   CURRENCIES,
-  GROUPED_AMOUNT_PATTERN,
-  caretAfterTyped,
   convertCents,
   formatBareMoney,
-  groupThousands,
   parseAmount,
   toCents,
   type Currency,
@@ -35,24 +33,12 @@ watch(
   { immediate: true },
 );
 
-/** Regroups as they type, keeping the caret by the digit it was next to. */
-function regroup(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const caret = input.selectionStart ?? input.value.length;
-  const typedBeforeCaret = input.value.slice(0, caret).replaceAll(' ', '');
-  const grouped = groupThousands(input.value);
-  typed.value = grouped;
-  input.value = grouped;
-  const at = caretAfterTyped(grouped, typedBeforeCaret.length);
-  input.setSelectionRange(at, at);
-}
-
 function swap() {
   [from.value, to.value] = [to.value, from.value];
 }
 
 const amountCents = computed(() => {
-  const amount = parseAmount(typed.value.replaceAll(' ', ''));
+  const amount = parseAmount(typed.value);
   return amount === null ? null : toCents(amount);
 });
 
@@ -71,11 +57,10 @@ const converted = computed(() =>
         <label for="convert-amount">Amount</label>
         <input
           id="convert-amount"
-          :value="typed"
+          v-model="typed"
           type="text"
           inputmode="decimal"
-          :pattern="GROUPED_AMOUNT_PATTERN"
-          @input="regroup"
+          :pattern="AMOUNT_PATTERN"
         />
       </div>
       <div class="fr__field-row">
