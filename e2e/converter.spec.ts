@@ -26,7 +26,7 @@ test('converts both ways, with the rate and its date', async ({ page }) => {
 
   await fr.convert('100', 'SEK', 'JPY');
 
-  await expect(fr.conversion()).toHaveText('1 585');
+  await expect(fr.conversion()).toHaveText('1,585');
   await expect(fr.rateLine()).toHaveText('1 SEK = 15.8511 JPY');
   await expect(fr.rateDate()).toHaveText('Rate from 2026-10-09');
 
@@ -44,8 +44,8 @@ test('a long amount reads back grouped above what it equals', async ({
 
   await fr.convert('20000', 'JPY', 'SEK');
 
-  await expect(fr.typedEcho()).toHaveText('20 000 JPY');
-  await expect(fr.conversion()).toHaveText('1 262');
+  await expect(fr.typedEcho()).toHaveText('20,000 JPY');
+  await expect(fr.conversion()).toHaveText('1,262');
 });
 
 test('nothing typed echoes nothing', async ({ page }) => {
@@ -67,10 +67,10 @@ test('asks for a pair once a day, however often it is opened', async ({
   await fr.setSwitch('Converter', true);
 
   await fr.convert('100', 'SEK', 'JPY');
-  await expect(fr.conversion()).toHaveText('1 585');
+  await expect(fr.conversion()).toHaveText('1,585');
   await page.reload();
   await fr.convert('100', 'SEK', 'JPY');
-  await expect(fr.conversion()).toHaveText('1 585');
+  await expect(fr.conversion()).toHaveText('1,585');
 
   expect(asked.filter((pair) => pair === 'SEK/JPY')).toHaveLength(1);
 });

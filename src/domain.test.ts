@@ -53,11 +53,11 @@ describe('formatMoney', () => {
 
 describe('formatBareMoney', () => {
   it.each([
-    [475_533_000, 'JPY', '4 755 330'],
+    [475_533_000, 'JPY', '4,755,330'],
     [631, 'SEK', '6.31'],
-    [30_000_000, 'SEK', '300 000'],
+    [30_000_000, 'SEK', '300,000'],
     [450, 'SEK', '4.50'],
-    [123_456_789, 'EUR', '1 234 567.89'],
+    [123_456_789, 'EUR', '1,234,567.89'],
     [-325, 'USD', '-3.25'],
   ] as const)('shows %d hundredths of %s as %s', (cents, currency, shown) => {
     expect(formatBareMoney(cents, currency)).toBe(shown);
