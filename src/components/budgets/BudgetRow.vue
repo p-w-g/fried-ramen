@@ -12,9 +12,9 @@ const { budget } = defineProps<{ budget: Budget }>();
 const budgets = useBudgetsStore();
 const settings = useSettingsStore();
 
-/** Shown beside the total in currency mode, for budgets that have one. */
+/** Shown beside the total with budget currencies on, for budgets that have one. */
 const currency = computed(() =>
-  settings.currencyMode ? (budget.currency ?? null) : null,
+  settings.switches.budgetCurrencies ? (budget.currency ?? null) : null,
 );
 
 /** Ties this row's menu to its own button; ids are unique per budget. */

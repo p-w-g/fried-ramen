@@ -123,17 +123,17 @@ test('settings', async ({ page }) => {
 test('converter', async ({ page }) => {
   const fr = app(page);
   await fr.mockRates({ 'SEK/JPY': 15.8511 });
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
   await fr.convert('100', 'SEK', 'JPY');
   await expect(fr.conversion()).toHaveText('¥1,585');
 
   await expect(page).toHaveScreenshot('converter.png', { fullPage: true });
 });
 
-test('budgets page in currency mode', async ({ page }) => {
+test('budgets page with budget currencies', async ({ page }) => {
   const fr = app(page);
   await fr.mockRates({});
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Budget currencies', true);
   await fr.createBudget('Japan', 'JPY');
   await fr.addExpense('Ramen', 1500);
   await fr.goToBudgets();
@@ -143,10 +143,10 @@ test('budgets page in currency mode', async ({ page }) => {
   });
 });
 
-test('budget in currency mode, shown in another currency', async ({ page }) => {
+test('budget shown in another currency', async ({ page }) => {
   const fr = app(page);
   await fr.mockRates({ 'JPY/SEK': 0.0631 });
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Budget currencies', true);
   await fr.createBudget('Japan', 'JPY');
   await fr.addExpense('Ramen', 1500);
   await fr.showIn('SEK');

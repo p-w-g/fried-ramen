@@ -1,12 +1,21 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { db, getMeta } from '@/db';
 import type { Currency } from '@/domain';
 
+/**
+ * Each off by default, and while all are off the app never asks the
+ * rates API. converter: the converter page. budgetCurrencies: budgets
+ * get a currency and can be shown in another one.
+ */
+export type Switch = 'converter' | 'budgetCurrencies';
+
 /** Choices for this device; backups leave them out, like the theme. */
 export const useSettingsStore = defineStore('settings', () => {
-  /** Off: no currency labels, no converter, no requests to the rates API. */
-  const currencyMode = ref(false);
+  const switches = reactive<Record<Switch, boolean>>({
+    converter: false,
+    budgetCurrencies: false,
+  });
   /** What budgets are shown in; undefined shows each in its own currency. */
   const displayCurrency = ref<Currency>();
   let loading: Promise<void> | undefined;
@@ -14,16 +23,18 @@ export const useSettingsStore = defineStore('settings', () => {
   /** Loads once; route guards await it before deciding what is reachable. */
   const load = () =>
     (loading ??= Promise.all([
-      getMeta('currencyMode'),
+      getMeta('converter'),
+      getMeta('budgetCurrencies'),
       getMeta('displayCurrency'),
-    ]).then(([mode, display]) => {
-      currencyMode.value = mode ?? false;
+    ]).then(([converter, budgetCurrencies, display]) => {
+      switches.converter = converter ?? false;
+      switches.budgetCurrencies = budgetCurrencies ?? false;
       displayCurrency.value = display;
     }));
 
-  async function setCurrencyMode(on: boolean) {
-    await db.meta.put({ key: 'currencyMode', value: on });
-    currencyMode.value = on;
+  async function setSwitch(key: Switch, on: boolean) {
+    await db.meta.put({ key, value: on });
+    switches[key] = on;
   }
 
   async function setDisplayCurrency(currency: Currency | undefined) {
@@ -33,11 +44,5 @@ export const useSettingsStore = defineStore('settings', () => {
     displayCurrency.value = currency;
   }
 
-  return {
-    currencyMode,
-    displayCurrency,
-    load,
-    setCurrencyMode,
-    setDisplayCurrency,
-  };
+  return { switches, displayCurrency, load, setSwitch, setDisplayCurrency };
 });

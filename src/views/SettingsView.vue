@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import BackupPanel from '@/components/form/BackupPanel.vue';
-import { useSettingsStore } from '@/stores/settings';
+import { useSettingsStore, type Switch } from '@/stores/settings';
 
 const settings = useSettingsStore();
+
+const currencySwitches: { key: Switch; label: string; hint: string }[] = [
+  {
+    key: 'converter',
+    label: 'Converter',
+    hint: 'Adds a currency converter to the budgets page.',
+  },
+  {
+    key: 'budgetCurrencies',
+    label: 'Budget currencies',
+    hint: 'Gives each budget a currency, and shows it in another one.',
+  },
+];
 </script>
 
 <template>
@@ -10,24 +23,27 @@ const settings = useSettingsStore();
     <h1>Settings</h1>
     <section class="fr__setting">
       <h2 class="fr__subheading">Currency</h2>
-      <label class="fr__switch">
-        <input
-          type="checkbox"
-          role="switch"
-          :checked="settings.currencyMode"
-          aria-describedby="currency-mode-hint"
-          @change="
-            settings.setCurrencyMode(
-              ($event.target as HTMLInputElement).checked,
-            )
-          "
-        />
-        Currency mode
-      </label>
-      <p id="currency-mode-hint" class="fr__hint">
-        Gives budgets a currency, shows them in another one, and adds a
-        converter. Exchange rates come from frankfurter.dev once a day, and only
-        while this is on.
+      <div v-for="item in currencySwitches" :key="item.key">
+        <label class="fr__switch">
+          <input
+            type="checkbox"
+            role="switch"
+            :checked="settings.switches[item.key]"
+            :aria-describedby="`${item.key}-hint`"
+            @change="
+              settings.setSwitch(
+                item.key,
+                ($event.target as HTMLInputElement).checked,
+              )
+            "
+          />
+          {{ item.label }}
+        </label>
+        <p :id="`${item.key}-hint`" class="fr__hint">{{ item.hint }}</p>
+      </div>
+      <p class="fr__hint">
+        Exchange rates come from frankfurter.dev, at most once a day per
+        currency pair, and only while one of these is on.
       </p>
     </section>
     <BackupPanel />
@@ -36,6 +52,14 @@ const settings = useSettingsStore();
 
 <style>
 .fr__setting {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  & .fr__subheading {
+    margin-bottom: 0;
+  }
+
   & p {
     margin: 0.25rem 0 0;
     font-size: 0.875rem;

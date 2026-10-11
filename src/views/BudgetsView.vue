@@ -40,7 +40,7 @@ async function create() {
           <input id="budget-name" v-model="newName" type="text" />
         </div>
         <CurrencySelect
-          v-if="settings.currencyMode"
+          v-if="settings.switches.budgetCurrencies"
           id="new-budget-currency"
           v-model="newCurrency"
           label="Currency"
@@ -70,7 +70,7 @@ async function create() {
     </section>
 
     <RouterLink
-      v-if="settings.currencyMode"
+      v-if="settings.switches.converter"
       :to="{ name: 'convert' }"
       class="fr__link-button"
     >

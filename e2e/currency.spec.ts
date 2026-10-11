@@ -11,7 +11,7 @@ test('a budget made in yen shows yen wherever its amounts are', async ({
   page,
 }) => {
   const fr = app(page);
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Budget currencies', true);
 
   await fr.createBudget('Japan', 'JPY');
   await fr.addExpense('Ramen', 1500);
@@ -23,31 +23,31 @@ test('a budget made in yen shows yen wherever its amounts are', async ({
   await expect(fr.budgetRow('Japan')).toContainText('1,500.00 JPY');
 });
 
-test('currency mode off reads as before, and on again brings currencies back', async ({
+test('budget currencies off reads as before, and on again brings them back', async ({
   page,
 }) => {
   const fr = app(page);
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Budget currencies', true);
   await fr.createBudget('Japan', 'JPY');
   await fr.addExpense('Ramen', 1500);
 
-  await fr.setCurrencyMode(false);
+  await fr.setSwitch('Budget currencies', false);
   await fr.openBudget('Japan');
 
   await fr.expectTotal(1500);
   await expect(fr.budgetCurrency()).toHaveCount(0);
 
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Budget currencies', true);
   await fr.openBudget('Japan');
   await expect(fr.shownTotal()).toHaveText('¥1,500');
 });
 
-test('a budget from before currency mode gets one later, relabelled and not converted', async ({
+test('a budget from before currencies gets one later, relabelled and not converted', async ({
   page,
 }) => {
   const fr = app(page);
   await fr.addExpense('Coffee', 4.5);
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Budget currencies', true);
   await fr.openBudget('Current');
   await expect(fr.shownTotal()).toHaveText('4.50');
 
@@ -62,7 +62,7 @@ test.describe('shown in another currency', () => {
   test.beforeEach(async ({ page }) => {
     const fr = app(page);
     await page.context().unrouteAll();
-    await fr.setCurrencyMode(true);
+    await fr.setSwitch('Budget currencies', true);
     await fr.createBudget('Stockholm', 'SEK');
     await fr.addExpense('Ramen', 100);
     await fr.addExpense('Tea', 33.33);
@@ -130,7 +130,9 @@ test.describe('shown in another currency', () => {
     await expect(fr.shownTotal()).toHaveText('SEK 133.33');
   });
 
-  test('turning currency mode off stops asking for rates', async ({ page }) => {
+  test('turning budget currencies off stops asking for rates', async ({
+    page,
+  }) => {
     const fr = app(page);
     const asked = await fr.mockRates({ 'SEK/JPY': 15.8511, 'PLN/JPY': 37.1 });
     await fr.createBudget('Warsaw', 'PLN');
@@ -138,7 +140,7 @@ test.describe('shown in another currency', () => {
     await fr.showIn('JPY');
     await expect(fr.shownTotal()).toHaveText('¥2,113');
 
-    await fr.setCurrencyMode(false);
+    await fr.setSwitch('Budget currencies', false);
     await fr.openBudget('Warsaw');
     await fr.expectTotal(0);
 

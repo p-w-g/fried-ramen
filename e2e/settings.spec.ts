@@ -14,20 +14,47 @@ test('settings are one tap away from every page', async ({ page }) => {
   await fr.goToSettings();
 });
 
-test('currency mode starts off and stays on once turned on', async ({
+test('each currency switch starts off and stays on once turned on', async ({
   page,
 }) => {
   const fr = app(page);
   await fr.goToSettings();
-  await expect(fr.currencyModeSwitch()).not.toBeChecked();
+  await expect(fr.settingSwitch('Converter')).not.toBeChecked();
+  await expect(fr.settingSwitch('Budget currencies')).not.toBeChecked();
 
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
+  await fr.setSwitch('Budget currencies', true);
   await page.reload();
 
-  await expect(fr.currencyModeSwitch()).toBeChecked();
+  await expect(fr.settingSwitch('Converter')).toBeChecked();
+  await expect(fr.settingSwitch('Budget currencies')).toBeChecked();
 });
 
-test('with currency mode off, nothing ever asks the rates API', async ({
+test('the converter alone brings no budget currencies', async ({ page }) => {
+  const fr = app(page);
+  await fr.setSwitch('Converter', true);
+
+  await fr.goToBudgets();
+
+  await expect(fr.converterLink()).toBeVisible();
+  await expect(page.getByLabel('Currency')).toHaveCount(0);
+  await fr.openBudget('Current');
+  await expect(page.getByLabel('Currency')).toHaveCount(0);
+});
+
+test('budget currencies alone bring no converter', async ({ page }) => {
+  const fr = app(page);
+  await fr.setSwitch('Budget currencies', true);
+
+  await fr.goToBudgets();
+
+  await expect(page.getByLabel('Currency')).toBeVisible();
+  await expect(fr.converterLink()).toHaveCount(0);
+  await page.goto('/convert');
+  await expect(page).toHaveURL(/\/budgets$/);
+});
+
+test('with every currency switch off, nothing ever asks the rates API', async ({
   page,
 }) => {
   const fr = app(page);

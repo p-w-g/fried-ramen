@@ -39,7 +39,7 @@ test('the converter keeps converting offline with the last rate it got', async (
   await fr.goto();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await fr.mockRates({ 'SEK/JPY': 15.8511 });
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
   await fr.convert('100', 'SEK', 'JPY');
   await expect(fr.conversion()).toHaveText('¥1,585');
 

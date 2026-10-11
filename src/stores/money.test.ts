@@ -37,16 +37,16 @@ const expense = (amountCents: number): Expense => ({
   category: null,
 });
 
-it('labels amounts with the budget currency in currency mode', async () => {
+it('labels amounts with the budget currency with budget currencies on', async () => {
   await openBudget('JPY');
-  await useSettingsStore().setCurrencyMode(true);
+  await useSettingsStore().setSwitch('budgetCurrencies', true);
   const money = useMoneyStore();
 
   expect(money.amount(158_511)).toBe('¥1,585');
   expect(money.total([expense(100_000), expense(58_511)])).toBe('¥1,585');
 });
 
-it('reads as before with currency mode off, even for a budget with one', async () => {
+it('reads as before with budget currencies off, even for a budget with one', async () => {
   await openBudget('JPY');
   const money = useMoneyStore();
 
@@ -55,7 +55,7 @@ it('reads as before with currency mode off, even for a budget with one', async (
 
 it('reads as before for a budget without a currency', async () => {
   await openBudget();
-  await useSettingsStore().setCurrencyMode(true);
+  await useSettingsStore().setSwitch('budgetCurrencies', true);
 
   expect(useMoneyStore().amount(450)).toBe('4.50');
 });
@@ -64,7 +64,7 @@ it('shows each amount converted, and a total that adds up what is shown', async 
   fetchMock.mockResolvedValue(published(1.5));
   await openBudget('SEK');
   const settings = useSettingsStore();
-  await settings.setCurrencyMode(true);
+  await settings.setSwitch('budgetCurrencies', true);
   await settings.setDisplayCurrency('EUR');
   const money = useMoneyStore();
   await vi.waitFor(() => expect(money.rate).not.toBeNull());
@@ -81,7 +81,7 @@ it('stays in its own currency without a rate, and says so', async () => {
   fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
   await openBudget('SEK');
   const settings = useSettingsStore();
-  await settings.setCurrencyMode(true);
+  await settings.setSwitch('budgetCurrencies', true);
   await settings.setDisplayCurrency('EUR');
   const money = useMoneyStore();
 
@@ -89,7 +89,7 @@ it('stays in its own currency without a rate, and says so', async () => {
   expect(money.amount(450)).toBe('SEK\u00a04.50');
 });
 
-it('never asks for a rate with currency mode off', async () => {
+it('never asks for a rate with budget currencies off', async () => {
   await openBudget('SEK');
   await useSettingsStore().setDisplayCurrency('EUR');
   const money = useMoneyStore();

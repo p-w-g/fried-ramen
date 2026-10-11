@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
   await app(page).goto();
 });
 
-test('the converter stays out of sight until currency mode is on', async ({
+test('the converter stays out of sight until it is switched on', async ({
   page,
 }) => {
   const fr = app(page);
@@ -15,7 +15,7 @@ test('the converter stays out of sight until currency mode is on', async ({
   await page.goto('/convert');
   await expect(page).toHaveURL(/\/budgets$/);
 
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
   await fr.goToBudgets();
   await expect(fr.converterLink()).toBeVisible();
 });
@@ -23,7 +23,7 @@ test('the converter stays out of sight until currency mode is on', async ({
 test('converts both ways, with the rate and its date', async ({ page }) => {
   const fr = app(page);
   await fr.mockRates({ 'SEK/JPY': 15.8511, 'JPY/SEK': 0.0631 });
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
 
   await fr.convert('100', 'SEK', 'JPY');
 
@@ -42,7 +42,7 @@ test('asks for a pair once a day, however often it is opened', async ({
 }) => {
   const fr = app(page);
   const asked = await fr.mockRates({ 'SEK/JPY': 15.8511 });
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
 
   await fr.convert('100', 'SEK', 'JPY');
   await expect(fr.conversion()).toHaveText('¥1,585');
@@ -58,7 +58,7 @@ test('says so when there has never been a rate to convert with', async ({
 }) => {
   const fr = app(page);
   await fr.mockRates(null);
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
 
   await fr.convert('100', 'SEK', 'JPY');
 
@@ -70,7 +70,7 @@ test('says so when there has never been a rate to convert with', async ({
 test('leads back to the budgets', async ({ page }) => {
   const fr = app(page);
   await fr.mockRates({});
-  await fr.setCurrencyMode(true);
+  await fr.setSwitch('Converter', true);
   await fr.goToBudgets();
   await fr.converterLink().click();
 

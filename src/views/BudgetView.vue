@@ -27,7 +27,10 @@ function setCurrency(currency: Currency | undefined) {
           <span class="fr__total-label">Total</span>
           <span class="fr__amount">{{ money.total(budget.expenses) }}</span>
         </p>
-        <div v-if="settings.currencyMode" class="fr__field-row fr__currencies">
+        <div
+          v-if="settings.switches.budgetCurrencies"
+          class="fr__field-row fr__currencies"
+        >
           <CurrencySelect
             id="budget-currency"
             label="Currency"

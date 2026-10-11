@@ -1,5 +1,13 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/** Settings switches by label, and the meta key each is saved under. */
+const SWITCH_KEYS = {
+  Converter: 'converter',
+  'Budget currencies': 'budgetCurrencies',
+} as const;
+
+type SwitchLabel = keyof typeof SWITCH_KEYS;
+
 /** Drag target outside every drop zone: the page title. */
 export const NOWHERE = Symbol('nowhere');
 
@@ -176,15 +184,15 @@ export function app(page: Page) {
       await expect(page).toHaveURL(/\/settings$/);
     },
 
-    currencyModeSwitch: () =>
-      page.getByRole('switch', { name: 'Currency mode' }),
+    settingSwitch: (label: SwitchLabel) =>
+      page.getByRole('switch', { name: label }),
 
     /** Waits until it is saved, so a reload right after keeps it. */
-    async setCurrencyMode(on: boolean) {
+    async setSwitch(label: SwitchLabel, on: boolean) {
       await page.getByRole('link', { name: 'Settings' }).click();
-      await page.getByRole('switch', { name: 'Currency mode' }).setChecked(on);
+      await page.getByRole('switch', { name: label }).setChecked(on);
       await page.waitForFunction(
-        (expected) =>
+        ({ key, expected }) =>
           new Promise<boolean>((resolve) => {
             const opening = indexedDB.open('fried-ramen');
             opening.onsuccess = () => {
@@ -192,14 +200,14 @@ export function app(page: Page) {
               const reading = database
                 .transaction('meta')
                 .objectStore('meta')
-                .get('currencyMode');
+                .get(key);
               reading.onsuccess = () => {
                 database.close();
                 resolve(reading.result?.value === expected);
               };
             };
           }),
-        on,
+        { key: SWITCH_KEYS[label], expected: on },
       );
     },
 
@@ -284,7 +292,7 @@ export function app(page: Page) {
     /** The budget's name in the top bar, or the page's own title. */
     pageTitle: () => page.getByRole('heading', { level: 1 }),
 
-    /** A currency can only be picked in currency mode. */
+    /** A currency can only be picked with budget currencies on. */
     async createBudget(name: string, currency?: string) {
       await goToBudgets();
       await page.fill('#budget-name', name);

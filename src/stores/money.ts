@@ -20,9 +20,11 @@ export const useMoneyStore = defineStore('money', () => {
   const budget = useBudgetStore();
   const settings = useSettingsStore();
 
-  /** Only labelled in currency mode; off, every budget reads as before. */
+  /** Only labelled with budget currencies on; off, budgets read as before. */
   const currency = computed(() =>
-    settings.currencyMode ? (budget.budget?.currency ?? null) : null,
+    settings.switches.budgetCurrencies
+      ? (budget.budget?.currency ?? null)
+      : null,
   );
 
   /** The currency to show in, when it differs from the budget's own. */

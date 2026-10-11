@@ -47,7 +47,7 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   const settings = useSettingsStore();
   await Promise.all([runFirstStart(), settings.load()]);
-  if (to.name === 'convert' && !settings.currencyMode) {
+  if (to.name === 'convert' && !settings.switches.converter) {
     return { name: 'budgets', replace: true };
   }
   if (to.name !== 'home') return;
