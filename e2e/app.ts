@@ -275,8 +275,11 @@ export function app(page: Page) {
     /** The bottom bar's mini donut, while it leads to the charts. */
     chartsToggle: () => page.getByRole('link', { name: 'Charts' }),
 
-    /** The same donut on a charts page, where it leads back. */
-    expensesToggle: () => page.getByRole('link', { name: 'Back to expenses' }),
+    /** On a charts page, the bottom bar's only link: back to its budget. */
+    bottomBarLinks: () => page.getByRole('navigation').getByRole('link'),
+
+    /** The budget's name in the top bar, as a link back to it. */
+    titleLink: () => page.getByRole('heading', { level: 1 }).getByRole('link'),
 
     async openTrends() {
       await page.getByRole('link', { name: 'Charts' }).click();

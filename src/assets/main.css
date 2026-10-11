@@ -271,6 +271,11 @@ a.fr__icon-button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  & a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 /* Theme and settings stay together on the right, with or without a title. */

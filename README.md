@@ -15,7 +15,7 @@ Stop buying random stuff, start buying useful stuff. A budget can be money alrea
 - **Budgets**, each at its own path (`/budgets/<slug>`). On first start there's one called "Current".
 - **Expenses** with an amount, an optional name and description. A blank amount counts as 0, so quick entries are fine. Amounts take a comma or a dot. Completing an expense takes it off the list and the current total, but the Trends history keeps it.
 - **Categories**: drag expenses into them with a mouse or a finger. Each category shows its subtotal.
-- **Charts**: _Overview_ is a donut of the total by category. _Trends_ draws the total over time, daily for the last 30 days or monthly for the last 12.
+- **Charts**: _Overview_ is a donut of the total by category. _Trends_ draws the total over time, daily for the last 30 days or monthly for the last 12. The mini donut in the bottom bar opens them; from there the bottom bar and the budget's name in the top bar lead back to the budget, and only the logo leads to all budgets.
 - **Settings** (the gear in the top bar), with two currency switches, **Converter** and **Budget currencies**. Both are off by default, and while both are off the app never talks to anything but itself.
 - **Converter**, once switched on, linked from the budgets page: an amount from one currency to another, with the rate and the day it was published. Rates come from [Frankfurter](https://frankfurter.dev), at most once a day per pair, and the last one keeps working offline.
 - **Budget currencies**, once switched on: a budget can be in SEK, yen, złoty… picked when it's created or later on its page. That only labels its amounts, it never converts them, and switched off every budget reads as plain numbers again.

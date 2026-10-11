@@ -26,7 +26,11 @@ const isInBudget = computed(() => typeof route.params.slug === 'string');
       <img :src="RamenIcon" alt="Fried Ramen: all budgets" />
     </RouterLink>
     <h1 v-if="isInBudget && budget.budget" class="fr__title">
-      {{ budget.budget.name }}
+      <RouterLink
+        :to="{ name: 'budget', params: { slug: budget.budget.slug } }"
+      >
+        {{ budget.budget.name }}
+      </RouterLink>
     </h1>
     <div class="fr__topbar-actions">
       <ThemeToggle />
