@@ -261,6 +261,9 @@ export function app(page: Page) {
     swapCurrencies: () =>
       page.getByRole('button', { name: 'Swap currencies' }).click(),
 
+    /** The typed amount, echoed readably, e.g. "300 000 SEK". */
+    typedEcho: () => page.locator('.fr__conversion-from'),
+
     /** The converted amount alone, e.g. "1 585" for yen. */
     conversion: () => page.locator('.fr__conversion-result'),
 

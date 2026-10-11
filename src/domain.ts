@@ -109,11 +109,15 @@ export const formatMoney = (cents: number, currency: Currency) =>
   );
 
 /**
- * The number alone, for when the currency is said next to it: in that
- * currency's decimals and grouped by spaces, like typed amounts.
+ * The number alone, for when the currency is said next to it: grouped by
+ * spaces, in that currency's decimals, and none when they are all zeros.
  */
 export const formatBareMoney = (cents: number, currency: Currency) =>
-  new Intl.NumberFormat(undefined, { style: 'currency', currency })
+  new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency,
+    trailingZeroDisplay: 'stripIfInteger',
+  })
     .formatToParts(fromCents(cents))
     .filter((part) => part.type !== 'currency' && part.type !== 'literal')
     .map((part) => (part.type === 'group' ? ' ' : part.value))

@@ -35,6 +35,30 @@ test('converts both ways, with the rate and its date', async ({ page }) => {
   await expect(fr.conversion()).toHaveText('6.31');
 });
 
+test('a long amount reads back grouped above what it equals', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.mockRates({ 'JPY/SEK': 0.0631 });
+  await fr.setSwitch('Converter', true);
+
+  await fr.convert('20000', 'JPY', 'SEK');
+
+  await expect(fr.typedEcho()).toHaveText('20 000 JPY');
+  await expect(fr.conversion()).toHaveText('1 262');
+});
+
+test('nothing typed echoes nothing', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({ 'SEK/JPY': 15.8511 });
+  await fr.setSwitch('Converter', true);
+
+  await fr.convert('', 'SEK', 'JPY');
+
+  await expect(fr.typedEcho()).toHaveCount(0);
+  await expect(fr.rateLine()).toHaveText('1 SEK = 15.8511 JPY');
+});
+
 test('asks for a pair once a day, however often it is opened', async ({
   page,
 }) => {

@@ -42,6 +42,13 @@ const amountCents = computed(() => {
   return amount === null ? null : toCents(amount);
 });
 
+/** What was typed, easier to read: grouped, and in its currency's decimals. */
+const typedShown = computed(() =>
+  typed.value.trim() && amountCents.value !== null
+    ? formatBareMoney(amountCents.value, from.value)
+    : null,
+);
+
 const converted = computed(() =>
   rate.value && amountCents.value !== null
     ? formatBareMoney(convertCents(amountCents.value, rate.value), to.value)
@@ -89,6 +96,12 @@ const converted = computed(() =>
 
     <section aria-live="polite" class="fr__conversion">
       <template v-if="rate">
+        <template v-if="typedShown">
+          <p class="fr__amount fr__conversion-from">
+            {{ typedShown }} {{ from }}
+          </p>
+          <p class="fr__hint">equals</p>
+        </template>
         <p class="fr__amount fr__conversion-result">{{ converted ?? '–' }}</p>
         <p class="fr__conversion-rate">
           1 {{ rate.base }} = {{ rate.rate }} {{ rate.quote }}
@@ -110,6 +123,11 @@ const converted = computed(() =>
 .fr__conversion {
   & p {
     margin: 0;
+  }
+
+  & .fr__conversion-from {
+    font-size: 1.5rem;
+    font-weight: 600;
   }
 
   /* The answer is the point of the page: as large as a phone can fit. */
