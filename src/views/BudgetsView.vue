@@ -68,14 +68,6 @@ async function create() {
         />
       </ul>
     </section>
-
-    <RouterLink
-      v-if="settings.switches.converter"
-      :to="{ name: 'convert' }"
-      class="fr__link-button"
-    >
-      Currency converter
-    </RouterLink>
   </div>
 </template>
 

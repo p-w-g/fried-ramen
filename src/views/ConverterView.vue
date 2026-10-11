@@ -10,8 +10,10 @@ import {
   type Currency,
   type Rate,
 } from '@/domain';
+import { useLeave } from '@/leave';
 import { getRate } from '@/rates';
 
+const leave = useLeave();
 const typed = ref('');
 const from = ref<Currency>('SEK');
 const to = ref<Currency>('EUR');
@@ -49,7 +51,7 @@ const converted = computed(() =>
 
 <template>
   <div class="fr__page">
-    <h1>Converter</h1>
+    <h1>Currency</h1>
     <form class="fr__stack" @submit.prevent>
       <div class="fr__field">
         <label for="convert-amount">Amount</label>
@@ -98,9 +100,9 @@ const converted = computed(() =>
       </p>
     </section>
 
-    <RouterLink :to="{ name: 'budgets' }" class="fr__link-button">
-      Back to budgets
-    </RouterLink>
+    <button type="button" class="fr__button--primary" @click="leave">
+      Done
+    </button>
   </div>
 </template>
 

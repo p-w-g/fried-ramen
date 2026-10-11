@@ -9,14 +9,13 @@ test('the converter stays out of sight until it is switched on', async ({
   page,
 }) => {
   const fr = app(page);
-  await fr.goToBudgets();
   await expect(fr.converterLink()).toHaveCount(0);
 
   await page.goto('/convert');
   await expect(page).toHaveURL(/\/budgets$/);
 
   await fr.setSwitch('Converter', true);
-  await fr.goToBudgets();
+  await fr.openBudget('Current');
   await expect(fr.converterLink()).toBeVisible();
 });
 
@@ -67,14 +66,20 @@ test('says so when there has never been a rate to convert with', async ({
   );
 });
 
-test('leads back to the budgets', async ({ page }) => {
+test('the icon and Done both leave for where it was opened', async ({
+  page,
+}) => {
   const fr = app(page);
   await fr.mockRates({});
   await fr.setSwitch('Converter', true);
-  await fr.goToBudgets();
+  await fr.openBudget('Current');
   await fr.converterLink().click();
 
-  await page.getByRole('link', { name: 'Back to budgets' }).click();
+  await fr.closeWithIcon('currency');
+  await expect(page).toHaveURL(/\/budgets\/current$/);
 
+  await fr.goToBudgets();
+  await fr.converterLink().click();
+  await fr.done();
   await expect(page).toHaveURL(/\/budgets$/);
 });

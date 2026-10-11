@@ -37,9 +37,9 @@ test('the converter alone brings no budget currencies', async ({ page }) => {
   await fr.goToBudgets();
 
   await expect(fr.converterLink()).toBeVisible();
-  await expect(page.getByLabel('Currency')).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Currency' })).toHaveCount(0);
   await fr.openBudget('Current');
-  await expect(page.getByLabel('Currency')).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Currency' })).toHaveCount(0);
 });
 
 test('budget currencies alone bring no converter', async ({ page }) => {
@@ -48,7 +48,7 @@ test('budget currencies alone bring no converter', async ({ page }) => {
 
   await fr.goToBudgets();
 
-  await expect(page.getByLabel('Currency')).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Currency' })).toBeVisible();
   await expect(fr.converterLink()).toHaveCount(0);
   await page.goto('/convert');
   await expect(page).toHaveURL(/\/budgets$/);

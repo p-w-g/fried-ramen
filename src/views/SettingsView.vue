@@ -11,7 +11,7 @@ const currencySwitches: { key: Switch; label: string; hint: string }[] = [
   {
     key: 'converter',
     label: 'Converter',
-    hint: 'Adds a currency converter to the budgets page.',
+    hint: 'Adds Currency to the top bar: converts an amount between currencies.',
   },
   {
     key: 'budgetCurrencies',

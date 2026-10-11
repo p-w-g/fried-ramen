@@ -245,11 +245,14 @@ export function app(page: Page) {
       return asked;
     },
 
-    converterLink: () => page.getByRole('link', { name: 'Currency converter' }),
+    /** The converter's icon in the top bar, while it is switched on. */
+    converterLink: () =>
+      page.getByRole('link', { name: 'Currency', exact: true }),
 
     async convert(amount: string, from: string, to: string) {
-      await goToBudgets();
-      await page.getByRole('link', { name: 'Currency converter' }).click();
+      if (!page.url().endsWith('/convert')) {
+        await page.getByRole('link', { name: 'Currency', exact: true }).click();
+      }
       await page.getByLabel('Amount', { exact: true }).fill(amount);
       await page.getByLabel('From', { exact: true }).selectOption(from);
       await page.getByLabel('To', { exact: true }).selectOption(to);
@@ -308,7 +311,9 @@ export function app(page: Page) {
       await goToBudgets();
       await page.fill('#budget-name', name);
       if (currency) {
-        await page.getByLabel('Currency').selectOption(currency);
+        await page
+          .getByRole('combobox', { name: 'Currency' })
+          .selectOption(currency);
       }
       await page.getByRole('button', { name: 'Create budget' }).click();
     },
