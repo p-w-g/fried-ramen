@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 import { db, getMeta } from '@/db';
-import type { Currency } from '@/domain';
+import type { Currency, NumberLocale } from '@/domain';
 
 /**
  * Each off by default, and while all are off the app never asks the
@@ -18,6 +18,8 @@ export const useSettingsStore = defineStore('settings', () => {
   });
   /** What budgets are shown in; undefined shows each in its own currency. */
   const displayCurrency = ref<Currency>();
+  /** How numbers are written and read; undefined follows the phone. */
+  const numberLocale = ref<NumberLocale>();
   let loading: Promise<void> | undefined;
 
   /** Loads once; route guards await it before deciding what is reachable. */
@@ -26,10 +28,12 @@ export const useSettingsStore = defineStore('settings', () => {
       getMeta('converter'),
       getMeta('budgetCurrencies'),
       getMeta('displayCurrency'),
-    ]).then(([converter, budgetCurrencies, display]) => {
+      getMeta('numberLocale'),
+    ]).then(([converter, budgetCurrencies, display, locale]) => {
       switches.converter = converter ?? false;
       switches.budgetCurrencies = budgetCurrencies ?? false;
       displayCurrency.value = display;
+      numberLocale.value = locale;
     }));
 
   async function setSwitch(key: Switch, on: boolean) {
@@ -44,5 +48,19 @@ export const useSettingsStore = defineStore('settings', () => {
     displayCurrency.value = currency;
   }
 
-  return { switches, displayCurrency, load, setSwitch, setDisplayCurrency };
+  async function setNumberLocale(locale: NumberLocale) {
+    if (locale) await db.meta.put({ key: 'numberLocale', value: locale });
+    else await db.meta.delete('numberLocale');
+    numberLocale.value = locale;
+  }
+
+  return {
+    switches,
+    displayCurrency,
+    numberLocale,
+    load,
+    setSwitch,
+    setDisplayCurrency,
+    setNumberLocale,
+  };
 });

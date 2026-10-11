@@ -2,8 +2,9 @@
 import { computed, ref } from 'vue';
 import { confirmAction } from '@/confirm';
 import AppIcon from '@/components/shared/AppIcon.vue';
-import { formatAmount, formatCompactAmount, type Budget } from '@/domain';
+import type { Budget } from '@/domain';
 import { BudgetNameError, useBudgetsStore } from '@/stores/budgets';
+import { useFormatStore } from '@/stores/format';
 import { useSettingsStore } from '@/stores/settings';
 import MoreIcon from '@/assets/icons/more_horiz.svg';
 
@@ -11,6 +12,7 @@ const { budget } = defineProps<{ budget: Budget }>();
 
 const budgets = useBudgetsStore();
 const settings = useSettingsStore();
+const format = useFormatStore();
 
 /** Shown beside the total with budget currencies on, for budgets that have one. */
 const currency = computed(() =>
@@ -76,13 +78,13 @@ async function remove() {
       </h3>
       <p class="fr__budget-total fr__amount">
         <span aria-hidden="true">
-          {{ formatCompactAmount(budgets.totalOf(budget.id)) }}
+          {{ format.compact(budgets.totalOf(budget.id)) }}
           <span v-if="currency" class="fr__budget-currency">{{
             currency
           }}</span>
         </span>
         <span class="fr__visually-hidden">
-          Total {{ formatAmount(budgets.totalOf(budget.id)) }} {{ currency }}
+          Total {{ format.amount(budgets.totalOf(budget.id)) }} {{ currency }}
         </span>
       </p>
       <button

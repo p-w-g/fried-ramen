@@ -94,17 +94,32 @@ export const toCents = (amount: number) => Math.round(amount * 100);
 
 export const fromCents = (cents: number) => cents / 100;
 
-const ledger = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+/** The number formats on offer, besides following the phone's own. */
+export const NUMBER_LOCALES = [
+  'en-US',
+  'sv-SE',
+  'de-DE',
+  'en-IN',
+  'ja-JP',
+] as const;
+
+/** A chosen number format; undefined follows the phone. */
+export type NumberLocale = (typeof NUMBER_LOCALES)[number] | undefined;
 
 /** Always two decimals, so amounts line up in a column. */
-export const formatAmount = (cents: number) => ledger.format(fromCents(cents));
+export const formatAmount = (cents: number, locale: NumberLocale) =>
+  new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(fromCents(cents));
 
 /** With the currency's own sign and decimals: yen have none, so ¥1,585. */
-export const formatMoney = (cents: number, currency: Currency) =>
-  new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(
+export const formatMoney = (
+  cents: number,
+  currency: Currency,
+  locale: NumberLocale,
+) =>
+  new Intl.NumberFormat(locale, { style: 'currency', currency }).format(
     fromCents(cents),
   );
 
@@ -112,8 +127,12 @@ export const formatMoney = (cents: number, currency: Currency) =>
  * The number alone, for when the currency is said next to it: in that
  * currency's decimals, and none when they are all zeros.
  */
-export const formatBareMoney = (cents: number, currency: Currency) =>
-  new Intl.NumberFormat(undefined, {
+export const formatBareMoney = (
+  cents: number,
+  currency: Currency,
+  locale: NumberLocale,
+) =>
+  new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
     trailingZeroDisplay: 'stripIfInteger',
@@ -123,17 +142,62 @@ export const formatBareMoney = (cents: number, currency: Currency) =>
     .map((part) => part.value)
     .join('');
 
-const compact = new Intl.NumberFormat(undefined, {
-  notation: 'compact',
-  maximumSignificantDigits: 3,
-});
-
-/** Exact while it fits a glance; 132K or 8.24M once it would not. */
-export function formatCompactAmount(cents: number) {
+/** Exact while it fits a glance; 132K, 8.24M or 300万 once it would not. */
+export function formatCompactAmount(cents: number, locale: NumberLocale) {
   const amount = fromCents(cents);
   return Math.abs(amount) < 10_000
-    ? formatAmount(cents)
-    : compact.format(amount);
+    ? formatAmount(cents, locale)
+    : new Intl.NumberFormat(locale, {
+        notation: 'compact',
+        maximumSignificantDigits: 3,
+      }).format(amount);
+}
+
+/** Its short words keyed the way readLocaleAmount compares them. */
+const wordKey = (word: string) => word.toLowerCase().replace(/\.$/, '');
+
+/**
+ * How a number format writes numbers, learned from Intl rather than kept
+ * as tables: its separators, and its short words with what each is worth
+ * (万 is 10 000, L is 100 000, M is 1 000 000).
+ */
+function numberStyle(locale: NumberLocale) {
+  const parts = new Intl.NumberFormat(locale).formatToParts(1234567.8);
+  const group = parts.find((part) => part.type === 'group')?.value ?? '';
+  const decimal = parts.find((part) => part.type === 'decimal')?.value ?? '.';
+
+  const words = new Map<string, number>();
+  const short = new Intl.NumberFormat(locale, { notation: 'compact' });
+  for (let exponent = 3; exponent <= 15; exponent++) {
+    const shortParts = short.formatToParts(10 ** exponent);
+    const word = shortParts.find((part) => part.type === 'compact')?.value;
+    const lead = Number(
+      shortParts.find((part) => part.type === 'integer')?.value,
+    );
+    if (word && !words.has(wordKey(word))) {
+      words.set(wordKey(word), 10 ** exponent / lead);
+    }
+  }
+  return { group, decimal, words };
+}
+
+/**
+ * Reads an amount the way a number format writes it, short words too:
+ * 300万, 30L, 1.5M, 4 755 330,5. Null when it does not read as one.
+ */
+export function readLocaleAmount(typed: string, locale: NumberLocale) {
+  const { group, decimal, words } = numberStyle(locale);
+  const text = typed.replace(/\s/g, '');
+  const [, number = '', word = ''] = /^(.*?)(\p{L}[\p{L}.]*)?$/u.exec(text)!;
+  const worth = word ? words.get(wordKey(word)) : 1;
+  if (worth === undefined) return null;
+
+  // Spaces, Swedish grouping among them, are already gone with the rest.
+  const isGroupedBySpace = /\s/.test(group);
+  const ungrouped = isGroupedBySpace ? number : number.replaceAll(group, '');
+  const plain = ungrouped.replace(decimal, '.');
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(plain)) return null;
+  return Number(plain) * worth;
 }
 
 export const sumCents = (expenses: Expense[]) =>

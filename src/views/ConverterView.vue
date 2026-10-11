@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef, watch } from 'vue';
 import {
-  AMOUNT_PATTERN,
   CURRENCIES,
   convertCents,
-  formatBareMoney,
-  parseAmount,
   toCents,
   type Currency,
   type Rate,
 } from '@/domain';
 import { useLeave } from '@/leave';
+import { useFormatStore } from '@/stores/format';
 import { getRate } from '@/rates';
 
 const leave = useLeave();
+const format = useFormatStore();
 const typed = ref('');
 const from = ref<Currency>('SEK');
 const to = ref<Currency>('EUR');
@@ -37,21 +36,22 @@ function swap() {
   [from.value, to.value] = [to.value, from.value];
 }
 
+/** Read in the chosen number format, so 300万 or 30L work as typed. */
 const amountCents = computed(() => {
-  const amount = parseAmount(typed.value);
+  const amount = format.read(typed.value);
   return amount === null ? null : toCents(amount);
 });
 
-/** What was typed, easier to read: grouped, and in its currency's decimals. */
+/** What was typed, written out in full: 300万 reads back as 3,000,000. */
 const typedShown = computed(() =>
   typed.value.trim() && amountCents.value !== null
-    ? formatBareMoney(amountCents.value, from.value)
+    ? format.bareMoney(amountCents.value, from.value)
     : null,
 );
 
 const converted = computed(() =>
   rate.value && amountCents.value !== null
-    ? formatBareMoney(convertCents(amountCents.value, rate.value), to.value)
+    ? format.bareMoney(convertCents(amountCents.value, rate.value), to.value)
     : null,
 );
 </script>
@@ -62,13 +62,7 @@ const converted = computed(() =>
     <form class="fr__stack" @submit.prevent>
       <div class="fr__field">
         <label for="convert-amount">Amount</label>
-        <input
-          id="convert-amount"
-          v-model="typed"
-          type="text"
-          inputmode="decimal"
-          :pattern="AMOUNT_PATTERN"
-        />
+        <input id="convert-amount" v-model="typed" type="text" />
       </div>
       <div class="fr__field-row">
         <div class="fr__field">

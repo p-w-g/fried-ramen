@@ -1,11 +1,43 @@
 <script setup lang="ts">
 import BackupPanel from '@/components/form/BackupPanel.vue';
+import {
+  NUMBER_LOCALES,
+  formatAmount,
+  formatCompactAmount,
+  type NumberLocale,
+} from '@/domain';
 import { useLeave } from '@/leave';
 import { useSettingsStore, type Switch } from '@/stores/settings';
 
 const settings = useSettingsStore();
 /** Every switch saves as it flips, so leaving needs no save of its own. */
 const leave = useLeave();
+
+const FORMAT_NAMES: Record<NonNullable<NumberLocale>, string> = {
+  'en-US': 'US',
+  'sv-SE': 'Swedish',
+  'de-DE': 'German',
+  'en-IN': 'Indian',
+  'ja-JP': 'Japanese',
+};
+
+/** Shows a format rather than naming it: 1,234,567.89 · 300万. */
+const sample = (locale: NumberLocale) =>
+  `${formatAmount(123_456_789, locale)} · ${formatCompactAmount(300_000_000, locale)}`;
+
+const numberFormats = [
+  { locale: undefined, label: `Auto, as the phone: ${sample(undefined)}` },
+  ...NUMBER_LOCALES.map((locale) => ({
+    locale,
+    label: `${FORMAT_NAMES[locale]}: ${sample(locale)}`,
+  })),
+];
+
+function chooseNumberFormat(event: Event) {
+  const chosen = (event.target as HTMLSelectElement).value;
+  const locale = NUMBER_LOCALES.find((known) => known === chosen);
+  void settings.setNumberLocale(locale);
+}
 
 const currencySwitches: { key: Switch; label: string; hint: string }[] = [
   {
@@ -47,6 +79,30 @@ const currencySwitches: { key: Switch; label: string; hint: string }[] = [
       <p class="fr__hint">
         Exchange rates come from frankfurter.dev, at most once a day per
         currency pair, and only while one of these is on.
+      </p>
+    </section>
+    <section class="fr__setting">
+      <h2 class="fr__subheading">Numbers</h2>
+      <div class="fr__field">
+        <label for="number-format">Number format</label>
+        <select
+          id="number-format"
+          :value="settings.numberLocale ?? ''"
+          aria-describedby="number-format-hint"
+          @change="chooseNumberFormat"
+        >
+          <option
+            v-for="format in numberFormats"
+            :key="format.locale ?? ''"
+            :value="format.locale ?? ''"
+          >
+            {{ format.label }}
+          </option>
+        </select>
+      </div>
+      <p id="number-format-hint" class="fr__hint">
+        How amounts are written, and how the converter reads them: 300万 or 30L
+        work as typed.
       </p>
     </section>
     <BackupPanel />

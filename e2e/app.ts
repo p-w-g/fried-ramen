@@ -89,6 +89,27 @@ export function app(page: Page) {
     return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   };
 
+  /** Resolves once IndexedDB holds `expected` for a meta key. */
+  const metaSaved = (key: string, expected: unknown) =>
+    page.waitForFunction(
+      ({ key, expected }) =>
+        new Promise<boolean>((resolve) => {
+          const opening = indexedDB.open('fried-ramen');
+          opening.onsuccess = () => {
+            const database = opening.result;
+            const reading = database
+              .transaction('meta')
+              .objectStore('meta')
+              .get(key);
+            reading.onsuccess = () => {
+              database.close();
+              resolve(reading.result?.value === expected);
+            };
+          };
+        }),
+      { key, expected },
+    );
+
   /** Answers the in-app confirm dialog by the label of its button. */
   const answerDialog = async (label: string) => {
     const dialog = page.getByRole('dialog');
@@ -199,24 +220,16 @@ export function app(page: Page) {
         await page.getByRole('link', { name: 'Settings' }).click();
       }
       await page.getByRole('switch', { name: label }).setChecked(on);
-      await page.waitForFunction(
-        ({ key, expected }) =>
-          new Promise<boolean>((resolve) => {
-            const opening = indexedDB.open('fried-ramen');
-            opening.onsuccess = () => {
-              const database = opening.result;
-              const reading = database
-                .transaction('meta')
-                .objectStore('meta')
-                .get(key);
-              reading.onsuccess = () => {
-                database.close();
-                resolve(reading.result?.value === expected);
-              };
-            };
-          }),
-        { key: SWITCH_KEYS[label], expected: on },
-      );
+      await metaSaved(SWITCH_KEYS[label], on);
+    },
+
+    /** By locale, e.g. "ja-JP"; "" is Auto. Waits until it is saved. */
+    async setNumberFormat(locale: string) {
+      if (!page.url().endsWith('/settings')) {
+        await page.getByRole('link', { name: 'Settings' }).click();
+      }
+      await page.getByLabel('Number format').selectOption(locale);
+      await metaSaved('numberLocale', locale || undefined);
     },
 
     /**

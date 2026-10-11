@@ -6,6 +6,7 @@ import {
   type Category,
   type Currency,
   type Expense,
+  type NumberLocale,
   type Posting,
   type Rate,
 } from './domain';
@@ -16,7 +17,8 @@ export type Meta =
   | { key: 'firstStartDone'; value: number }
   | { key: 'converter'; value: boolean }
   | { key: 'budgetCurrencies'; value: boolean }
-  | { key: 'displayCurrency'; value: Currency };
+  | { key: 'displayCurrency'; value: Currency }
+  | { key: 'numberLocale'; value: NonNullable<NumberLocale> };
 
 /** Reads one setting with the type its key promises. */
 export async function getMeta<K extends Meta['key']>(key: K) {

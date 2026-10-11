@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import type { Period, Point } from '@/charts';
-import { formatAmount, formatCompactAmount } from '@/domain';
+import { useFormatStore } from '@/stores/format';
 
 const { points, by } = defineProps<{ points: Point[]; by: Period }>();
+
+const format = useFormatStore();
 
 /** The point a finger or pointer is on; the latest one otherwise. */
 const scrubbed = ref<number | null>(null);
@@ -51,7 +53,7 @@ function scrub(event: PointerEvent) {
 <template>
   <figure class="fr__trend">
     <p class="fr__trend-readout">
-      <span class="fr__amount">{{ formatAmount(shown.cents) }}</span>
+      <span class="fr__amount">{{ format.amount(shown.cents) }}</span>
       <span class="fr__total-label">{{ labelOf(shown.period) }}</span>
     </p>
     <div
@@ -60,7 +62,7 @@ function scrub(event: PointerEvent) {
       @pointerdown="scrub"
       @pointerleave="scrubbed = null"
     >
-      <span class="fr__trend-scale">{{ formatCompactAmount(high) }}</span>
+      <span class="fr__trend-scale">{{ format.compact(high) }}</span>
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <line class="fr__trend-grid" x1="0" x2="100" :y1="0" :y2="0" />
         <line
@@ -95,7 +97,7 @@ function scrub(event: PointerEvent) {
         </caption>
         <tr v-for="point in points" :key="point.period">
           <th scope="row">{{ labelOf(point.period) }}</th>
-          <td>{{ formatAmount(point.cents) }}</td>
+          <td>{{ format.amount(point.cents) }}</td>
         </tr>
       </table>
     </div>

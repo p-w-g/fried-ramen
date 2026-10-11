@@ -1,14 +1,9 @@
 import { defineStore } from 'pinia';
 import { computed, ref, shallowRef, watch } from 'vue';
-import {
-  convertCents,
-  formatAmount,
-  formatMoney,
-  type Expense,
-  type Rate,
-} from '@/domain';
+import { convertCents, type Expense, type Rate } from '@/domain';
 import { getRate } from '@/rates';
 import { useBudgetStore } from './budget';
+import { useFormatStore } from './format';
 import { useSettingsStore } from './settings';
 
 /**
@@ -19,6 +14,7 @@ import { useSettingsStore } from './settings';
 export const useMoneyStore = defineStore('money', () => {
   const budget = useBudgetStore();
   const settings = useSettingsStore();
+  const formats = useFormatStore();
 
   /** Only labelled with budget currencies on; off, budgets read as before. */
   const currency = computed(() =>
@@ -63,7 +59,7 @@ export const useMoneyStore = defineStore('money', () => {
 
   function format(cents: number) {
     const shownIn = rate.value?.quote ?? currency.value;
-    return shownIn ? formatMoney(cents, shownIn) : formatAmount(cents);
+    return shownIn ? formats.money(cents, shownIn) : formats.amount(cents);
   }
 
   const amount = (cents: number) => format(shownCents(cents));

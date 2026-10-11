@@ -20,6 +20,7 @@ Stop buying random stuff, start buying useful stuff. A budget can be money alrea
 - **Converter**, once switched on, behind the **Currency** icon in the top bar: an amount from one currency to another, with the rate and the day it was published. Rates come from [Frankfurter](https://frankfurter.dev), at most once a day per pair, and the last one keeps working offline.
 - **Budget currencies**, once switched on: a budget can be in SEK, yen, złoty… picked when it's created or later on its page. That only labels its amounts, it never converts them, and switched off every budget reads as plain numbers again.
 - **Show in** another currency, on a budget's page: each expense is converted for display only, and the total adds up the amounts as shown. Nothing converted is saved, amounts are still typed in the budget's own currency, and the charts stay in it.
+- **Number format**, in settings: Auto follows the phone, or pick US, Swedish, German, Indian or Japanese. It decides how every amount is written (`47,55,330.50`, `300万`, `4 755 330,50`), and the converter reads amounts the same way, short words too: `300万`, `30L`, `1.5M`. The expense form keeps reading a comma or a dot as the decimal mark.
 - **Light and dark theme**: follows the system until you pick one.
 - **Installable and offline**: it's a PWA. When a new version is deployed, it asks before reloading.
 
