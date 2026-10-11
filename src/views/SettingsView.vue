@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import BackupPanel from '@/components/form/BackupPanel.vue';
+import { useLeave } from '@/leave';
 import { useSettingsStore, type Switch } from '@/stores/settings';
 
 const settings = useSettingsStore();
+/** Every switch saves as it flips, so leaving needs no save of its own. */
+const leave = useLeave();
 
 const currencySwitches: { key: Switch; label: string; hint: string }[] = [
   {
@@ -47,6 +50,9 @@ const currencySwitches: { key: Switch; label: string; hint: string }[] = [
       </p>
     </section>
     <BackupPanel />
+    <button type="button" class="fr__button--primary" @click="leave">
+      Done
+    </button>
   </div>
 </template>
 

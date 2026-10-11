@@ -184,12 +184,20 @@ export function app(page: Page) {
       await expect(page).toHaveURL(/\/settings$/);
     },
 
+    /** The open side page's icon in the top bar, now a close button. */
+    closeWithIcon: (page_: 'settings' | 'currency') =>
+      page.getByRole('button', { name: `Close ${page_}` }).click(),
+
+    done: () => page.getByRole('button', { name: 'Done' }).click(),
+
     settingSwitch: (label: SwitchLabel) =>
       page.getByRole('switch', { name: label }),
 
     /** Waits until it is saved, so a reload right after keeps it. */
     async setSwitch(label: SwitchLabel, on: boolean) {
-      await page.getByRole('link', { name: 'Settings' }).click();
+      if (!page.url().endsWith('/settings')) {
+        await page.getByRole('link', { name: 'Settings' }).click();
+      }
       await page.getByRole('switch', { name: label }).setChecked(on);
       await page.waitForFunction(
         ({ key, expected }) =>

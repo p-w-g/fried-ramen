@@ -85,3 +85,36 @@ test('backups are made and restored from settings', async ({ page }) => {
     page.getByRole('button', { name: 'Import backup' }),
   ).toBeVisible();
 });
+
+test('the gear closes settings again, back where they were opened', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.openTrends();
+  await fr.goToSettings();
+
+  await fr.closeWithIcon('settings');
+
+  await expect(page).toHaveURL(/\/budgets\/current\/charts\/trends$/);
+});
+
+test('Done leaves settings for where they were opened', async ({ page }) => {
+  const fr = app(page);
+  await fr.goToBudgets();
+  await fr.goToSettings();
+
+  await fr.done();
+
+  await expect(page).toHaveURL(/\/budgets$/);
+});
+
+test('settings opened from a link leave for the app’s start', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await page.goto('/settings');
+
+  await fr.done();
+
+  await expect(page).toHaveURL(/\/budgets\/current$/);
+});
