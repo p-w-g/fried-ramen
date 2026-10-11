@@ -37,18 +37,43 @@ test('an empty category can be deleted', async ({ page }) => {
   await fr.expectCategoryTotal('third', 0);
 });
 
-test('a category with expenses cannot be deleted', async ({ page }) => {
+test('only unused categories are offered for deletion', async ({ page }) => {
+  const fr = app(page);
+  await fr.addExpense('Shoes', 25);
+  await fr.addCategory('hype yo');
+  await fr.addCategory('spare');
+  await fr.assignCategory('Shoes', 'hype yo');
+
+  await expect(await fr.deletableCategories()).toHaveText(['spare']);
+
+  await fr.completeExpense('Shoes');
+  await expect(await fr.deletableCategories()).toHaveText(['hype yo', 'spare']);
+  await fr.deleteEmptyCategory('hype yo');
+  await expect(fr.categoryHeading('hype yo')).toHaveCount(0);
+});
+
+test('with every category in use there is nothing to delete', async ({
+  page,
+}) => {
   const fr = app(page);
   await fr.addExpense('Shoes', 25);
   await fr.addCategory('hype yo');
   await fr.assignCategory('Shoes', 'hype yo');
 
-  await fr.deleteEmptyCategory('hype yo');
-  await fr.expectCategoryTotal('hype yo', 25);
+  await expect(await fr.deletableCategories()).toHaveCount(0);
+  await expect(page.getByLabel('Delete an unused category')).toHaveCount(0);
+});
 
-  await fr.completeExpense('Shoes');
-  await fr.deleteEmptyCategory('hype yo');
-  await expect(fr.categoryHeading('hype yo')).toHaveCount(0);
+test('categories have their own section, apart from adding expenses', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.openForm();
+  await expect(page.getByLabel('New category')).toHaveCount(0);
+
+  await fr.addCategory('food');
+
+  await expect(fr.categoryHeading('food')).toBeVisible();
 });
 
 test.describe('card state follows its expense, not its position', () => {

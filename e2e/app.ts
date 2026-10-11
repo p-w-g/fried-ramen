@@ -123,6 +123,12 @@ export function app(page: Page) {
     }
   };
 
+  const openCategories = async () => {
+    if (!(await page.locator('#labels-form').isVisible())) {
+      await page.getByRole('button', { name: 'Categories' }).click();
+    }
+  };
+
   return {
     card,
 
@@ -155,14 +161,20 @@ export function app(page: Page) {
     },
 
     async addCategory(name: string) {
-      await openForm();
+      await openCategories();
       await page.fill('#label', name);
       await page.press('#label', 'Enter');
     },
 
     async deleteEmptyCategory(name: string) {
-      await openForm();
+      await openCategories();
       await page.selectOption('#removal-menu', name);
+    },
+
+    /** What the delete menu offers; none when it is not shown at all. */
+    async deletableCategories() {
+      await openCategories();
+      return page.locator('#removal-menu option:not([disabled])');
     },
 
     async assignCategory(expense: string, category: string) {

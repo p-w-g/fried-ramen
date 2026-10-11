@@ -57,7 +57,7 @@ test('a form pinned beside the list never hides its lower part under the bottom 
   await scrollBy(200);
   const isPinned = (await box(total)).y === settled.y;
 
-  const lastControl = await box(page.getByLabel('Delete an empty category'));
+  const lastControl = await box(page.getByLabel('Delete an unused category'));
   const bottomBar = await box(page.getByRole('navigation'));
   if (isPinned) {
     expect(lastControl.y + lastControl.height).toBeLessThanOrEqual(bottomBar.y);

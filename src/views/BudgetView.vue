@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CategoryForm from '@/components/form/CategoryForm.vue';
 import ExpenseForm from '@/components/form/ExpenseForm.vue';
 import ExpenseList from '@/components/list/ExpenseList.vue';
 import BaseAccordion from '@/components/shared/BaseAccordion.vue';
@@ -58,6 +59,9 @@ function setCurrency(currency: Currency | undefined) {
       </header>
       <BaseAccordion label="Add expense">
         <ExpenseForm />
+      </BaseAccordion>
+      <BaseAccordion label="Categories">
+        <CategoryForm />
       </BaseAccordion>
     </div>
     <ExpenseList />
