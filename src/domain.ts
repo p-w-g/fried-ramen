@@ -90,6 +90,34 @@ export function parseAmount(typed: string): number | null {
   return Number.isNaN(amount) ? null : amount;
 }
 
+/** AMOUNT_PATTERN with the spaces groupThousands puts in. */
+export const GROUPED_AMOUNT_PATTERN = '-?[0-9 ]*([.,][0-9]{0,2})?';
+
+/**
+ * Groups the whole part by threes with spaces, as typed: "300 000,5".
+ * Spaces, not commas, so a comma or a dot stays free to be the decimal
+ * mark. The rest of what was typed is left alone, for the pattern to judge.
+ */
+export function groupThousands(typed: string) {
+  const [, sign = '', whole = '', rest = ''] = /^(-?)([0-9 ]*)(.*)$/s.exec(
+    typed,
+  )!;
+  const digits = whole.replaceAll(' ', '');
+  return sign + digits.replace(/\B(?=(\d{3})+$)/g, ' ') + rest;
+}
+
+/**
+ * Where the caret belongs in a regrouped amount: after the same number of
+ * typed characters as before, since grouping only moves spaces around.
+ */
+export function caretAfterTyped(grouped: string, typedBeforeCaret: number) {
+  let position = 0;
+  for (let seen = 0; seen < typedBeforeCaret; position++) {
+    if (grouped[position] !== ' ') seen++;
+  }
+  return position;
+}
+
 export const toCents = (amount: number) => Math.round(amount * 100);
 
 export const fromCents = (cents: number) => cents / 100;
