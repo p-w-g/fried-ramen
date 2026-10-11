@@ -3,10 +3,13 @@ import BudgetLayout from './views/BudgetLayout.vue';
 import BudgetView from './views/BudgetView.vue';
 import BudgetsView from './views/BudgetsView.vue';
 import ChartsLayout from './views/ChartsLayout.vue';
+import ConverterView from './views/ConverterView.vue';
 import OverviewView from './views/OverviewView.vue';
+import SettingsView from './views/SettingsView.vue';
 import TrendsView from './views/TrendsView.vue';
 import { useBudgetStore } from './stores/budget';
 import { runFirstStart } from './stores/firstStart';
+import { useSettingsStore } from './stores/settings';
 
 /** "/" only ever redirects, so it never gets to render anything. */
 const Redirecting = { render: () => null };
@@ -16,6 +19,8 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: Redirecting },
     { path: '/budgets', name: 'budgets', component: BudgetsView },
+    { path: '/settings', name: 'settings', component: SettingsView },
+    { path: '/convert', name: 'convert', component: ConverterView },
     {
       path: '/budgets/:slug',
       component: BudgetLayout,
@@ -40,7 +45,11 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  await runFirstStart();
+  const settings = useSettingsStore();
+  await Promise.all([runFirstStart(), settings.load()]);
+  if (to.name === 'convert' && !settings.switches.converter) {
+    return { name: 'budgets', replace: true };
+  }
   if (to.name !== 'home') return;
 
   // Bookmarks and home screen shortcuts from before budgets had paths.

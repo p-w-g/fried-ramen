@@ -25,6 +25,25 @@ describe('budgets', () => {
     expect(await db.budgets.count()).toBe(1);
   });
 
+  it('keeps the currency a budget is created with', async () => {
+    const created = await useBudgetsStore().create('Japan', 'JPY');
+
+    expect(await db.budgets.get(created.id)).toMatchObject({
+      currency: 'JPY',
+    });
+  });
+
+  it('relabels a currency and takes it away, leaving amounts alone', async () => {
+    const budgets = useBudgetsStore();
+    const { id } = await budgets.create('Poland', 'SEK');
+
+    await budgets.setCurrency(id, 'PLN');
+    expect((await db.budgets.get(id))?.currency).toBe('PLN');
+
+    await budgets.setCurrency(id, undefined);
+    expect(await db.budgets.get(id)).not.toHaveProperty('currency');
+  });
+
   it('refuses a blank name', async () => {
     await expect(useBudgetsStore().create('   ')).rejects.toThrow(
       BudgetNameError,

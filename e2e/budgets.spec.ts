@@ -188,26 +188,6 @@ test('only a budget has the bottom bar, and it leads back to budgets', async ({
   await expect(nav).toHaveCount(0);
 });
 
-test('backups sit at the bottom of a short list and follow a long one', async ({
-  page,
-}) => {
-  const fr = app(page);
-  const backup = page.getByRole('heading', { name: 'Backup' });
-  const screenHeight = page.viewportSize()!.height;
-  await fr.goToBudgets();
-
-  const short = await backup.boundingBox();
-  expect(short!.y).toBeGreaterThan(screenHeight / 2);
-
-  for (const name of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) {
-    await fr.createBudget(name);
-  }
-  await fr.goToBudgets();
-
-  const long = await backup.boundingBox();
-  expect(long!.y).toBeGreaterThan(screenHeight);
-});
-
 test('a link from before budgets had paths still opens the budget', async ({
   page,
 }) => {

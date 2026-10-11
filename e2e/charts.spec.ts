@@ -38,7 +38,33 @@ test('the mini donut opens the overview, and taps back to the list', async ({
     /food\s*5\.00\s*25%/,
   ]);
 
-  await fr.expensesToggle().click();
+  await fr.bottomBarLinks().click();
+
+  await expect(page).toHaveURL(/\/budgets\/current$/);
+});
+
+test('on the charts, the bottom bar only leads back to the budget', async ({
+  page,
+}) => {
+  const fr = app(page);
+
+  await fr.openTrends();
+
+  await expect(fr.bottomBarLinks()).toHaveText(['Current']);
+  await expect(fr.chartsToggle()).toHaveCount(0);
+  await expect(
+    page.getByRole('link', { name: 'Budgets', exact: true }),
+  ).toHaveCount(0);
+  await expect(fr.homeLink()).toBeVisible();
+});
+
+test('the budget name in the top bar leads back to the budget', async ({
+  page,
+}) => {
+  const fr = app(page);
+  await fr.openTrends();
+
+  await fr.titleLink().click();
 
   await expect(page).toHaveURL(/\/budgets\/current$/);
 });

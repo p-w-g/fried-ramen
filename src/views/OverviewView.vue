@@ -7,10 +7,11 @@ import {
   sumSlices,
   wholePercentages,
 } from '@/charts';
-import { formatAmount } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
+import { useFormatStore } from '@/stores/format';
 
 const budget = useBudgetStore();
+const format = useFormatStore();
 
 const shares = computed(() => categoryShares(budget.expenses));
 const shownCents = computed(() => sumSlices(shares.value.slices));
@@ -28,7 +29,7 @@ const percentages = computed(() => wholePercentages(shares.value.slices));
         <DonutChart :slices="shares.slices" />
         <p class="fr__overview-total">
           <span class="fr__amount">
-            {{ formatAmount(shownCents)
+            {{ format.amount(shownCents)
             }}<span v-if="shares.hasNegatives" aria-hidden="true">*</span>
           </span>
           <span class="fr__total-label">Total</span>
@@ -41,7 +42,7 @@ const percentages = computed(() => wholePercentages(shares.value.slices));
             :style="{ background: sliceColor(slice, index) }"
           />
           <span class="fr__legend-label">{{ slice.label }}</span>
-          <span class="fr__amount">{{ formatAmount(slice.cents) }}</span>
+          <span class="fr__amount">{{ format.amount(slice.cents) }}</span>
           <span class="fr__legend-share">{{ percentages[index] }}%</span>
         </li>
       </ul>

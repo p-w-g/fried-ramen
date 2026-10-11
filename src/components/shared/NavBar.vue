@@ -9,7 +9,10 @@ const route = useRoute();
 const budget = useBudgetStore();
 
 const slices = computed(() => categoryShares(budget.expenses).slices);
-/** The donut toggles: charts from the list, and back to the list from charts. */
+/**
+ * Charts lead only back to their budget: the donut and Budgets would each
+ * be one tap from a wrong turn there. All budgets stay behind the logo.
+ */
 const isOnCharts = computed(
   () => route.name === 'overview' || route.name === 'trends',
 );
@@ -18,23 +21,19 @@ const slug = computed(() => String(route.params.slug));
 
 <template>
   <nav class="fr__navbar">
-    <RouterLink
-      v-if="isOnCharts"
-      :to="{ name: 'budget', params: { slug } }"
-      class="fr__chart-toggle fr__chart-toggle--on"
-      aria-label="Back to expenses"
-    >
-      <DonutChart :slices="slices" />
+    <RouterLink v-if="isOnCharts" :to="{ name: 'budget', params: { slug } }">
+      {{ budget.budget?.name }}
     </RouterLink>
-    <RouterLink
-      v-else
-      :to="{ name: 'overview', params: { slug } }"
-      class="fr__chart-toggle"
-      aria-label="Charts"
-    >
-      <DonutChart :slices="slices" />
-    </RouterLink>
-    <RouterLink :to="{ name: 'budgets' }">Budgets</RouterLink>
+    <template v-else>
+      <RouterLink
+        :to="{ name: 'overview', params: { slug } }"
+        class="fr__chart-toggle"
+        aria-label="Charts"
+      >
+        <DonutChart :slices="slices" />
+      </RouterLink>
+      <RouterLink :to="{ name: 'budgets' }">Budgets</RouterLink>
+    </template>
   </nav>
 </template>
 
@@ -63,10 +62,6 @@ const slug = computed(() => String(route.params.slug));
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  & > .fr__chart-toggle--on {
-    background: var(--accent-soft);
   }
 }
 

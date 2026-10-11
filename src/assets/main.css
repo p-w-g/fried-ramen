@@ -193,7 +193,8 @@ button,
 }
 
 /* An icon with a full-size touch target around it. */
-button.fr__icon-button {
+button.fr__icon-button,
+a.fr__icon-button {
   display: inline-grid;
   place-items: center;
   width: 2.75rem;
@@ -270,6 +271,17 @@ button.fr__icon-button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  & a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* Theme and settings stay together on the right, with or without a title. */
+.fr__topbar-actions {
+  display: flex;
+  margin-left: auto;
 }
 
 /* Pixel art: shown at its own 32px and scaled by whole device pixels. */

@@ -114,6 +114,50 @@ test('unknown budget', async ({ page }) => {
   await expect(page).toHaveScreenshot('unknown-budget.png', { fullPage: true });
 });
 
+test('settings', async ({ page }) => {
+  await app(page).goToSettings();
+
+  await expect(page).toHaveScreenshot('settings.png', { fullPage: true });
+});
+
+test('converter', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({ 'SEK/JPY': 15.8511 });
+  await fr.setSwitch('Converter', true);
+  await fr.convert('300000', 'SEK', 'JPY');
+  await expect(fr.conversion()).toHaveText('4,755,330');
+
+  await expect(page).toHaveScreenshot('converter.png', { fullPage: true });
+});
+
+test('budgets page with budget currencies', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({});
+  await fr.setSwitch('Budget currencies', true);
+  await fr.createBudget('Japan', 'JPY');
+  await fr.addExpense('Ramen', 1500);
+  await fr.goToBudgets();
+
+  await expect(page).toHaveScreenshot('budgets-currency.png', {
+    fullPage: true,
+  });
+});
+
+test('budget shown in another currency', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({ 'JPY/SEK': 0.0631 });
+  await fr.setSwitch('Budget currencies', true);
+  await fr.createBudget('Japan', 'JPY');
+  await fr.addExpense('Ramen', 1500);
+  await fr.showIn('SEK');
+  await expect(fr.shownTotal()).toHaveText('SEK 94.65');
+  await fr.openForm();
+
+  await expect(page).toHaveScreenshot('budget-currency.png', {
+    fullPage: true,
+  });
+});
+
 test.describe('dark theme', () => {
   test.use({ colorScheme: 'dark' });
 

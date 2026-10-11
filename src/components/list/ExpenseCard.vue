@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 import {
   AMOUNT_PATTERN,
-  formatAmount,
   fromCents,
   parseAmount,
   type Expense,
   type ExpenseDraft,
 } from '@/domain';
 import { useBudgetStore } from '@/stores/budget';
+import { useMoneyStore } from '@/stores/money';
 import { useDragToCategory } from './dragAndDrop';
 import AppIcon from '@/components/shared/AppIcon.vue';
 import CheckIcon from '@/assets/icons/check_circle_outline-24px.svg';
@@ -18,6 +18,7 @@ import SaveIcon from '@/assets/icons/save_as.svg';
 const { expense } = defineProps<{ expense: Expense }>();
 
 const budget = useBudgetStore();
+const money = useMoneyStore();
 
 /** What assistive tech calls this expense; quick entries have no name yet. */
 const label = () => expense.name || 'unnamed expense';
@@ -104,7 +105,7 @@ function startDrag(event: PointerEvent) {
         {{ expense.name || 'Unnamed expense' }}
       </h3>
       <span class="fr__entry-amount fr__amount">
-        {{ formatAmount(expense.amountCents) }}
+        {{ money.amount(expense.amountCents) }}
       </span>
       <p v-if="expense.description" class="fr__entry-description">
         {{ expense.description }}

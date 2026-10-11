@@ -1,5 +1,13 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/** Settings switches by label, and the meta key each is saved under. */
+const SWITCH_KEYS = {
+  Converter: 'converter',
+  'Budget currencies': 'budgetCurrencies',
+} as const;
+
+type SwitchLabel = keyof typeof SWITCH_KEYS;
+
 /** Drag target outside every drop zone: the page title. */
 export const NOWHERE = Symbol('nowhere');
 
@@ -81,6 +89,27 @@ export function app(page: Page) {
     return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   };
 
+  /** Resolves once IndexedDB holds `expected` for a meta key. */
+  const metaSaved = (key: string, expected: unknown) =>
+    page.waitForFunction(
+      ({ key, expected }) =>
+        new Promise<boolean>((resolve) => {
+          const opening = indexedDB.open('fried-ramen');
+          opening.onsuccess = () => {
+            const database = opening.result;
+            const reading = database
+              .transaction('meta')
+              .objectStore('meta')
+              .get(key);
+            reading.onsuccess = () => {
+              database.close();
+              resolve(reading.result?.value === expected);
+            };
+          };
+        }),
+      { key, expected },
+    );
+
   /** Answers the in-app confirm dialog by the label of its button. */
   const answerDialog = async (label: string) => {
     const dialog = page.getByRole('dialog');
@@ -91,6 +120,12 @@ export function app(page: Page) {
   const openForm = async () => {
     if (!(await page.locator('#expenses-form').isVisible())) {
       await formToggle.click();
+    }
+  };
+
+  const openCategories = async () => {
+    if (!(await page.locator('#labels-form').isVisible())) {
+      await page.getByRole('button', { name: 'Categories' }).click();
     }
   };
 
@@ -126,14 +161,20 @@ export function app(page: Page) {
     },
 
     async addCategory(name: string) {
-      await openForm();
+      await openCategories();
       await page.fill('#label', name);
       await page.press('#label', 'Enter');
     },
 
     async deleteEmptyCategory(name: string) {
-      await openForm();
+      await openCategories();
       await page.selectOption('#removal-menu', name);
+    },
+
+    /** What the delete menu offers; none when it is not shown at all. */
+    async deletableCategories() {
+      await openCategories();
+      return page.locator('#removal-menu option:not([disabled])');
     },
 
     async assignCategory(expense: string, category: string) {
@@ -171,6 +212,95 @@ export function app(page: Page) {
 
     goToBudgets,
 
+    async goToSettings() {
+      await page.getByRole('link', { name: 'Settings' }).click();
+      await expect(page).toHaveURL(/\/settings$/);
+    },
+
+    /** The open side page's icon in the top bar, now a close button. */
+    closeWithIcon: (page_: 'settings' | 'currency') =>
+      page.getByRole('button', { name: `Close ${page_}` }).click(),
+
+    done: () => page.getByRole('button', { name: 'Done' }).click(),
+
+    settingSwitch: (label: SwitchLabel) =>
+      page.getByRole('switch', { name: label }),
+
+    /** Waits until it is saved, so a reload right after keeps it. */
+    async setSwitch(label: SwitchLabel, on: boolean) {
+      if (!page.url().endsWith('/settings')) {
+        await page.getByRole('link', { name: 'Settings' }).click();
+      }
+      await page.getByRole('switch', { name: label }).setChecked(on);
+      await metaSaved(SWITCH_KEYS[label], on);
+    },
+
+    /** By locale, e.g. "ja-JP"; "" is Auto. Waits until it is saved. */
+    async setNumberFormat(locale: string) {
+      if (!page.url().endsWith('/settings')) {
+        await page.getByRole('link', { name: 'Settings' }).click();
+      }
+      await page.getByLabel('Number format').selectOption(locale);
+      await metaSaved('numberLocale', locale || undefined);
+    },
+
+    /**
+     * Stands in for the rates API, so no test depends on the real one.
+     * Answers pairs like "SEK/JPY" from `rates`, refuses the rest, and
+     * returns the pairs asked for, in order. Pass null to fail every
+     * request, as when the API is unreachable.
+     */
+    async mockRates(rates: Record<string, number> | null) {
+      const asked: string[] = [];
+      await page
+        .context()
+        .route('https://api.frankfurter.dev/**', async (route) => {
+          const [base, quote] = new URL(route.request().url()).pathname
+            .split('/')
+            .slice(-2);
+          asked.push(`${base}/${quote}`);
+          if (rates === null) return route.abort('internetdisconnected');
+          const rate = rates[`${base}/${quote}`];
+          await route.fulfill({
+            status: rate === undefined ? 422 : 200,
+            headers: { 'access-control-allow-origin': '*' },
+            json: { date: '2026-10-09', base, quote, rate },
+          });
+        });
+      return asked;
+    },
+
+    /** The converter's icon in the top bar, while it is switched on. */
+    converterLink: () =>
+      page.getByRole('link', { name: 'Currency', exact: true }),
+
+    async convert(amount: string, from: string, to: string) {
+      if (!page.url().endsWith('/convert')) {
+        await page.getByRole('link', { name: 'Currency', exact: true }).click();
+      }
+      await page.getByLabel('Amount', { exact: true }).fill(amount);
+      await page.getByLabel('From', { exact: true }).selectOption(from);
+      await page.getByLabel('To', { exact: true }).selectOption(to);
+    },
+
+    swapCurrencies: () =>
+      page.getByRole('button', { name: 'Swap currencies' }).click(),
+
+    /** The typed amount, echoed readably, e.g. "300,000 SEK". */
+    typedEcho: () => page.locator('.fr__conversion-from'),
+
+    /** The converted amount alone, e.g. "1,585" for yen. */
+    conversion: () => page.locator('.fr__conversion-result'),
+
+    /** The result as its number format shortens it, e.g. "≈ 476万". */
+    shortConversion: () => page.locator('.fr__conversion-short'),
+
+    /** e.g. "1 SEK = 15.8511 JPY". */
+    rateLine: () => page.locator('.fr__conversion-rate'),
+
+    /** e.g. "Rate from 2026-10-09". */
+    rateDate: () => page.locator('.fr__conversion-date'),
+
     homeLink: () =>
       page.getByRole('link', { name: 'Fried Ramen: all budgets' }),
 
@@ -190,8 +320,11 @@ export function app(page: Page) {
     /** The bottom bar's mini donut, while it leads to the charts. */
     chartsToggle: () => page.getByRole('link', { name: 'Charts' }),
 
-    /** The same donut on a charts page, where it leads back. */
-    expensesToggle: () => page.getByRole('link', { name: 'Back to expenses' }),
+    /** On a charts page, the bottom bar's only link: back to its budget. */
+    bottomBarLinks: () => page.getByRole('navigation').getByRole('link'),
+
+    /** The budget's name in the top bar, as a link back to it. */
+    titleLink: () => page.getByRole('heading', { level: 1 }).getByRole('link'),
 
     async openTrends() {
       await page.getByRole('link', { name: 'Charts' }).click();
@@ -207,9 +340,15 @@ export function app(page: Page) {
     /** The budget's name in the top bar, or the page's own title. */
     pageTitle: () => page.getByRole('heading', { level: 1 }),
 
-    async createBudget(name: string) {
+    /** A currency can only be picked with budget currencies on. */
+    async createBudget(name: string, currency?: string) {
       await goToBudgets();
       await page.fill('#budget-name', name);
+      if (currency) {
+        await page
+          .getByRole('combobox', { name: 'Currency' })
+          .selectOption(currency);
+      }
       await page.getByRole('button', { name: 'Create budget' }).click();
     },
 
@@ -241,14 +380,14 @@ export function app(page: Page) {
 
     /** Returns the path of the downloaded backup file. */
     async exportBackup() {
-      await goToBudgets();
+      await page.getByRole('link', { name: 'Settings' }).click();
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: 'Export backup' }).click();
       return (await download).path();
     },
 
     async importBackup(file: string | { name: string; buffer: Buffer }) {
-      await goToBudgets();
+      await page.getByRole('link', { name: 'Settings' }).click();
       const files =
         typeof file === 'string'
           ? file
@@ -263,6 +402,22 @@ export function app(page: Page) {
       await page.getByRole('button', { name: /^Clear / }).click();
       await answerDialog('Clear');
     },
+
+    /** The open budget's total as shown, e.g. "¥1,500" or "SEK 4.50". */
+    shownTotal: () => page.locator('.fr__total .fr__amount'),
+
+    /** One expense's amount as shown. */
+    shownAmount: (name: string) => card(name).locator('.fr__entry-amount'),
+
+    /** Picks what the open budget is shown in; "" shows its own. */
+    showIn: (currency: string) =>
+      page.getByLabel('Show in').selectOption(currency),
+
+    /** e.g. "Converted at 1 SEK = 15.8511 JPY, rate from 2026-10-09. …" */
+    rateNote: () => page.locator('.fr__rate-note'),
+
+    /** The open budget's own currency, on its page. */
+    budgetCurrency: () => page.getByLabel('Currency', { exact: true }),
 
     async expectTotal(total: number) {
       await expect(page.locator('.fr__total .fr__amount')).toHaveText(

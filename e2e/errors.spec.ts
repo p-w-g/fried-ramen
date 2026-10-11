@@ -44,7 +44,7 @@ test('a failure outside storage is reported, e.g. a blocked download', async ({
     };
   });
 
-  await fr.goToBudgets();
+  await fr.goToSettings();
   await page.getByRole('button', { name: 'Export backup' }).click();
 
   await expect(fr.errorAlert()).toContainText('Downloads are blocked');
