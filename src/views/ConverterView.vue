@@ -5,7 +5,7 @@ import {
   GROUPED_AMOUNT_PATTERN,
   caretAfterTyped,
   convertCents,
-  formatMoney,
+  formatBareMoney,
   groupThousands,
   parseAmount,
   toCents,
@@ -58,7 +58,7 @@ const amountCents = computed(() => {
 
 const converted = computed(() =>
   rate.value && amountCents.value !== null
-    ? formatMoney(convertCents(amountCents.value, rate.value), to.value)
+    ? formatBareMoney(convertCents(amountCents.value, rate.value), to.value)
     : null,
 );
 </script>
@@ -105,10 +105,10 @@ const converted = computed(() =>
     <section aria-live="polite" class="fr__conversion">
       <template v-if="rate">
         <p class="fr__amount fr__conversion-result">{{ converted ?? '–' }}</p>
-        <p class="fr__hint">
-          1 {{ rate.base }} = {{ rate.rate }} {{ rate.quote }}, rate from
-          {{ rate.date }}
+        <p class="fr__conversion-rate">
+          1 {{ rate.base }} = {{ rate.rate }} {{ rate.quote }}
         </p>
+        <p class="fr__hint fr__conversion-date">Rate from {{ rate.date }}</p>
       </template>
       <p v-else-if="!isFetching" role="alert" class="fr__problem">
         No exchange rate yet. Connect to the internet once to get one.
@@ -127,10 +127,24 @@ const converted = computed(() =>
     margin: 0;
   }
 
+  /* The answer is the point of the page: as large as a phone can fit. */
   & .fr__conversion-result {
-    font-size: 2.75rem;
+    font-size: 3.5rem;
     font-weight: 600;
     line-height: 1.1;
+    letter-spacing: -0.02em;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  & .fr__conversion-rate {
+    margin-top: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  & .fr__conversion-date {
+    font-size: 0.875rem;
   }
 }
 </style>

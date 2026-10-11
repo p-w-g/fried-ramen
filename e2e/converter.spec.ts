@@ -26,14 +26,13 @@ test('converts both ways, with the rate and its date', async ({ page }) => {
 
   await fr.convert('100', 'SEK', 'JPY');
 
-  await expect(fr.conversion()).toHaveText('¥1,585');
-  await expect(fr.rateLine()).toHaveText(
-    '1 SEK = 15.8511 JPY, rate from 2026-10-09',
-  );
+  await expect(fr.conversion()).toHaveText('1 585');
+  await expect(fr.rateLine()).toHaveText('1 SEK = 15.8511 JPY');
+  await expect(fr.rateDate()).toHaveText('Rate from 2026-10-09');
 
   await fr.swapCurrencies();
 
-  await expect(fr.conversion()).toHaveText('SEK 6.31');
+  await expect(fr.conversion()).toHaveText('6.31');
 });
 
 test('long amounts group by thousands as they are typed', async ({ page }) => {
@@ -54,7 +53,7 @@ test('long amounts group by thousands as they are typed', async ({ page }) => {
   await amount.press('End');
   await amount.pressSequentially(',5');
   await expect(amount).toHaveValue('31 200 000,5');
-  await expect(fr.conversion()).toContainText('494,554,328');
+  await expect(fr.conversion()).toHaveText('494 554 328');
 });
 
 test('asks for a pair once a day, however often it is opened', async ({
@@ -65,10 +64,10 @@ test('asks for a pair once a day, however often it is opened', async ({
   await fr.setSwitch('Converter', true);
 
   await fr.convert('100', 'SEK', 'JPY');
-  await expect(fr.conversion()).toHaveText('¥1,585');
+  await expect(fr.conversion()).toHaveText('1 585');
   await page.reload();
   await fr.convert('100', 'SEK', 'JPY');
-  await expect(fr.conversion()).toHaveText('¥1,585');
+  await expect(fr.conversion()).toHaveText('1 585');
 
   expect(asked.filter((pair) => pair === 'SEK/JPY')).toHaveLength(1);
 });

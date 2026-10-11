@@ -124,8 +124,8 @@ test('converter', async ({ page }) => {
   const fr = app(page);
   await fr.mockRates({ 'SEK/JPY': 15.8511 });
   await fr.setSwitch('Converter', true);
-  await fr.convert('100', 'SEK', 'JPY');
-  await expect(fr.conversion()).toHaveText('¥1,585');
+  await fr.convert('300000', 'SEK', 'JPY');
+  await expect(fr.conversion()).toHaveText('4 755 330');
 
   await expect(page).toHaveScreenshot('converter.png', { fullPage: true });
 });

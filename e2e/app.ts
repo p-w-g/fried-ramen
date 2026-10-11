@@ -264,11 +264,14 @@ export function app(page: Page) {
     swapCurrencies: () =>
       page.getByRole('button', { name: 'Swap currencies' }).click(),
 
-    /** The converted amount, e.g. "¥1,585". */
+    /** The converted amount alone, e.g. "1 585" for yen. */
     conversion: () => page.locator('.fr__conversion-result'),
 
-    /** e.g. "1 SEK = 15.8511 JPY, rate from 2026-10-09". */
-    rateLine: () => page.locator('.fr__conversion .fr__hint'),
+    /** e.g. "1 SEK = 15.8511 JPY". */
+    rateLine: () => page.locator('.fr__conversion-rate'),
+
+    /** e.g. "Rate from 2026-10-09". */
+    rateDate: () => page.locator('.fr__conversion-date'),
 
     homeLink: () =>
       page.getByRole('link', { name: 'Fried Ramen: all budgets' }),

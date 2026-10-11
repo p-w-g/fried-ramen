@@ -41,12 +41,12 @@ test('the converter keeps converting offline with the last rate it got', async (
   await fr.mockRates({ 'SEK/JPY': 15.8511 });
   await fr.setSwitch('Converter', true);
   await fr.convert('100', 'SEK', 'JPY');
-  await expect(fr.conversion()).toHaveText('¥1,585');
+  await expect(fr.conversion()).toHaveText('1 585');
 
   await context.setOffline(true);
   await page.reload();
   await fr.convert('100', 'SEK', 'JPY');
 
-  await expect(fr.conversion()).toHaveText('¥1,585');
-  await expect(fr.rateLine()).toContainText('rate from 2026-10-09');
+  await expect(fr.conversion()).toHaveText('1 585');
+  await expect(fr.rateDate()).toHaveText('Rate from 2026-10-09');
 });

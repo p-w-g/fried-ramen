@@ -136,6 +136,17 @@ export const formatMoney = (cents: number, currency: Currency) =>
     fromCents(cents),
   );
 
+/**
+ * The number alone, for when the currency is said next to it: in that
+ * currency's decimals and grouped by spaces, like typed amounts.
+ */
+export const formatBareMoney = (cents: number, currency: Currency) =>
+  new Intl.NumberFormat(undefined, { style: 'currency', currency })
+    .formatToParts(fromCents(cents))
+    .filter((part) => part.type !== 'currency' && part.type !== 'literal')
+    .map((part) => (part.type === 'group' ? ' ' : part.value))
+    .join('');
+
 const compact = new Intl.NumberFormat(undefined, {
   notation: 'compact',
   maximumSignificantDigits: 3,
