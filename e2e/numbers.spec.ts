@@ -17,6 +17,7 @@ test('a Japanese format reads 300万 in the converter, in full above its result'
 
   await expect(fr.typedEcho()).toHaveText('3,000,000 JPY');
   await expect(fr.conversion()).toHaveText('189,300');
+  await expect(fr.shortConversion()).toHaveText('≈ 18.9万');
 });
 
 test('an Indian format reads lakhs and groups by them everywhere', async ({
@@ -30,6 +31,7 @@ test('an Indian format reads lakhs and groups by them everywhere', async ({
   await fr.convert('30L', 'SEK', 'JPY');
   await expect(fr.typedEcho()).toHaveText('30,00,000 SEK');
   await expect(fr.conversion()).toHaveText('4,75,53,300');
+  await expect(fr.shortConversion()).toHaveText('≈ 4.76Cr');
 
   await fr.openBudget('Current');
   await fr.addExpense('Flat', 4755330.5);
@@ -64,4 +66,15 @@ test.describe('on a German phone', () => {
 
     await expect(fr.shownTotal()).toHaveText('4.755.330,50');
   });
+});
+
+test('a small result needs no short form', async ({ page }) => {
+  const fr = app(page);
+  await fr.mockRates({ 'SEK/JPY': 15.8511 });
+  await fr.setSwitch('Converter', true);
+
+  await fr.convert('100', 'SEK', 'JPY');
+
+  await expect(fr.conversion()).toHaveText('1,585');
+  await expect(fr.shortConversion()).toHaveCount(0);
 });

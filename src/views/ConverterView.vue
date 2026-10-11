@@ -49,9 +49,22 @@ const typedShown = computed(() =>
     : null,
 );
 
-const converted = computed(() =>
+const convertedCents = computed(() =>
   rate.value && amountCents.value !== null
-    ? format.bareMoney(convertCents(amountCents.value, rate.value), to.value)
+    ? convertCents(amountCents.value, rate.value)
+    : null,
+);
+
+const converted = computed(() =>
+  convertedCents.value === null
+    ? null
+    : format.bareMoney(convertedCents.value, to.value),
+);
+
+/** How the number format says a large result: ≈ 476万, ≈ 4.76Cr, ≈ 4.76M. */
+const convertedShort = computed(() =>
+  convertedCents.value !== null && Math.abs(convertedCents.value) >= 1_000_000
+    ? format.compact(convertedCents.value)
     : null,
 );
 </script>
@@ -97,6 +110,9 @@ const converted = computed(() =>
           <p class="fr__hint">equals</p>
         </template>
         <p class="fr__amount fr__conversion-result">{{ converted ?? '–' }}</p>
+        <p v-if="convertedShort" class="fr__hint fr__conversion-short">
+          ≈ {{ convertedShort }}
+        </p>
         <p class="fr__conversion-rate">
           1 {{ rate.base }} = {{ rate.rate }} {{ rate.quote }}
         </p>

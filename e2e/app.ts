@@ -280,6 +280,9 @@ export function app(page: Page) {
     /** The converted amount alone, e.g. "1,585" for yen. */
     conversion: () => page.locator('.fr__conversion-result'),
 
+    /** The result as its number format shortens it, e.g. "≈ 476万". */
+    shortConversion: () => page.locator('.fr__conversion-short'),
+
     /** e.g. "1 SEK = 15.8511 JPY". */
     rateLine: () => page.locator('.fr__conversion-rate'),
 
